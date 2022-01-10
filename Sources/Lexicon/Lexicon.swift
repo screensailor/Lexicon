@@ -6,15 +6,16 @@ import Foundation
 
 @LexiconActor
 public class Lexicon: ObservableObject {
-
-    public private(set) var root: Lemma!
-    public internal(set) var dictionary: [Lemma.ID: Unowned<Lemma>] = [:]
+	
+	private(set) static var all: [Lexicon] = []
+	
+	public var root: Lemma { dictionary[serialization.name]! }
+    public internal(set) var dictionary: [Lemma.ID: Lemma] = [:]
     
     @Published public private(set) var serialization: Serialization
     
-    private init(_ serialization: Serialization) {
-        self.serialization = serialization
-        Lexicon.all.append(self)
+    private init(_ o: Serialization) {
+        serialization = o
     }
 }
 
@@ -23,17 +24,15 @@ public extension Lexicon {
     static func from(_ serialization: Serialization) -> Lexicon {
         let o = Lexicon(serialization)
         connect(lexicon: o, with: serialization)
+		all.append(o)
         return o
     }
     
     private static func connect(lexicon o: Lexicon, with serialization: Serialization) {
         
-        o.root = nil
         o.dictionary = [:]
         
-        let root = Lemma(name: serialization.name, node: serialization.root, parent: nil, lexicon: o)
-        
-        o.root = root
+		_ = Lemma(name: serialization.name, node: serialization.root, parent: nil, lexicon: o)
 
 		for lemma in o.dictionary.values {
 			guard let suffix = lemma.node.protonym else {
@@ -69,15 +68,7 @@ extension Lexicon {
 public extension Lexicon {
     
     subscript(id: Lemma.ID) -> Lemma? {
-		dictionary[id]?.unwrapped ?? self[id.components(separatedBy: ".")]
-    }
-    
-    @inlinable subscript(id: Lemma.Name...) -> Lemma? {
-        self[id]
-    }
-    
-    subscript<ID>(id: ID) -> Lemma? where ID: Collection, ID.Element == Lemma.Name {
-        id.first == root.name ? root[id.dropFirst()] : root[id]
+		dictionary[id] ?? root[id.components(separatedBy: ".")]
     }
 }
 
@@ -106,7 +97,7 @@ public extension Lexicon {
         lemma.children[name] = child
         
         for id in dictionary.keys {
-            guard let o = dictionary[id]?.unwrapped, o != lemma, o.is(lemma) else {
+            guard let o = dictionary[id], o != lemma, o.is(lemma) else {
                 continue
             }
             make(child: name, node: node, to: o)
@@ -145,7 +136,7 @@ public extension Lexicon {
 		lemma.children[name] = child
 		
 		for id in dictionary.keys {
-			guard let o = dictionary[id]?.unwrapped, o != lemma, o.is(lemma) else {
+			guard let o = dictionary[id], o != lemma, o.is(lemma) else {
 				continue
 			}
 			make(child: name, node: node, to: o)
@@ -168,14 +159,11 @@ public extension Lexicon {
     
     private func deleteWithRecursion(_ lemma: Lemma) -> Lemma? {
         
-        guard
-            let parent = lemma.parent,
-            let node = parent.node.children?.removeValue(forKey: lemma.name)
-        else {
+        guard let parent = lemma.parent else {
             return nil
         }
         
-        assert(lemma.node === node)
+		parent.node.children?.removeValue(forKey: lemma.name)
         
         parent.ownChildren.removeValue(forKey: lemma.name)
         parent.children.removeValue(forKey: lemma.name)
@@ -183,14 +171,14 @@ public extension Lexicon {
         dictionary.removeValue(forKey: lemma.id)
 
         for id in dictionary.keys {
-            guard let o = dictionary[id]?.unwrapped else {
+            guard let o = dictionary[id] else {
                 continue
             }
             if o.protonym == lemma {
 				let parent = deleteWithRecursion(o)
 				assert(parent != nil)
             }
-            else if o.is(lemma), let lemma = o.type.values.first(where: { $0.node === node })?.unwrapped {
+			else if let lemma = o.type[lemma.id]?.unwrapped {
 				let success = removeWithDeleteRecursion(type: lemma, from: o) // TODO: there's more to remove!
 				assert(success)
             }
@@ -218,7 +206,7 @@ public extension Lexicon {
             newID = name
         }
 
-        root.node.traverse(name: root.name) { id, name, node in
+        root.node.traverse(name: serialization.name) { id, name, node in
             if let type = node.type {
                 guard type.contains(where: { id in id.starts(with: oldID) }) else {
                     return
@@ -246,7 +234,7 @@ public extension Lexicon {
         
         serialization.date = .init()
         
-        return dictionary[newID]?.unwrapped
+        return dictionary[newID]
     }
 
     @discardableResult
@@ -259,7 +247,7 @@ public extension Lexicon {
         lemma.type[type.id] = Unowned(type)
         
         for id in dictionary.keys {
-            guard let o = dictionary[id]?.unwrapped, o.is(lemma) else {
+            guard let o = dictionary[id], o.is(lemma) else {
                 continue
             }
             for (name, lemma) in type.children {
@@ -289,10 +277,10 @@ public extension Lexicon {
             lemma.node.type = nil
         }
 
-        let children = type.children.map(\.value.name)
+		let children = type.children.keys
         
         for id in dictionary.keys {
-            guard let o = dictionary[id]?.unwrapped, o != type, o.is(lemma) else {
+            guard let o = dictionary[id], o != type, o.is(lemma) else {
                 continue
             }
             for name in children {
@@ -319,7 +307,7 @@ public extension Lexicon {
                 print("❓ protonym", protonym, "not validated for", lemma)
                 return // TODO: throw
             }
-            dictionary[lemma.id] = Unowned(protonym)
+            dictionary[lemma.id] = protonym
             
             lemma.node.protonym = ref
             
@@ -328,7 +316,7 @@ public extension Lexicon {
             }
             
             for id in dictionary.keys {
-                guard let o = dictionary[id]?.unwrapped else {
+                guard let o = dictionary[id] else {
                     continue
                 }
                 if remove(type: lemma, from: o) {
@@ -343,17 +331,11 @@ public extension Lexicon {
             lemma.type = [:]
         }
         else {
-            dictionary[lemma.id] = Unowned(lemma)
+            dictionary[lemma.id] = lemma
             lemma.node.protonym = nil
             lemma.protonym = nil
             lemma.type[lemma.id] = Unowned(lemma)
         }
         serialization.date = .init()
     }
-}
-
-@LexiconActor
-public extension Lexicon {
-    
-    private(set) static var all: [Lexicon] = []
 }

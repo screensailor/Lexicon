@@ -10,7 +10,7 @@ final class CLI™: Hopes {
 	@LexiconActor
     func test() throws {
 		
-		let root = try Lexicon.from(Lexicon.Serialization(name: "root")).root.hopefully()
+		let root = Lexicon.from(Lexicon.Serialization(name: "root")).root
 		/*
 		 root:
 		 */

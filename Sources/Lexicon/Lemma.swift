@@ -34,7 +34,7 @@ public class Lemma {
         self.parent = parent
         self.lexicon = lexicon
         
-        lexicon.dictionary[id] = Unowned(self)
+        lexicon.dictionary[id] = self
 
         for (name, node) in node.children ?? [:] {
             ownChildren[name] = Lemma(name: name, node: node, parent: self, lexicon: lexicon)
@@ -245,7 +245,7 @@ extension Lemma {
     func lazy_ownType() -> [ID: Unowned<Lemma>] {
         var o: [ID: Unowned<Lemma>] = [:]
         for id in node.type ?? [] {
-            o[id] = lexicon.dictionary[id]
+			o[id] = lexicon.dictionary[id].map(Unowned.init)
         }
         return o
     }

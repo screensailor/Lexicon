@@ -11,7 +11,7 @@ final class Lexicon™: Hopes {
     func test() throws {
 		
 		let lexicon = try Lexicon.from(TaskPaper(taskpaper).decode())
-		let root = try lexicon.root.hopefully()
+		let root = lexicon.root
 		var cli = CLI(root)
 		
 		hope(cli.suggestions.map(\.name)) == ["idea", "purpose", "type", "ui", "ux"]
