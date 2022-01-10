@@ -69,7 +69,7 @@ extension Lexicon {
 public extension Lexicon {
     
     subscript(id: Lemma.ID) -> Lemma? {
-		dictionary[id]?.__ ?? self[id.components(separatedBy: ".")]
+		dictionary[id]?.unwrapped ?? self[id.components(separatedBy: ".")]
     }
     
     @inlinable subscript(id: Lemma.Name...) -> Lemma? {
@@ -106,7 +106,7 @@ public extension Lexicon {
         lemma.children[name] = child
         
         for id in dictionary.keys {
-            guard let o = dictionary[id]?.__, o != lemma, o.is(lemma) else {
+            guard let o = dictionary[id]?.unwrapped, o != lemma, o.is(lemma) else {
                 continue
             }
             make(child: name, node: node, to: o)
@@ -145,7 +145,7 @@ public extension Lexicon {
 		lemma.children[name] = child
 		
 		for id in dictionary.keys {
-			guard let o = dictionary[id]?.__, o != lemma, o.is(lemma) else {
+			guard let o = dictionary[id]?.unwrapped, o != lemma, o.is(lemma) else {
 				continue
 			}
 			make(child: name, node: node, to: o)
@@ -183,14 +183,14 @@ public extension Lexicon {
         dictionary.removeValue(forKey: lemma.id)
 
         for id in dictionary.keys {
-            guard let o = dictionary[id]?.__ else {
+            guard let o = dictionary[id]?.unwrapped else {
                 continue
             }
             if o.protonym == lemma {
 				let parent = deleteWithRecursion(o)
 				assert(parent != nil)
             }
-            else if o.is(lemma), let lemma = o.type.values.first(where: { $0.node === node })?.__ {
+            else if o.is(lemma), let lemma = o.type.values.first(where: { $0.node === node })?.unwrapped {
 				let success = removeWithDeleteRecursion(type: lemma, from: o) // TODO: there's more to remove!
 				assert(success)
             }
@@ -246,7 +246,7 @@ public extension Lexicon {
         
         serialization.date = .init()
         
-        return dictionary[newID]?.__
+        return dictionary[newID]?.unwrapped
     }
 
     @discardableResult
@@ -259,7 +259,7 @@ public extension Lexicon {
         lemma.type[type.id] = Unowned(type)
         
         for id in dictionary.keys {
-            guard let o = dictionary[id]?.__, o.is(lemma) else {
+            guard let o = dictionary[id]?.unwrapped, o.is(lemma) else {
                 continue
             }
             for (name, lemma) in type.children {
@@ -292,7 +292,7 @@ public extension Lexicon {
         let children = type.children.map(\.value.name)
         
         for id in dictionary.keys {
-            guard let o = dictionary[id]?.__, o != type, o.is(lemma) else {
+            guard let o = dictionary[id]?.unwrapped, o != type, o.is(lemma) else {
                 continue
             }
             for name in children {
@@ -328,7 +328,7 @@ public extension Lexicon {
             }
             
             for id in dictionary.keys {
-                guard let o = dictionary[id]?.__ else {
+                guard let o = dictionary[id]?.unwrapped else {
                     continue
                 }
                 if remove(type: lemma, from: o) {

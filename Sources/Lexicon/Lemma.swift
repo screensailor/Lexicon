@@ -11,20 +11,20 @@ public class Lemma {
     public typealias Name = String
     public typealias Protonym = String
     
-    public let id: ID
-    public let name: Name
-    public unowned let lexicon: Lexicon
+	nonisolated public let node: Lexicon.Serialization.Node
 
-    public unowned let parent: Lemma?
-    public internal(set) unowned var protonym: Lemma?
+    nonisolated public let id: ID
+    nonisolated public let name: Name
+	nonisolated public unowned let parent: Lemma?
+    nonisolated public unowned let lexicon: Lexicon
+	
+	public internal(set) unowned var protonym: Lemma?
 
     public internal(set) lazy var children: [Name: Lemma] = lazy_children()
     public internal(set) var ownChildren: [Name: Lemma] = [:]
     
     public internal(set) lazy var type: [ID: Unowned<Lemma>] = lazy_type()
     public internal(set) lazy var ownType: [ID: Unowned<Lemma>] = lazy_ownType()
-
-    public let node: Lexicon.Serialization.Node
     
     init(name: Name, node: Lexicon.Serialization.Node, parent: Lemma?, lexicon: Lexicon) {
         

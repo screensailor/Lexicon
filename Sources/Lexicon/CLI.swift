@@ -225,7 +225,7 @@ public extension Lemma {
     var childrenGroupedByTypeAndSorted: [(type: Lemma, children: [Lemma])] {
         var o = [(self, ownChildren.values.sorted{ $0.name < $1.name })]
         for type in ownType.values.sorted(by: { $0.id < $1.id }) {
-            o.append((type.__, type.children.keys.sorted(by: <).compactMap{ children[$0] }))
+            o.append((type.unwrapped, type.children.keys.sorted(by: <).compactMap{ children[$0] }))
         }
         return o
     }

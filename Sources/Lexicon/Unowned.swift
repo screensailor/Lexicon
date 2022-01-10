@@ -5,22 +5,22 @@
 @dynamicMemberLookup
 public struct Unowned<Object: AnyObject> {
 
-    public unowned let __: Object
+    public unowned let unwrapped: Object
 
     public init(_ object: Object) {
-        self.__ = object
+        self.unwrapped = object
     }
 
     public subscript<A>(dynamicMember keyPath: KeyPath<Object, A>) -> A {
-        __[keyPath: keyPath]
+        unwrapped[keyPath: keyPath]
     }
 
     public subscript<A>(dynamicMember keyPath: ReferenceWritableKeyPath<Object, A>) -> A {
         get {
-            __[keyPath: keyPath]
+            unwrapped[keyPath: keyPath]
         }
         nonmutating set {
-            __[keyPath: keyPath] = newValue
+            unwrapped[keyPath: keyPath] = newValue
         }
     }
 }
@@ -28,35 +28,35 @@ public struct Unowned<Object: AnyObject> {
 extension Unowned: Equatable where Object: Equatable {
 
     @inlinable public static func == (lhs: Self, rhs: Self) -> Bool {
-        lhs.__ == rhs.__
+        lhs.unwrapped == rhs.unwrapped
     }
 }
 
 extension Unowned: Hashable where Object: Hashable {
 
     @inlinable public func hash(into hasher: inout Hasher) {
-        __.hash(into: &hasher)
+        unwrapped.hash(into: &hasher)
     }
 }
 
 extension Unowned: Comparable where Object: Comparable {
 
     @inlinable public static func < (lhs: Self, rhs: Self) -> Bool {
-        lhs.__ < rhs.__
+        lhs.unwrapped < rhs.unwrapped
     }
 }
 
 extension Unowned: CustomStringConvertible where Object: CustomStringConvertible {
 
     @inlinable public var description: String {
-        __.description
+        unwrapped.description
     }
 }
 
 extension Unowned: CustomDebugStringConvertible where Object: CustomDebugStringConvertible {
 
     @inlinable public var debugDescription: String {
-        __.debugDescription
+        unwrapped.debugDescription
     }
 }
 
@@ -64,7 +64,7 @@ extension Dictionary where Value == Unowned<Lemma> {
 
     subscript(key: Key) -> Lemma? {
         get {
-            self[key]?.__
+            self[key]?.unwrapped
         }
         set {
             self[key] = newValue.map(Unowned.init)
