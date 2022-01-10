@@ -1,2 +1,2 @@
 # Lexicon
-Recurrent Mind Maps, Vocabularies, Ontologies and Naming Systems.
+_Knowledge management and code generation with recurrent mind maps, outlines, directories and naming systems._
