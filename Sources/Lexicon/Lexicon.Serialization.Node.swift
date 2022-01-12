@@ -74,7 +74,15 @@ public extension Lexicon.Serialization.Node {
 			words.string = sentence
 			
 			words.enumerateTokens(in: sentence.indices.range) { range, _ in
-				let word = String(sentence[range]).lowercased().filter(\.isLetter)
+				var word = String(sentence[range]).lowercased().filter{ character in
+					CharacterSet.init(charactersIn: String(character)).isSubset(of: Lemma.validCharacterOfName)
+				}
+				guard let first = word.first else {
+					return true
+				}
+				if first.isNumber {
+					word = "number_\(word)"
+				}
 				node = node.children[word] ?? {
 					let child = Lexicon.Serialization.Node()
 					node.children[word] = child

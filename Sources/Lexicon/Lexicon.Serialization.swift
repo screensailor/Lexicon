@@ -12,7 +12,7 @@ public extension Lexicon {
         public internal(set) var name: Lemma.Name
         public let root: Node
 
-		public init(name: Lemma.Name = "o", root: Node = .init(), date: Date = .init()) {
+		public init(name: Lemma.Name = "root", root: Node = .init(), date: Date = .init()) {
             self.name = name
             self.root = root
             self.date = date

@@ -202,7 +202,9 @@ public extension Lexicon {
             newID = "\(parent.id).\(name)"
         }
         else {
+			dictionary[lemma.name] = nil
             serialization.name = name
+			dictionary[name] = lemma
             newID = name
         }
 
