@@ -27,6 +27,10 @@ public extension Lexicon {
 		all.append(o)
         return o
     }
+	
+	func reset(with serialization: Serialization) {
+		Lexicon.connect(lexicon: self, with: serialization)
+	}
     
     private static func connect(lexicon o: Lexicon, with serialization: Serialization) {
         

@@ -22,6 +22,19 @@ extension Optional where Wrapped: DictionaryProtocol {
             }
         }
     }
+	
+	subscript(key: Wrapped.Key, inserting defaultValue: @autoclosure () -> (Wrapped.Value)) -> Wrapped.Value {
+		mutating get {
+			let value: Wrapped.Value
+			if let o = self[key] {
+				value = o
+			} else {
+				value = defaultValue()
+				self[key] = value
+			}
+			return value
+		}
+	}
 }
 
 protocol SetProtocol: ExpressibleByArrayLiteral {

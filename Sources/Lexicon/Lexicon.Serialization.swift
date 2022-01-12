@@ -31,3 +31,71 @@ extension Lexicon.Serialization {
 		String(data: data(formatting: formatting), encoding: .utf8)!
 	}
 }
+
+#if canImport(NaturalLanguage)
+import NaturalLanguage
+
+public extension Lexicon.Serialization {
+	
+	@LexiconActor
+	static func from(sentences string: String, root name: Lemma.Name = "root") -> Lexicon.Serialization {
+		
+		let rootName = name
+		
+		let root = Lexicon.Serialization.Node()
+		let word = Lexicon.Serialization.Node()
+		let sentence = Lexicon.Serialization.Node()
+		
+		root.children = [
+			"word": word,
+			"sentence": sentence
+		]
+		
+		let sentences = NLTokenizer(unit: .sentence)
+		let tagger = NLTagger(tagSchemes: [.lexicalClass])
+		let options: NLTagger.Options = [.omitPunctuation, .omitWhitespace, .omitOther]
+	
+		sentences.string = string
+
+		sentences.enumerateTokens(in: string.indices.range) { range, _ in
+			
+			var node = sentence
+			
+			let sentence = String(string[range])
+			
+			tagger.string = sentence
+			
+			tagger.enumerateTags(in: sentence.indices.range, unit: .word, scheme: .lexicalClass, options: options) { tag, range in
+				
+				guard let tag = tag?.rawValue.lowercased() else {
+					return true
+				}
+				
+				var name = String(sentence[range]).lowercased().filter{ character in
+					CharacterSet(charactersIn: String(character)).isSubset(of: Lemma.validCharacterOfName)
+				}
+				
+				guard let first = name.first else {
+					return true
+				}
+				
+				if first.isNumber {
+					name = "_\(name)"
+				}
+				
+				node = node.children[name, inserting: .init()]
+
+				if word.children[tag] == nil {
+					word.children[tag] = .init()
+				}
+				
+				node.type.insert("\(rootName).word.\(tag)")
+
+				return true
+			}
+			return true
+		}
+		return .init(name: name, root: root)
+	}
+}
+#endif
