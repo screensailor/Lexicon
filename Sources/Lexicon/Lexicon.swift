@@ -36,7 +36,9 @@ public extension Lexicon {
         
         o.dictionary = [:]
         
-		_ = Lemma(name: serialization.name, node: serialization.root, parent: nil, lexicon: o)
+		let root = Lemma(name: serialization.name, node: serialization.root, parent: nil, lexicon: o)
+		
+		assert(o.dictionary[serialization.name] === root)
 
 		for lemma in o.dictionary.values {
 			guard let suffix = lemma.node.protonym else {
@@ -53,6 +55,8 @@ public extension Lexicon {
 			lemma.protonym = protonym
 			o.dictionary[lemma.id] = protonym
         }
+		
+		o.serialization = serialization
     }
 }
 
@@ -65,6 +69,7 @@ extension Lexicon {
     }
     
     private func remove(lemma id: Lemma.ID) {
+		print("🗑", id)
         dictionary.removeValue(forKey: id)
     }
 }

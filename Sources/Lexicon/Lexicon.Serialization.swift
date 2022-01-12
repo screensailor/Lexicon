@@ -37,6 +37,8 @@ import NaturalLanguage
 
 public extension Lexicon.Serialization {
 	
+	static let underscore = CharacterSet(charactersIn: "_")
+
 	@LexiconActor
 	static func from(sentences string: String, root name: Lemma.Name = "root") -> Lexicon.Serialization {
 		
@@ -71,7 +73,7 @@ public extension Lexicon.Serialization {
 					return true
 				}
 				
-				var name = String(sentence[range]).lowercased().filter{ character in
+				var name = sentence[range].lowercased().trimmingCharacters(in: underscore).filter{ character in
 					CharacterSet(charactersIn: String(character)).isSubset(of: Lemma.validCharacterOfName)
 				}
 				
