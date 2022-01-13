@@ -40,7 +40,11 @@ public extension Lexicon {
     private static func connect(lexicon o: Lexicon, with new: Serialization? = nil) {
 		
 		let serialization = new ?? o.serialization
-        
+		
+		defer {
+			o.serialization = serialization
+		}
+
 		o.dictionary.removeAll(keepingCapacity: true)
         
 		o.lemma = Lemma(name: serialization.name, node: serialization.root, parent: nil, lexicon: o)
@@ -62,8 +66,6 @@ public extension Lexicon {
 			lemma.protonym = protonym
 			o.dictionary[lemma.id] = protonym
         }
-		
-		o.serialization = serialization
     }
 }
 
@@ -97,6 +99,10 @@ public extension Lexicon {
         guard !name.isEmpty, lemma.children[name] == nil else {
             return nil // TODO: throw
         }
+		
+		defer {
+			serialization.date = .init()
+		}
         
         let node: Serialization.Node
         
@@ -119,8 +125,6 @@ public extension Lexicon {
             }
             make(child: name, node: node, to: o)
         }
-    
-        serialization.date = .init()
         
         return child
     }
@@ -132,10 +136,12 @@ public extension Lexicon {
 	
 	@discardableResult
 	func add(childrenOf node: Serialization.Node, to lemma: Lemma) -> Lemma? {
+		defer {
+			serialization.date = .init()
+		}
 		for (name, child) in node.children ?? [:] {
 			add(child: name, node: child, to: lemma, date: nil)
 		}
-		serialization.date = .init()
 		return lemma
 	}
 
@@ -146,6 +152,12 @@ public extension Lexicon {
 			return nil // TODO: throw
 		}
 		
+		defer {
+			if let date = date {
+				serialization.date = date
+			}
+		}
+
 		lemma.node.children[name] = node
 		
 		let child = Lemma(name: name, node: node, parent: lemma, lexicon: self)
@@ -157,10 +169,6 @@ public extension Lexicon {
 				continue
 			}
 			make(child: name, node: node, to: o)
-		}
-	
-		if let date = date {
-			serialization.date = date
 		}
 		
 		return child
@@ -212,8 +220,10 @@ public extension Lexicon {
         }
 		
 		guard let parent = lemma.parent else {
-			serialization.name = name
-			Lexicon.connect(lexicon: self)
+			var new = serialization
+			new.name = name
+			new.date = .init()
+			Lexicon.connect(lexicon: self, with: new)
 			assert(root.name == name)
 			return root
 		}
@@ -247,9 +257,7 @@ public extension Lexicon {
             }
         }
         
-        Lexicon.connect(lexicon: self, with: serialization)
-        
-        serialization.date = .init()
+        Lexicon.connect(lexicon: self)
         
         return dictionary[newID]
     }
