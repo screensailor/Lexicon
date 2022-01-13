@@ -38,11 +38,10 @@ import NaturalLanguage
 public extension Lexicon.Serialization {
 	
 	static let underscore = CharacterSet(charactersIn: "_")
+	static let specialSentenceTerminator = CharacterSet(charactersIn: ";–()[]{}")
 
 	@LexiconActor
 	static func from(sentences string: String, root name: Lemma.Name = "root") -> Lexicon.Serialization {
-		
-		let rootName = name
 		
 		let root = Lexicon.Serialization.Node()
 		let word = Lexicon.Serialization.Node()
@@ -62,37 +61,38 @@ public extension Lexicon.Serialization {
 			
 			var node = sentence
 			
-			let sentence = String(string[range])
-			
-			tagger.string = sentence
-			
-			tagger.enumerateTags(in: sentence.indices.range, unit: .word, scheme: .lexicalClass, options: options) { tag, range in
+			for sentence in string[range].components(separatedBy: specialSentenceTerminator) {
 				
-				guard let tag = tag?.rawValue.lowercased() else {
+				tagger.string = sentence
+				
+				tagger.enumerateTags(in: sentence.indices.range, unit: .word, scheme: .lexicalClass, options: options) { tag, range in
+					
+					guard let token = tag?.rawValue.lowercased() else {
+						return true
+					}
+					
+					var string = sentence[range].lowercased().trimmingCharacters(in: underscore).filter{ character in
+						CharacterSet(charactersIn: String(character)).isSubset(of: Lemma.validCharacterOfName)
+					}
+					
+					guard let first = string.first else {
+						return true
+					}
+					
+					if first.isNumber {
+						string = "_\(string)"
+					}
+					
+					node = node.children[string, inserting: .init()]
+					
+					if word.children[token] == nil {
+						word.children[token] = .init()
+					}
+					
+					node.type.insert("\(name).word.\(token)")
+					
 					return true
 				}
-				
-				var name = sentence[range].lowercased().trimmingCharacters(in: underscore).filter{ character in
-					CharacterSet(charactersIn: String(character)).isSubset(of: Lemma.validCharacterOfName)
-				}
-				
-				guard let first = name.first else {
-					return true
-				}
-				
-				if first.isNumber {
-					name = "_\(name)"
-				}
-				
-				node = node.children[name, inserting: .init()]
-
-				if word.children[tag] == nil {
-					word.children[tag] = .init()
-				}
-				
-				node.type.insert("\(rootName).word.\(tag)")
-
-				return true
 			}
 			return true
 		}
