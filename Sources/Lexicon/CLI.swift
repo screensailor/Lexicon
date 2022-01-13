@@ -219,16 +219,16 @@ public extension Lemma {
     }
 
     var childrenSortedByType: [Lemma] {
-        var o = ownChildren.values.sorted{ $0.name < $1.name }
-        for type in ownType.values.sorted(by: { $0.id < $1.id }) {
-            o.append(contentsOf: type.children.keys.sorted(by: <).compactMap{ children[$0] })
+		var o = ownChildren.values.sorted{ $0.name.localizedStandardCompare($1.name) == .orderedAscending }
+		for type in ownType.values.sorted(by: { $0.id.localizedStandardCompare($1.id) == .orderedAscending }) {
+			o.append(contentsOf: type.children.keys.sorted{ $0.localizedStandardCompare($1) == .orderedAscending  }.compactMap{ children[$0] })
         }
         return o
     }
 
     var childrenGroupedByTypeAndSorted: [(type: Lemma, children: [Lemma])] {
 		var o = [(self, ownChildren.values.sorted{ $0.name.localizedStandardCompare($1.name) == .orderedAscending })]
-        for type in ownType.values.sorted(by: { $0.id < $1.id }) {
+		for type in ownType.values.sorted(by: { $0.id.localizedStandardCompare($1.id) == .orderedAscending }) {
 			o.append((type.unwrapped, type.children.keys.sorted{ $0.localizedStandardCompare($1) == .orderedAscending  }.compactMap{ children[$0] }))
         }
         return o
