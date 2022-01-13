@@ -7,20 +7,25 @@ import Foundation
 @LexiconActor
 public class Lexicon: ObservableObject {
 	
-	private(set) static var all: [Lexicon] = []
+	@Published public private(set) var serialization: Serialization
+
+	public internal(set) var dictionary: [Lemma.ID: Lemma] = [:]
 	
-	public var root: Lemma { dictionary[serialization.name]! }
-    public internal(set) var dictionary: [Lemma.ID: Lemma] = [:]
-    
-    @Published public private(set) var serialization: Serialization
+	private var lemma: Lemma!
     
     private init(_ o: Serialization) {
         serialization = o
     }
+	
+	deinit {
+		assertionFailure("🗑 \(self)")
+	}
 }
 
 public extension Lexicon {
 	
+	private(set) static var all: [Lexicon] = []
+
     static func from(_ serialization: Serialization) -> Lexicon {
         let o = Lexicon(serialization)
         connect(lexicon: o, with: serialization)
@@ -28,17 +33,19 @@ public extension Lexicon {
         return o
     }
 	
-	func reset(with serialization: Serialization) {
+	func reset(to serialization: Serialization) {
 		Lexicon.connect(lexicon: self, with: serialization)
 	}
     
-    private static func connect(lexicon o: Lexicon, with serialization: Serialization) {
-        
-        o.dictionary = [:]
-        
-		let root = Lemma(name: serialization.name, node: serialization.root, parent: nil, lexicon: o)
+    private static func connect(lexicon o: Lexicon, with new: Serialization? = nil) {
 		
-		assert(o.dictionary[serialization.name] === root)
+		let serialization = new ?? o.serialization
+        
+		o.dictionary.removeAll(keepingCapacity: true)
+        
+		o.lemma = Lemma(name: serialization.name, node: serialization.root, parent: nil, lexicon: o)
+		
+		assert(o.dictionary[serialization.name] === o.lemma)
 
 		for lemma in o.dictionary.values {
 			guard let suffix = lemma.node.protonym else {
@@ -69,15 +76,16 @@ extension Lexicon {
     }
     
     private func remove(lemma id: Lemma.ID) {
-		print("🗑", id)
         dictionary.removeValue(forKey: id)
     }
 }
 
 public extension Lexicon {
-    
+	
+	var root: Lemma { lemma! }
+
     subscript(id: Lemma.ID) -> Lemma? {
-		dictionary[id] ?? root[id.components(separatedBy: ".")]
+		dictionary[id] ?? lemma?[id.components(separatedBy: ".")]
     }
 }
 
@@ -202,20 +210,18 @@ public extension Lexicon {
         guard lemma.isValid(newName: name) else {
             return nil
         }
+		
+		guard let parent = lemma.parent else {
+			serialization.name = name
+			Lexicon.connect(lexicon: self)
+			assert(root.name == name)
+			return root
+		}
         
         let oldID = lemma.id
-        let newID: Lemma.ID
+        let newID = "\(parent.id).\(name)"
         
-        if let parent = lemma.parent {
-            parent.node.children[name] = parent.node.children?.removeValue(forKey: lemma.name)
-            newID = "\(parent.id).\(name)"
-        }
-        else {
-			dictionary[lemma.name] = nil
-            serialization.name = name
-			dictionary[name] = lemma
-            newID = name
-        }
+		parent.node.children[name] = parent.node.children?.removeValue(forKey: lemma.name)
 
         root.node.traverse(name: serialization.name) { id, name, node in
             if let type = node.type {

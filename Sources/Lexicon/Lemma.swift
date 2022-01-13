@@ -67,7 +67,7 @@ public extension Lemma {
     }
     
     func isValid(newName: Name) -> Bool {
-        if parent?.children.keys.contains(newName) ?? false {
+        if parent?.children.keys.contains(newName) ?? (name == newName) {
             return false
         }
         return Lemma.isValid(name: newName)

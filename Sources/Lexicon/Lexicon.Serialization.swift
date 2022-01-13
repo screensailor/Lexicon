@@ -53,10 +53,9 @@ public extension Lexicon.Serialization {
 			"sentence": sentence
 		]
 		
-		let sentences = NLTokenizer(unit: .sentence)
 		let tagger = NLTagger(tagSchemes: [.lexicalClass])
 		let options: NLTagger.Options = [.omitPunctuation, .omitWhitespace, .omitOther]
-	
+		let sentences = NLTokenizer(unit: .sentence)
 		sentences.string = string
 
 		sentences.enumerateTokens(in: string.indices.range) { range, _ in

@@ -184,13 +184,17 @@ public extension CLI {
 	
 	@LexiconActor
 	@discardableResult
-	mutating func update() -> Self {
-		let selected = selectedSuggestion
-		date = root.lexicon.serialization.date
-		replacing(input: input)
-		if let i = selected.flatMap(suggestions.firstIndex(of:)) {
-			selectedIndex = i
+	mutating func update(with lexicon: Lexicon? = nil) -> Self {
+		let lexicon = lexicon ?? self.lemma.lexicon
+		var o = self
+		o.date = lexicon.serialization.date
+		o.root = lexicon[root.id] ?? lexicon.root
+		o.breadcrumbs = (lexicon[lemma.id] ?? lexicon.root).lineage.reversed()
+		o.replacing(input: input)
+		if let i = selectedSuggestion.flatMap(o.suggestions.firstIndex(of:)) {
+			o.selectedIndex = i
 		}
+		self = o
 		return self
 	}
 
