@@ -110,13 +110,13 @@ public extension CLI {
 
     @discardableResult
     mutating func append(_ character: Character) async -> Self {
-        self = await CLI.append(character, to: self)
+        self = await appending(character)
         return self
     }
     
     @LexiconActor
-    static func append(_ character: Character, to cli: CLI) -> CLI {
-        var o = cli
+    func appending(_ character: Character) -> CLI {
+        var o = self
         o.error = .none
         guard Self.isValid(character: character, appendingTo: o.input) else {
             o.error = .invalidInputCharacter(character)
@@ -134,13 +134,13 @@ public extension CLI {
     
 	@discardableResult
 	mutating func replace(input newInput: String) async -> Self {
-        self = await CLI.replace(input: newInput, in: self)
+        self = await replacing(input: newInput)
         return self
 	}
     
     @LexiconActor
-    static func replace(input newInput: String, in cli: CLI) -> CLI {
-        var o = cli
+    func replacing(input newInput: String) -> CLI {
+        var o = self
         o.input = ""
         o.error = .none
         for character in newInput {
@@ -161,13 +161,13 @@ public extension CLI {
     
     @discardableResult
     mutating func enter() async -> Self {
-        self = await CLI.performEnter(with: self)
+        self = await entered()
         return self
     }
     
     @LexiconActor
-    static func performEnter(with cli: CLI) -> CLI {
-        var o = cli
+    func entered() -> CLI {
+        var o = self
         guard
             let index = o.selectedIndex,
             o.suggestions.indices.contains(index)
@@ -189,13 +189,13 @@ public extension CLI {
     
     @discardableResult
     mutating func backspace() async -> Self {
-        self = await CLI.performBackspace(with: self)
+        self = await backspaced()
         return self
     }
     
     @LexiconActor
-    static func performBackspace(with cli: CLI) -> CLI {
-        var o = cli
+    func backspaced() -> CLI {
+        var o = self
         switch (o.breadcrumbs.count, o.input.count)
         {
             case (2..., 0):
@@ -228,19 +228,19 @@ public extension CLI {
     
 	@discardableResult
 	mutating func update(with lexicon: Lexicon? = nil) async -> Self {
-        self = await CLI.update(self, with: lexicon)
+        self = await updated(with: lexicon)
         return self
 	}
     
     @LexiconActor
-    static func update(_ cli: CLI, with lexicon: Lexicon? = nil) -> CLI {
-        let lexicon = lexicon ?? cli.lemma.lexicon
-        var o = cli
+    func updated(with lexicon: Lexicon? = nil) -> CLI {
+        let lexicon = lexicon ?? self.lemma.lexicon
+        var o = self
         o.date = lexicon.serialization.date
         o.root = lexicon[o.root.id] ?? lexicon.root
         o.breadcrumbs = (lexicon[o.lemma.id] ?? lexicon.root).lineage.reversed()
-        o = replace(input: o.input, in: o)
-        if let i = o.selectedSuggestion.flatMap(o.suggestions.firstIndex(of:)) {
+        o = o.replacing(input: o.input)
+        if let i = self.selectedSuggestion.flatMap(o.suggestions.firstIndex(of:)) {
             o.selectedIndex = i
         }
         return o
@@ -251,13 +251,13 @@ public extension CLI {
     
     @discardableResult
     mutating func reset(to lemma: Lemma? = nil, selecting: Lemma? = nil) async -> Self {
-        self = await CLI.reset(self, to: lemma, selecting: selecting)
+        self = await reseting(to: lemma, selecting: selecting)
         return self
     }
     
     @LexiconActor
-    static func reset(_ cli: CLI, to lemma: Lemma? = nil, selecting: Lemma? = nil) -> CLI {
-        var o = CLI.with(lemma: lemma ?? cli.lemma)
+    func reseting(to lemma: Lemma? = nil, selecting: Lemma? = nil) -> CLI {
+        var o = CLI.with(lemma: lemma ?? self.lemma)
         if let selecting = selecting, let i = o.suggestions.firstIndex(of: selecting) {
             o.selectedIndex = i
         }
