@@ -7,22 +7,21 @@
 
 final class Lexicon™: Hopes {
 
-	@LexiconActor
-    func test() throws {
+    func test() async throws {
 		
-		let lexicon = try Lexicon.from(TaskPaper(taskpaper).decode())
-		let root = lexicon.root
-		var cli = CLI(root)
+		let lexicon = try await Lexicon.from(TaskPaper(taskpaper).decode())
+		let root = await lexicon.root
+		var cli = await CLI(root)
 		
 		hope(cli.suggestions.map(\.name)) == ["idea", "purpose", "type", "ui", "ux"]
 		
-		cli.replacing(input: "idea")
-		cli.enter()
+		await cli.replace(input: "idea")
+        await cli.enter()
 		
 		hope(cli.suggestions.map(\.name)) == ["knowledge"]
 		
-		let outline = try lexicon["root.idea.knowledge.mind_map"].hopefully()
-		let tree = try lexicon["root.idea.knowledge.tree"].hopefully()
+		let outline = try await lexicon["root.idea.knowledge.mind_map"].hopefully()
+		let tree = try await lexicon["root.idea.knowledge.tree"].hopefully()
 
 		hope(outline) == tree
 		hope.true(outline === tree)

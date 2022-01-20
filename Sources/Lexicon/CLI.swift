@@ -26,14 +26,22 @@ public extension CLI {
 
 public extension CLI {
 	
-	@LexiconActor
-	init(_ lemma: Lemma, root: Lemma? = nil) {
-		self.breadcrumbs = lemma.lineage.reversed()
-		self.root = root ?? breadcrumbs.first!
-		self.suggestions = lemma.childrenSortedByType
-		self.selectedIndex = self.suggestions.indices.first
-		self.date = lemma.lexicon.serialization.date
+    init(_ lemma: Lemma, root: Lemma? = nil) async {
+        self = await CLI.with(lemma: lemma, root: root)
 	}
+    
+    @LexiconActor
+    static func with(lemma: Lemma, root: Lemma? = nil) -> CLI {
+        let breadcrumbs = lemma.lineage.reversed()
+        var o = CLI(
+            date: lemma.lexicon.serialization.date,
+            root: root ?? breadcrumbs.first!,
+            breadcrumbs: breadcrumbs,
+            suggestions: lemma.childrenSortedByType
+        )
+        o.selectedIndex = o.suggestions.indices.first
+        return o
+    }
 }
 
 public extension CLI {
@@ -100,112 +108,160 @@ public extension CLI {
 
 public extension CLI {
 
-    @LexiconActor
     @discardableResult
-    mutating func append(_ character: Character) -> Self {
-        error = .none
-        guard Self.isValid(character: character, appendingTo: input) else {
-            error = .invalidInputCharacter(character)
-            return self
-        }
-        input.append(character)
-        suggestions = lemma.suggestions(for: input)
-        selectedIndex = self.suggestions.indices.first
-        error = suggestions.isEmpty ? .noChildrenMatchInput(input) : .none
+    mutating func append(_ character: Character) async -> Self {
+        self = await CLI.append(character, to: self)
         return self
     }
     
-	@LexiconActor
-	@discardableResult
-	mutating func replacing(input newInput: String) -> Self {
-		input = ""
-		error = .none
-		for character in newInput {
-			guard Self.isValid(character: character, appendingTo: input) else {
-				error = .invalidInputCharacter(character)
-				return self
-			}
-			self.input.append(character)
-		}
-		suggestions = lemma.suggestions(for: input)
-		selectedIndex = self.suggestions.indices.first
-		error = suggestions.isEmpty ? .noChildrenMatchInput(input) : .none
-		return self
-	}
-
     @LexiconActor
+    static func append(_ character: Character, to cli: CLI) -> CLI {
+        var o = cli
+        o.error = .none
+        guard Self.isValid(character: character, appendingTo: o.input) else {
+            o.error = .invalidInputCharacter(character)
+            return o
+        }
+        o.input.append(character)
+        o.suggestions = o.lemma.suggestions(for: o.input)
+        o.selectedIndex = o.suggestions.indices.first
+        o.error = o.suggestions.isEmpty ? .noChildrenMatchInput(o.input) : .none
+        return o
+    }
+}
+
+public extension CLI {
+    
+	@discardableResult
+	mutating func replace(input newInput: String) async -> Self {
+        self = await CLI.replace(input: newInput, in: self)
+        return self
+	}
+    
+    @LexiconActor
+    static func replace(input newInput: String, in cli: CLI) -> CLI {
+        var o = cli
+        o.input = ""
+        o.error = .none
+        for character in newInput {
+            guard Self.isValid(character: character, appendingTo: o.input) else {
+                o.error = .invalidInputCharacter(character)
+                return o
+            }
+            o.input.append(character)
+        }
+        o.suggestions = o.lemma.suggestions(for: o.input)
+        o.selectedIndex = o.suggestions.indices.first
+        o.error = o.suggestions.isEmpty ? .noChildrenMatchInput(o.input) : .none
+        return o
+    }
+}
+
+public extension CLI {
+    
     @discardableResult
-    mutating func enter() -> Self {
+    mutating func enter() async -> Self {
+        self = await CLI.performEnter(with: self)
+        return self
+    }
+    
+    @LexiconActor
+    static func performEnter(with cli: CLI) -> CLI {
+        var o = cli
         guard
-            let index = selectedIndex,
-            suggestions.indices.contains(index)
+            let index = o.selectedIndex,
+            o.suggestions.indices.contains(index)
         else {
-            error = .invalidSelection(index: selectedIndex)
-            return self
+            o.error = .invalidSelection(index: o.selectedIndex)
+            return o
         }
-        error = .none
-        let suggestion = suggestions[index]
-        breadcrumbs.append(suggestion)
-        input = ""
-        suggestions = lemma.childrenSortedByType
-        selectedIndex = suggestions.indices.first
+        o.error = .none
+        let suggestion = o.suggestions[index]
+        o.breadcrumbs.append(suggestion)
+        o.input = ""
+        o.suggestions = o.lemma.childrenSortedByType
+        o.selectedIndex = o.suggestions.indices.first
+        return o
+    }
+}
+
+public extension CLI {
+    
+    @discardableResult
+    mutating func backspace() async -> Self {
+        self = await CLI.performBackspace(with: self)
         return self
     }
     
     @LexiconActor
-    @discardableResult
-    mutating func backspace() -> Self {
-        switch (breadcrumbs.count, input.count)
+    static func performBackspace(with cli: CLI) -> CLI {
+        var o = cli
+        switch (o.breadcrumbs.count, o.input.count)
         {
-        case (2..., 0):
-            if lemma == root {
-                return self
-            }
-            let removed = breadcrumbs.removeLast()
-            suggestions = lemma.childrenSortedByType
-            selectedIndex = suggestions.firstIndex(of: removed)
-            error = .none
-
-        case (_, 1...):
-            input.removeLast()
-            suggestions = lemma.suggestions(for: input)
-            selectedIndex = suggestions.indices.first
-            if input.isEmpty {
-                error = .none
-            } else {
-                error = suggestions.isEmpty ? .noChildrenMatchInput(input) : .none
-            }
-
-        default:
-            break
+            case (2..., 0):
+                if o.lemma == o.root {
+                    return o
+                }
+                let removed = o.breadcrumbs.removeLast()
+                o.suggestions = o.lemma.childrenSortedByType
+                o.selectedIndex = o.suggestions.firstIndex(of: removed)
+                o.error = .none
+                
+            case (_, 1...):
+                o.input.removeLast()
+                o.suggestions = o.lemma.suggestions(for: o.input)
+                o.selectedIndex = o.suggestions.indices.first
+                if o.input.isEmpty {
+                    o.error = .none
+                } else {
+                    o.error = o.suggestions.isEmpty ? .noChildrenMatchInput(o.input) : .none
+                }
+                
+            default:
+                break
         }
+        return o
+    }
+}
+
+public extension CLI {
+    
+	@discardableResult
+	mutating func update(with lexicon: Lexicon? = nil) async -> Self {
+        self = await CLI.update(self, with: lexicon)
+        return self
+	}
+    
+    @LexiconActor
+    static func update(_ cli: CLI, with lexicon: Lexicon? = nil) -> CLI {
+        let lexicon = lexicon ?? cli.lemma.lexicon
+        var o = cli
+        o.date = lexicon.serialization.date
+        o.root = lexicon[o.root.id] ?? lexicon.root
+        o.breadcrumbs = (lexicon[o.lemma.id] ?? lexicon.root).lineage.reversed()
+        o = replace(input: o.input, in: o)
+        if let i = o.selectedSuggestion.flatMap(o.suggestions.firstIndex(of:)) {
+            o.selectedIndex = i
+        }
+        return o
+    }
+}
+
+public extension CLI {
+    
+    @discardableResult
+    mutating func reset(to lemma: Lemma? = nil, selecting: Lemma? = nil) async -> Self {
+        self = await CLI.reset(self, to: lemma, selecting: selecting)
         return self
     }
-	
-	@LexiconActor
-	@discardableResult
-	mutating func update(with lexicon: Lexicon? = nil) -> Self {
-		let lexicon = lexicon ?? self.lemma.lexicon
-		var o = self
-		o.date = lexicon.serialization.date
-		o.root = lexicon[root.id] ?? lexicon.root
-		o.breadcrumbs = (lexicon[lemma.id] ?? lexicon.root).lineage.reversed()
-		o.replacing(input: input)
-		if let i = selectedSuggestion.flatMap(o.suggestions.firstIndex(of:)) {
-			o.selectedIndex = i
-		}
-		self = o
-		return self
-	}
-
+    
     @LexiconActor
-    @discardableResult
-    mutating func reset(to lemma: Lemma? = nil, selecting: Lemma? = nil) -> Self {
-        self = CLI(lemma ?? self.lemma)
-		if let i = selecting.flatMap(suggestions.firstIndex(of:)) {
-			selectedIndex = i
-		}
-        return self
+    static func reset(_ cli: CLI, to lemma: Lemma? = nil, selecting: Lemma? = nil) -> CLI {
+        var o = CLI.with(lemma: lemma ?? cli.lemma)
+        if let selecting = selecting, let i = o.suggestions.firstIndex(of: selecting) {
+            o.selectedIndex = i
+        }
+        return o
     }
 }
 

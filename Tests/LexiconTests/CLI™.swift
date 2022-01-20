@@ -7,15 +7,14 @@ import Hope
 
 final class CLI™: Hopes {
 	
-	@LexiconActor
-    func test() throws {
+    func test() async throws {
 		
-		let root = Lexicon.from(Lexicon.Serialization(name: "root")).root
+		let root = await Lexicon.from(Lexicon.Serialization(name: "root")).root
 		/*
 		 root:
 		 */
 		
-		var cli = CLI(root)
+		var cli = await CLI(root)
 		hope(cli.root) == root
 		hope(cli.lemma) == root
 		hope(cli.input) == ""
@@ -23,7 +22,7 @@ final class CLI™: Hopes {
 		hope(cli.suggestions) == []
 		hope(cli.selectedIndex) == nil
 		
-		cli.append("o")
+        await cli.append("o")
 		hope(cli.root) == root
 		hope(cli.lemma) == root
 		hope(cli.input) == "o"
@@ -31,17 +30,17 @@ final class CLI™: Hopes {
 		hope(cli.suggestions) == []
 		hope(cli.selectedIndex) == nil
 
-		cli.append("n")
+        await cli.append("n")
 		hope(cli.input) == "on"
 		hope(cli.error) == .noChildrenMatchInput("on")
 		
-		let one = try root.make(child: "one").hopefully()
+		let one = try await root.make(child: "one").hopefully()
 		/*
 		 root:
 			 one:
 		 */
 		
-		cli.update()
+        await cli.update()
 		hope(cli.root) == root
 		hope(cli.lemma) == root
 		hope(cli.input) == "on"
@@ -49,7 +48,7 @@ final class CLI™: Hopes {
 		hope(cli.suggestions) == [one]
 		hope(cli.selectedIndex) == 0
 		
-		cli.append("e")
+        await cli.append("e")
 		hope(cli.root) == root
 		hope(cli.lemma) == root
 		hope(cli.input) == "one"
@@ -57,7 +56,7 @@ final class CLI™: Hopes {
 		hope(cli.suggestions) == [one]
 		hope(cli.selectedIndex) == 0
 		
-		cli.enter()
+        await cli.enter()
 		hope(cli.root) == root
 		hope(cli.lemma) == one
 		hope(cli.input) == ""
@@ -65,7 +64,7 @@ final class CLI™: Hopes {
 		hope(cli.suggestions.map(\.name)) == []
 		hope(cli.selectedIndex) == nil
 		
-		cli.backspace()
+        await cli.backspace()
 		hope(cli.root) == root
 		hope(cli.lemma) == root
 		hope(cli.input) == ""
@@ -73,7 +72,7 @@ final class CLI™: Hopes {
 		hope(cli.suggestions) == [one]
 		hope(cli.selectedIndex) == 0
 		
-		cli.backspace()
+        await cli.backspace()
 		hope(cli.root) == root
 		hope(cli.lemma) == root
 		hope(cli.input) == ""
@@ -81,14 +80,14 @@ final class CLI™: Hopes {
 		hope(cli.suggestions) == [one]
 		hope(cli.selectedIndex) == 0
 		
-		let two = try root.make(child: "two").hopefully()
+		let two = try await root.make(child: "two").hopefully()
 		/*
 		 root:
 			 one:
 			 two:
 		 */
 		
-		cli.update()
+        await cli.update()
 		hope(cli.root) == root
 		hope(cli.lemma) == root
 		hope(cli.input) == ""
@@ -96,7 +95,7 @@ final class CLI™: Hopes {
 		hope(cli.suggestions) == [one, two]
 		hope(cli.selectedIndex) == 0
 		
-		cli.selectNext()
+        cli.selectNext()
 		hope(cli.root) == root
 		hope(cli.lemma) == root
 		hope(cli.input) == ""
@@ -116,7 +115,7 @@ final class CLI™: Hopes {
 		cli.selectPrevious()
 		hope(cli.selectedIndex) == 1
 
-		let three = try root.make(child: "three").hopefully()
+		let three = try await root.make(child: "three").hopefully()
 		/*
 		 root:
 			 one:
@@ -124,7 +123,7 @@ final class CLI™: Hopes {
 			 two:
 		 */
 		
-		cli.update()
+        await cli.update()
 		hope(cli.root) == root
 		hope(cli.lemma) == root
 		hope(cli.input) == ""
