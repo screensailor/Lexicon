@@ -10,9 +10,12 @@ let package = Package(
     ],
     dependencies: [
         .package(url: "https://github.com/screensailor/Hope.git", .branch("trunk")),
+        .package(url: "https://github.com/apple/swift-collections.git", from: "1.0.0")
     ],
     targets: [
-        .target(name: "Lexicon"),
+        .target(name: "Lexicon", dependencies: [
+            .product(name: "Collections", package: "swift-collections")
+        ]),
         .testTarget(name: "LexiconTests", dependencies: ["Hope", "Lexicon"]),
     ]
 )
