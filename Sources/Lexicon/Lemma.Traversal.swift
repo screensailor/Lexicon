@@ -12,6 +12,7 @@ public extension Lemma {
         BreadthFirstTraversal(of: self)
     }
     
+    /// Async sequence of the lexicon nodes.
     /// - note: Lemma's descendants can change during async traversal.
     struct BreadthFirstTraversal: AsyncSequence, AsyncIteratorProtocol {
         
@@ -28,7 +29,7 @@ public extension Lemma {
             guard let first = buffer.popFirst() else {
                 return nil
             }
-            await buffer.append(contentsOf: first.children.values.sorted(by: \.id))
+            await buffer.append(contentsOf: first.ownChildren.values.sorted(by: \.id))
             return first
         }
         
@@ -44,6 +45,7 @@ public extension Lemma {
         DepthFirstTraversal(of: self)
     }
     
+    /// Async sequence of the lexicon nodes.
     /// - note: Lemma's descendants can change during async traversal.
     struct DepthFirstTraversal: AsyncSequence, AsyncIteratorProtocol {
         
@@ -60,7 +62,7 @@ public extension Lemma {
             guard let last = buffer.popLast() else {
                 return nil
             }
-            await buffer.append(contentsOf: last.children.values.sorted(by: \.id).reversed())
+            await buffer.append(contentsOf: last.ownChildren.values.sorted(by: \.id).reversed())
             return last
         }
         

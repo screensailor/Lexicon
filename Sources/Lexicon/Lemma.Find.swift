@@ -4,6 +4,8 @@
 
 public extension Lemma {
     
+    // TODO: return an AsyncSequence
+    
     @inlinable func find(_ prefixes: String...) async -> Set<Lemma> {
         await find(prefixes)
     }
@@ -13,10 +15,10 @@ public extension Lemma {
         guard let prefix = prefixes.first else {
             return []
         }
-        let rest = prefixes.dropFirst()
+        let rest = prefixes.dropFirst().drop(while: \.isEmpty)
         var o: Set<Lemma> = []
         for await lemma in breadthFirstTraversal.dropFirst() {
-            if lemma.name.hasPrefix(prefix) {
+            if prefix.localizedCaseInsensitiveCompare(lemma.name.prefix(prefix.count)) == .orderedSame {
                 if rest.isEmpty {
                     o.insert(lemma)
                 } else {

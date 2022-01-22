@@ -24,6 +24,12 @@ class Lemma_Find™: Hopes {
         hope(o) == ["root.sentence.a.b.c"]
     }
     
+    func test_C() async throws {
+        let lemma = await Lexicon.from(.from(sentences: sentences)).root
+        let o = await lemma.find("c").map(\.id)
+        hope(o) == ["root.sentence.a.b.c"]
+    }
+
     func test_n() async throws {
         let lemma = await Lexicon.from(.from(sentences: sentences)).root
         let o = await lemma.find("n").map(\.id).sorted()
