@@ -6,11 +6,13 @@ import Collections
 
 public extension Lemma {
     
+    // TODO: Implement without a buffer for more granular adaptation to change during traversal
+    
     nonisolated var breadthFirstTraversal: BreadthFirstTraversal {
         BreadthFirstTraversal(of: self)
     }
     
-    /// - note: Lemmas descendants can change during async traversal.
+    /// - note: Lemma's descendants can change during async traversal.
     struct BreadthFirstTraversal: AsyncSequence, AsyncIteratorProtocol {
         
         public typealias Element = Lemma
@@ -42,7 +44,7 @@ public extension Lemma {
         DepthFirstTraversal(of: self)
     }
     
-    /// - note: Lemmas descendants can change during async traversal.
+    /// - note: Lemma's descendants can change during async traversal.
     struct DepthFirstTraversal: AsyncSequence, AsyncIteratorProtocol {
         
         public typealias Element = Lemma

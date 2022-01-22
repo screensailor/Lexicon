@@ -2,10 +2,15 @@
 // github.com/screensailor 2022
 //
 
-import Lexicon
 import Hope
+import Lexicon
 
 class Lemma_Traversal™: Hopes {
+    
+    let sentences = """
+        one two three
+        a b c d
+        """
 
     func test_BreadthFirstTraversal() async throws {
         
@@ -15,11 +20,6 @@ class Lemma_Traversal™: Hopes {
             """
         
         let lemma = await Lexicon.from(.from(sentences: sentences)).root
-        
-        for await lemma in lemma.breadthFirstTraversal {
-            print(lemma)
-            try await Task.sleep(nanoseconds: 100000)
-        }
         
         let hierarchy: [Lemma] = await lemma.breadthFirstTraversal.reduce(into: []){ $0.append($1) }
         
@@ -50,10 +50,6 @@ class Lemma_Traversal™: Hopes {
         let lemma = await Lexicon.from(.from(sentences: sentences)).root
         
         let hierarchy: [Lemma] = await lemma.depthFirstTraversal.reduce(into: []){ $0.append($1) }
-        
-//        for lemma in hierarchy {
-//            print("\"\(lemma)\",")
-//        }
         
         hope(hierarchy.map(\.id)) == [
             "root",
