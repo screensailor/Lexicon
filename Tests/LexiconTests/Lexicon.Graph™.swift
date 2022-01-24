@@ -6,8 +6,8 @@ import Hope
 import Lexicon
 
 class Lexicon_Graph™: Hopes {
-	
-	func test() async throws {
+    
+    func test() async throws {
 		let taskpaper = """
 		root:
 			a:
@@ -18,30 +18,34 @@ class Lexicon_Graph™: Hopes {
 					+ root
 			one:
 			+ root.a
-			+ root.first
 				two:
+				+ root.a
+				+ root.first
 					three:
+					+ root.a
+					+ root.first
+					+ root.bad
+						four:
+						+ root.a
+						+ root.first
+						+ root.bad
+						+ root.good
 			first:
 				second:
 					third:
+			bad:
+				worse:
+					worst:
+			good:
+				better:
+					best:
 		"""
-		
-		let root = try await Lexicon.from(TaskPaper(taskpaper).decode()).root
-		
-		for lemma in await root.sorted() {
-			print(lemma)
-		}
-	}
+        
+        let root = try await Lexicon.from(TaskPaper(taskpaper).decode()).root
+    }
 }
 
 public extension Lemma {
-	
-	func sorted() async -> [Lemma] {
-		let nodes = await breadthFirstTraversal.reduce(into: []){ $0.append($1) }
-		return nodes.sorted{ a, b in
-			!a.is(b)
-		}
-	}
     
     func classes() async -> [Lemma.ID: Lexicon.Graph.Node.Class] {
         var mixins: [Lemma.ID: Lexicon.Graph.Node.Class] = [:]
@@ -49,6 +53,13 @@ public extension Lemma {
             .map{ .init(lemma: $0, with: &mixins) }
             .reduce(into: [:]){ $0[$1.id] = $1 }
             .merging(mixins, uniquingKeysWith: { _, _ in fatalError() })
+    }
+}
+
+public extension Sequence where Element == Lexicon.Graph.Node.Class {
+    
+    func sorted() -> [Element] {
+        sorted{ $1.is($0) || $0.id.lexicographicallyPrecedes($1.id) }
     }
 }
 
@@ -63,7 +74,7 @@ public extension Lexicon.Graph.Node {
         public var mixinType: Lemma.ID?
         public var mixinChildren: Set<Lemma.ID>?
         public var type: Set<Lemma.ID>?
-
+        
         @LexiconActor
         init(lemma: Lemma, with mixins: inout [Lemma.ID: Lexicon.Graph.Node.Class]) {
             id = lemma.id
@@ -99,5 +110,5 @@ extension Lexicon.Graph.Node.Class {
         
         fatalError()
     }
-
+    
 }
