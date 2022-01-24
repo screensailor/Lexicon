@@ -2,7 +2,7 @@
 // github.com/screensailor 2021
 //
 
-public extension Lexicon.Serialization {
+public extension Lexicon.Graph {
 
     class Node: Codable {
         

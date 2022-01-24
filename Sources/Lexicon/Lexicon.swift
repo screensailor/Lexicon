@@ -7,13 +7,13 @@ import Foundation
 @LexiconActor
 public class Lexicon: ObservableObject {
 	
-	@Published public private(set) var serialization: Serialization
+	@Published public private(set) var serialization: Graph
 
 	public internal(set) var dictionary: [Lemma.ID: Lemma] = [:]
 	
 	private var lemma: Lemma!
     
-    private init(_ o: Serialization) {
+    private init(_ o: Graph) {
         serialization = o
     }
 	
@@ -26,18 +26,18 @@ public extension Lexicon {
 	
 	private(set) static var all: [Lexicon] = []
 
-    static func from(_ serialization: Serialization) -> Lexicon {
+    static func from(_ serialization: Graph) -> Lexicon {
         let o = Lexicon(serialization)
         connect(lexicon: o, with: serialization)
 		all.append(o)
         return o
     }
 	
-	func reset(to serialization: Serialization) {
+	func reset(to serialization: Graph) {
 		Lexicon.connect(lexicon: self, with: serialization)
 	}
     
-    private static func connect(lexicon o: Lexicon, with new: Serialization? = nil) {
+    private static func connect(lexicon o: Lexicon, with new: Graph? = nil) {
 		
 		let serialization = new ?? o.serialization
 		
@@ -94,7 +94,7 @@ public extension Lexicon {
 public extension Lexicon {
     
     @discardableResult
-    func make(child name: Lemma.Name, node inherited: Serialization.Node?, to lemma: Lemma) -> Lemma? {
+    func make(child name: Lemma.Name, node inherited: Graph.Node?, to lemma: Lemma) -> Lemma? {
         
         guard !name.isEmpty, lemma.children[name] == nil else {
             return nil // TODO: throw
@@ -104,7 +104,7 @@ public extension Lexicon {
 			serialization.date = .init()
 		}
         
-        let node: Serialization.Node
+        let node: Graph.Node
         
         if let o = inherited ?? lemma.node.children?[name] {
             node = o
@@ -130,12 +130,12 @@ public extension Lexicon {
     }
 	
 	@discardableResult
-	func add(child serialization: Serialization, to lemma: Lemma) -> Lemma? {
+	func add(child serialization: Graph, to lemma: Lemma) -> Lemma? {
 		add(child: serialization.name, node: serialization.root, to: lemma)
 	}
 	
 	@discardableResult
-	func add(childrenOf node: Serialization.Node, to lemma: Lemma) -> Lemma? {
+	func add(childrenOf node: Graph.Node, to lemma: Lemma) -> Lemma? {
 		defer {
 			serialization.date = .init()
 		}
@@ -146,7 +146,7 @@ public extension Lexicon {
 	}
 
 	@discardableResult
-	func add(child name: Lemma.Name, node: Serialization.Node, to lemma: Lemma, date: Date? = Date()) -> Lemma? {
+	func add(child name: Lemma.Name, node: Graph.Node, to lemma: Lemma, date: Date? = Date()) -> Lemma? {
 		
 		guard !name.isEmpty, lemma.children[name] == nil else {
 			return nil // TODO: throw

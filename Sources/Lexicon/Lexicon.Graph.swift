@@ -6,7 +6,7 @@ import Foundation
 
 public extension Lexicon {
     
-    struct Serialization: Codable {
+    struct Graph: Codable {
 
         public internal(set) var date: Date
         public internal(set) var name: Lemma.Name
@@ -20,7 +20,7 @@ public extension Lexicon {
     }
 }
 
-extension Lexicon.Serialization {
+extension Lexicon.Graph {
 	
 	public func data(encoder: JSONEncoder = .init(), formatting: JSONEncoder.OutputFormatting = [.sortedKeys, .prettyPrinted]) -> Data {
 		encoder.outputFormatting = formatting
@@ -35,17 +35,17 @@ extension Lexicon.Serialization {
 #if canImport(NaturalLanguage)
 import NaturalLanguage
 
-public extension Lexicon.Serialization {
+public extension Lexicon.Graph {
 	
 	static let underscore = CharacterSet(charactersIn: "_")
 	static let specialSentenceTerminator = CharacterSet(charactersIn: ";–()[]{}")
 
 	@LexiconActor
-	static func from(sentences string: String, root name: Lemma.Name = "root") -> Lexicon.Serialization {
+	static func from(sentences string: String, root name: Lemma.Name = "root") -> Lexicon.Graph {
 		
-		let root = Lexicon.Serialization.Node()
-		let word = Lexicon.Serialization.Node()
-		let sentence = Lexicon.Serialization.Node()
+		let root = Lexicon.Graph.Node()
+		let word = Lexicon.Graph.Node()
+		let sentence = Lexicon.Graph.Node()
 		
 		root.children = [
 			"word": word,

@@ -9,7 +9,7 @@ final class CLI™: Hopes {
 	
     func test() async throws {
 		
-		let root = await Lexicon.from(Lexicon.Serialization(name: "root")).root
+		let root = await Lexicon.from(Lexicon.Graph(name: "root")).root
 		/*
 		 root:
 		 */

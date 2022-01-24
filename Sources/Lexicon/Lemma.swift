@@ -11,7 +11,7 @@ public class Lemma {
     public typealias Name = String
     public typealias Protonym = String
     
-	nonisolated public let node: Lexicon.Serialization.Node
+	nonisolated public let node: Lexicon.Graph.Node
 
     nonisolated public let id: ID
     nonisolated public let name: Name
@@ -26,7 +26,7 @@ public class Lemma {
     public internal(set) lazy var type: [ID: Unowned<Lemma>] = lazy_type()
     public internal(set) lazy var ownType: [ID: Unowned<Lemma>] = lazy_ownType()
     
-    init(name: Name, node: Lexicon.Serialization.Node, parent: Lemma?, lexicon: Lexicon) {
+    init(name: Name, node: Lexicon.Graph.Node, parent: Lemma?, lexicon: Lexicon) {
         
         self.id = parent.map{ "\($0.id).\(name)" } ?? name
         self.name = name
@@ -49,7 +49,7 @@ public class Lemma {
 
 public extension Lemma {
 	
-	var serialization: Lexicon.Serialization {
+	var serialization: Lexicon.Graph {
 		.init(name: name, root: node, date: lexicon.serialization.date)
 	}
 }
@@ -80,15 +80,15 @@ public extension Lemma {
 		lexicon.make(child: child, node: nil, to: self)
 	}
 	
-	@discardableResult @inlinable func add(child: Lexicon.Serialization) -> Lemma? {
+	@discardableResult @inlinable func add(child: Lexicon.Graph) -> Lemma? {
 		lexicon.add(child: child, to: self)
 	}
 	
-	@discardableResult @inlinable func add(child name: Lemma.Name, node: Lexicon.Serialization.Node) -> Lemma? {
+	@discardableResult @inlinable func add(child name: Lemma.Name, node: Lexicon.Graph.Node) -> Lemma? {
 		lexicon.add(child: name, node: node, to: self)
 	}
 	
-	@discardableResult @inlinable func add(childrenOf node: Lexicon.Serialization.Node) -> Lemma? {
+	@discardableResult @inlinable func add(childrenOf node: Lexicon.Graph.Node) -> Lemma? {
 		lexicon.add(childrenOf: node, to: self)
 	}
 

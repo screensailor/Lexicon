@@ -6,7 +6,7 @@ import Foundation
 
 public class TaskPaper { // TODO: actor
 	
-	typealias Node = Lexicon.Serialization.Node
+	typealias Node = Lexicon.Graph.Node
 	
 	static let linePattern = try! NSRegularExpression(pattern: "^(?<tabs>\\t*)(?<content>.+)")
 	static let lemmaPattern = try! NSRegularExpression(pattern: "^(?<lemma>[\\w]+):?\\s*$") // TODO: Optional colon `:?` allows plain text (tabbed) outlines, but this should be opted into
@@ -31,7 +31,7 @@ public class TaskPaper { // TODO: actor
 		self.string = string
 	}
 
-	public func decode() throws -> Lexicon.Serialization {
+	public func decode() throws -> Lexicon.Graph {
 		
 		if let error = error {
 			throw error
@@ -136,11 +136,11 @@ public class TaskPaper { // TODO: actor
 
 public extension TaskPaper {
 	
-	static func encode(node: Lexicon.Serialization.Node, name: Lemma.Name, date: Date = .init()) -> String {
+	static func encode(node: Lexicon.Graph.Node, name: Lemma.Name, date: Date = .init()) -> String {
 		encode(.init(name: name, root: node, date: date))
 	}
 	
-	static func encode(_ serialization: Lexicon.Serialization) -> String {
+	static func encode(_ serialization: Lexicon.Graph) -> String {
 		
 		var lines: [String] = []
 		
