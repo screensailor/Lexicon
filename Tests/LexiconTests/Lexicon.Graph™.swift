@@ -29,7 +29,7 @@ class Lexicon_Graph™: Hopes {
 		let root = try await Lexicon.from(TaskPaper(taskpaper).decode()).root
 		
 		for lemma in await root.sorted() {
-//			print(lemma)
+			print(lemma)
 		}
 	}
 }
@@ -43,44 +43,61 @@ public extension Lemma {
 		}
 	}
     
-    func classes() -> [Lexicon.Graph.Node.Class.JSON] {
-        fatalError()
+    func classes() async -> [Lemma.ID: Lexicon.Graph.Node.Class] {
+        var mixins: [Lemma.ID: Lexicon.Graph.Node.Class] = [:]
+        return await breadthFirstTraversal
+            .map{ .init(lemma: $0, with: &mixins) }
+            .reduce(into: [:]){ $0[$1.id] = $1 }
+            .merging(mixins, uniquingKeysWith: { _, _ in fatalError() })
     }
 }
 
 public extension Lexicon.Graph.Node {
     
-    class Class: Hashable {
+    struct Class: Hashable {
         
-        var json: JSON
-        var type: Set<Lemma.ID> = []
+        public var id: Lemma.ID
+        public var synonymOf: Lemma.Protonym?
+        public var children: Set<Lemma.Name>?
+        public var supertype: Lemma.ID?
+        public var mixinType: Lemma.ID?
+        public var mixinChildren: Set<Lemma.ID>?
+        public var type: Set<Lemma.ID>?
+
+        @LexiconActor
+        init(lemma: Lemma, with mixins: inout [Lemma.ID: Lexicon.Graph.Node.Class]) {
+            id = lemma.id
+            synonymOf = lemma.protonym?.id
+            children = Set(lemma.children.keys).unlessEmpty
+            type = Set(lemma.type.keys).unlessEmpty
+        }
         
-        @LexiconActor init(lemma: Lemma) {
-            json = .init(
-                id: lemma.id,
-                synonymOf: lemma.protonym?.id,
-                children: Set(lemma.children.keys).unlessEmpty,
-                type: Set(lemma.type.keys).unlessEmpty
-            )
-            type = json.type ?? []
+        @inlinable public func `is`(_ type: Class) -> Bool {
+            self.type?.contains(type.id) ?? false
         }
         
         public func hash(into hasher: inout Hasher) {
-            hasher.combine(json.id)
+            hasher.combine(id)
         }
         
         public static func == (lhs: Class, rhs: Class) -> Bool {
-            lhs.json.id == rhs.json.id
-        }
-        
-        public struct JSON: Decodable {
-            let id: Lemma.ID
-            let synonymOf: Lemma.Protonym?
-            let children: Set<Lemma.Name>?
-            var supertype: Lemma.ID?
-            var mixinType: Lemma.ID?
-            var mixinChildren: [Lemma.ID]?
-            let type: Set<Lemma.ID>?
+            lhs.id == rhs.id
         }
     }
+}
+
+extension Lexicon.Graph.Node.Class {
+    
+    static func superclass(for type: Set<Lexicon.Graph.Node.Class>?, in graph: inout [Lemma.ID: Lexicon.Graph.Node.Class]) -> Lemma.ID? {
+        guard let type = type, let first = type.first else {
+            return nil
+        }
+        guard type.count > 1 else {
+            return first.id
+        }
+        
+        
+        fatalError()
+    }
+
 }
