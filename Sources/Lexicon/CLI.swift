@@ -275,17 +275,17 @@ public extension Lemma {
     }
 
     var childrenSortedByType: [Lemma] {
-		var o = ownChildren.values.sorted(by: \.name)
-		for type in ownType.values.sorted(by: \.id) {
-			o.append(contentsOf: type.children.keys.sorted(by: \.self).compactMap{ children[$0] })
+		var o = ownChildren.values.sortedByLocalizedStandard(by: \.name)
+		for type in ownType.values.sortedByLocalizedStandard(by: \.id) {
+			o.append(contentsOf: type.children.keys.sortedByLocalizedStandard(by: \.self).compactMap{ children[$0] })
         }
         return o
     }
 
     var childrenGroupedByTypeAndSorted: [(type: Lemma, children: [Lemma])] {
-		var o = [(self, ownChildren.values.sorted(by: \.name))]
-		for type in ownType.values.sorted(by: \.id) {
-			o.append((type.unwrapped, type.children.keys.sorted(by: \.self).compactMap{ children[$0] }))
+		var o = [(self, ownChildren.values.sortedByLocalizedStandard(by: \.name))]
+		for type in ownType.values.sortedByLocalizedStandard(by: \.id) {
+			o.append((type.unwrapped, type.children.keys.sortedByLocalizedStandard(by: \.self).compactMap{ children[$0] }))
         }
         return o
     }

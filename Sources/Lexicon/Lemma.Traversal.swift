@@ -29,7 +29,7 @@ public extension Lemma {
             guard let first = buffer.popFirst() else {
                 return nil
             }
-            await buffer.append(contentsOf: first.ownChildren.values.sorted(by: \.id))
+            await buffer.append(contentsOf: first.ownChildren.values.sortedByLocalizedStandard(by: \.id))
             return first
         }
         
@@ -62,7 +62,7 @@ public extension Lemma {
             guard let last = buffer.popLast() else {
                 return nil
             }
-            await buffer.append(contentsOf: last.ownChildren.values.sorted(by: \.id).reversed())
+            await buffer.append(contentsOf: last.ownChildren.values.sortedByLocalizedStandard(by: \.id).reversed())
             return last
         }
         
