@@ -12,9 +12,15 @@ public extension Lexicon {
         public internal(set) var name: Lemma.Name
         public let root: Node
 
-		public init(name: Lemma.Name = "root", root: Node = .init(), date: Date = .init()) {
+        public init(name: Lemma.Name = "root", date: Date = .init()) {
             self.date = date
             self.name = name
+            self.root = Node(parent: nil, name: name)
+        }
+
+        public init(root: Node, date: Date = .init()) {
+            self.date = date
+            self.name = root.name
             self.root = root
         }
     }
@@ -51,14 +57,9 @@ public extension Lexicon.Graph {
 	@LexiconActor
 	static func from(sentences string: String, root name: Lemma.Name = "root") -> Lexicon.Graph {
 		
-		let root = Node()
-		let word = Node()
-		let sentence = Node()
-		
-		root.children = [
-			"word": word,
-			"sentence": sentence
-		]
+        let root = Node(parent: nil, name: name)
+        let word = Node(parent: root, name: "word")
+        let sentence = Node(parent: root, name: "sentence")
 		
 		let tagger = NLTagger(tagSchemes: [.lexicalClass])
 		let options: NLTagger.Options = [.omitPunctuation, .omitWhitespace, .omitOther]
@@ -91,10 +92,10 @@ public extension Lexicon.Graph {
 						string = "_\(string)"
 					}
 					
-					node = node.children[string, inserting: .init()]
+                    node = node.children[string, default: Node(parent: node, name: string)]
 					
 					if word.children[token] == nil {
-						word.children[token] = .init()
+						word.children[token] = Node(parent: word, name: token)
 					}
 					
 					node.type.insert("\(name).word.\(token)")
@@ -104,7 +105,7 @@ public extension Lexicon.Graph {
 			}
 			return true
 		}
-		return .init(name: name, root: root)
+		return .init(root: root)
 	}
 }
 #endif

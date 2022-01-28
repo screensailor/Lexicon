@@ -36,7 +36,7 @@ public class Lemma {
         
         lexicon.dictionary[id] = self
 
-        for (name, node) in node.children ?? [:] {
+        for (name, node) in node.children {
             ownChildren[name] = Lemma(name: name, node: node, parent: self, lexicon: lexicon)
         }
     }
@@ -50,7 +50,7 @@ public class Lemma {
 public extension Lemma {
 	
 	var graph: Lexicon.Graph {
-		.init(name: name, root: node, date: lexicon.graph.date)
+		.init(root: node, date: lexicon.graph.date)
 	}
 }
 
@@ -244,7 +244,7 @@ extension Lemma {
     
     func lazy_ownType() -> [ID: Unowned<Lemma>] {
         var o: [ID: Unowned<Lemma>] = [:]
-        for id in node.type ?? [] {
+        for id in node.type {
 			o[id] = lexicon.dictionary[id].map(Unowned.init)
         }
         return o

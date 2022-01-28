@@ -4,7 +4,7 @@
 
 import Foundation
 
-public class TaskPaper { // TODO: actor
+public class TaskPaper {
 	
 	typealias Node = Lexicon.Graph.Node
 	
@@ -15,7 +15,6 @@ public class TaskPaper { // TODO: actor
 	let string: String
 	
 	private(set) var error: Error?
-	private(set) var name: Node.Name?
 	private(set) var root: Node?
 	
 	private var path: [Node] = []
@@ -37,8 +36,8 @@ public class TaskPaper { // TODO: actor
 			throw error
 		}
 		
-		if let root = root, let name = name {
-			return .init(name: name, root: root) // TODO: date
+		if let root = root {
+			return .init(root: root) // TODO: date
 		}
 		
 		string.enumerateLines{ line, stop in
@@ -61,23 +60,22 @@ public class TaskPaper { // TODO: actor
 			throw error
 		}
 		
-		guard let root = root, let name = name else {
+		guard let root = root else {
 			throw "The taskpaper file does not declare a root lemma"
 		}
 		
-		return .init(name: name, root: root) // TODO: date
+		return .init(root: root) // TODO: date
 	}
 	
 	func decode(line: String, depth: Int) throws {
 		
 		let name = TaskPaper.lemmaPattern.first(in: line)?["lemma"]
 		
-		guard !path.isEmpty else {
+        guard let parent = path.last else {
 			guard let name = name, depth == 0 else {
 				return // ignore everything before the first root node
 			}
-			let node = Node()
-			self.name = name
+            let node = Node(parent: nil, name: name)
 			self.root = node
 			self.path.append(node)
 			return
@@ -88,31 +86,27 @@ public class TaskPaper { // TODO: actor
 		}
 		
 		if let name = name {
-			
-			let node = Node()
-			let indent = depth - (path.count - 1)
+
+            let indent = depth - (path.count - 1)
 
 			switch indent {
 				
 			case 0:
 				path.removeLast()
 				guard let parent = path.last else {
-					throw "More than one root: \(name) (current root: \(self.name ?? "?"))"
+					throw "More than one root: \(name) (current root: \(root?.name ?? "?"))"
 				}
-				parent.children[name] = node
-				path.append(node)
+				path.append(Node(parent: parent, name: name))
 
 			case 1:
-				path.last?.children[name] = node
-				path.append(node)
+				path.append(Node(parent: parent, name: name))
 
 			case ..<0:
 				guard path.count + indent > 0 else {
 					throw "Line with wrong indent (\(indent)): '\(line)'"
 				}
 				path.removeLast(1 + abs(indent))
-				path.last?.children[name] = node
-				path.append(node)
+                path.append(Node(parent: path.last!, name: name))
 
 			default:
 				throw "Line with wrong indent (\(indent)): '\(line)'"
@@ -136,8 +130,8 @@ public class TaskPaper { // TODO: actor
 
 public extension TaskPaper {
 	
-	static func encode(node: Lexicon.Graph.Node, name: Lemma.Name, date: Date = .init()) -> String {
-		encode(.init(name: name, root: node, date: date))
+	static func encode(node: Lexicon.Graph.Node, date: Date = .init()) -> String {
+		encode(.init(root: node, date: date))
 	}
 	
 	static func encode(_ graph: Lexicon.Graph) -> String {
@@ -151,7 +145,7 @@ public extension TaskPaper {
 			if let protonym = node.protonym {
 				lines.append("\(tabs)= \(protonym)")
 			} else {
-				for type in node.type?.sorted(by: <) ?? [] {
+				for type in node.type.sorted(by: <) {
 					lines.append("\(tabs)+ \(type)")
 				}
 			}

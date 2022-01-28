@@ -3,22 +3,54 @@
 //
 
 import Collections
+import UniformTypeIdentifiers
+
+public struct GenJSON: CodeGenerator {
+    
+    public static let type = UTType.json
+    
+    public static func generate(_ json: Lexicon.Graph.JSON) throws -> Data {
+        let encoder = JSONEncoder()
+        encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
+        return try encoder.encode(json)
+    }
+}
 
 extension Lexicon.Graph.Node.Class: Encodable {
     
+    // TODO: replace dictionaries with OrderedDictionary when it's json serialisation is fixed
+    
     public struct JSON: Codable {
         public var id: Lemma.ID
-        public var synonymOf: Lemma.Protonym?
+        public var protonym: Lemma.ID?
         public var type: OrderedSet<Lemma.ID>?
         public var children: OrderedSet<Lemma.Name>?
         public var synonyms: [Lemma.Name: Lemma.Protonym]?
         public var supertype: Lemma.ID?
-        public var mixinType: Lemma.ID?
-        public var mixinChildren: OrderedSet<Lemma.ID>?
+        public var mixin: Mixin?
     }
     
     @inlinable public func encode(to encoder: Encoder) throws {
         try json.encode(to: encoder)
+    }
+}
+
+public extension Lexicon.Graph.Node.Class.JSON {
+    
+    struct Mixin: Codable {
+        public var type: Lemma.ID
+        public var children: [Lemma.Name: Lemma.ID]?
+    }
+}
+
+public extension Lexicon.Graph.Node.Class.JSON {
+    
+    @inlinable var hasProperties: Bool {
+        !hasNoProperties
+    }
+    
+    @inlinable var hasNoProperties: Bool {
+        (children?.isEmpty ?? true) && (synonyms?.isEmpty ?? true) && (mixin?.children?.isEmpty ?? true)
     }
 }
 
@@ -114,7 +146,7 @@ public extension Lexicon.Graph.Node {
             
             self.json = JSON(
                 id: lemma.id,
-                synonymOf: lemma.protonym?.id,
+                protonym: lemma.protonym?.node.id,
                 type: lemma.ownType
                     .keys
                     .sortedByLocalizedStandard()
@@ -142,11 +174,13 @@ public extension Lexicon.Graph.Node {
             self.json = JSON(
                 id: id,
                 supertype: supertype,
-                mixinType: mixin.json.id,
-                mixinChildren: mixin.json.children?
-                    .map{ "\(mixin.json.id).\($0)" }
-                    .unlessEmpty
-                    .map(OrderedSet.init)
+                mixin: JSON.Mixin(
+                    type: mixin.json.id,
+                    children: mixin.json.children?
+                        .map{ child in (child, "\(mixin.json.id).\(child)") }
+                        .unlessEmpty
+                        .map{ Dictionary($0){ _, last in last }}
+                )
             )
             
             self.lemma = nil

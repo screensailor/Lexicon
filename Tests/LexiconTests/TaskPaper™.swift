@@ -6,9 +6,7 @@ final class TaskPaper™: Hopes {
 	
 	func test_root_only_taskpaper() async throws {
 		
-		let o = TaskPaper(taskpaper_example)
-		
-		let graph = try o.decode()
+		let graph = try TaskPaper(taskpaper_example).decode()
 		
 		let taskpaper = TaskPaper.encode(graph)
 		

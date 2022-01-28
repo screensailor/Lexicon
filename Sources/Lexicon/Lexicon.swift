@@ -107,10 +107,10 @@ public extension Lexicon {
         
         let node: Graph.Node
         
-        if let o = inherited ?? lemma.node.children?[name] {
+        if let o = inherited ?? lemma.node.children[name] {
             node = o
         } else {
-            node = .init()
+            node = Graph.Node(parent: lemma.node, name: name)
             lemma.node.children[name] = node
         }
         
@@ -140,7 +140,7 @@ public extension Lexicon {
 		defer {
 			graph.date = .init()
 		}
-		for (name, child) in node.children ?? [:] {
+		for (name, child) in node.children {
 			add(child: name, node: child, to: lemma, date: nil)
 		}
 		return lemma
@@ -189,7 +189,7 @@ public extension Lexicon {
             return nil
         }
         
-		parent.node.children?.removeValue(forKey: lemma.name)
+		parent.node.children.removeValue(forKey: lemma.name)
         
         parent.ownChildren.removeValue(forKey: lemma.name)
         parent.children.removeValue(forKey: lemma.name)
@@ -232,15 +232,12 @@ public extension Lexicon {
         let oldID = lemma.id
         let newID = "\(parent.id).\(name)"
         
-		parent.node.children[name] = parent.node.children?.removeValue(forKey: lemma.name)
+		parent.node.children[name] = parent.node.children.removeValue(forKey: lemma.name)
 
         root.node.traverse(name: graph.name) { id, name, node in
-            if let type = node.type {
-                guard type.contains(where: { id in id.starts(with: oldID) }) else {
-                    return
-                }
+            if node.type.contains(where: { id in id.starts(with: oldID) }) {
                 node.type = Set(
-                    type.map { id in
+                    node.type.map { id in
                         id == oldID ? newID : "\(newID)\(id.dropFirst(oldID.count))"
                     }
                 )
@@ -296,11 +293,8 @@ public extension Lexicon {
 	
     private func removeWithDeleteRecursion(type: Lemma, from lemma: Lemma) -> Bool {
         
-        guard lemma.node.type?.remove(type.id) != nil else {
+        guard lemma.node.type.remove(type.id) != nil else {
             return false
-        }
-        if lemma.node.type?.isEmpty == true {
-            lemma.node.type = nil
         }
 
 		let children = type.children.keys
@@ -350,8 +344,8 @@ public extension Lexicon {
                 }
             }
 
-            lemma.node.children = nil
-            lemma.node.type = nil
+            lemma.node.children = [:]
+            lemma.node.type = []
             lemma.protonym = protonym
             lemma.children = [:]
             lemma.type = [:]

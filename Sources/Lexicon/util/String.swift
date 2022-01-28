@@ -88,3 +88,16 @@ extension Sequence where Element: StringProtocol {
         }
     }
 }
+
+extension String {
+    
+    func idToTypeName(prefix: String) -> String {
+        "\(prefix)_\(idToTypeSuffix)"
+    }
+    
+    var idToTypeSuffix: String {
+        replacingOccurrences(of: "_", with: "__")
+            .replacingOccurrences(of: ".", with: "_")
+            .replacingOccurrences(of: "_&_", with: "_")
+    }
+}

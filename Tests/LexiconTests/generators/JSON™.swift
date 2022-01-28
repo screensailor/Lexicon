@@ -5,71 +5,60 @@
 import Hope
 @testable import Lexicon
 
-class CodeGeneration™: Hopes {
+class JSON™: Hopes {
     
-    func test_classes_json() async throws {
+    func test() async throws {
         
-        let lexicon = try await Lexicon.from(TaskPaper(taskpaper).decode())
-        
-        let encoder = JSONEncoder()
-        
-        encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
+		let lexicon = try await Lexicon.from(TaskPaper(Self.taskpaper).decode())
         
         var json = await lexicon.json()
         json.date = Date(timeIntervalSinceReferenceDate: 0)
         
-        let data = try encoder.encode(json)
+        let data = try GenJSON.generate(json)
         
         let encoded = try String(data: data, encoding: .utf8).hopefully()
-
+        
         hope(encoded) == expected
-    }
-    
-    func test_swift_generator() async throws {
-        
-        let lexicon = try await Lexicon.from(TaskPaper(taskpaper).decode())
-        
-        let json = await lexicon.json()
-        
-        print(json.swift())
     }
 }
 
-private let taskpaper = """
-root:
-	a:
-	+ root.a.b.c
-		b:
+extension JSON™ {
+
+	static let taskpaper = """
+	root:
+		a:
+		+ root.a.b.c
+			b:
+			+ root.a
+				c:
+				+ root
+		x_y_z:
+		= a.b.b.b.b.b
+		one:
 		+ root.a
-			c:
-			+ root
-	x_y_z:
-	= a.b.c
-	one:
-	+ root.a
-		two:
-		+ root.a
-		+ root.first
-			three:
+			two:
 			+ root.a
 			+ root.first
-			+ root.bad
-				four:
+				three:
 				+ root.a
 				+ root.first
 				+ root.bad
-				+ root.good
-	first:
-		second:
-			third:
-	bad:
-		worse:
-			worst:
-	good:
-		better:
-			best:
-"""
-
+					four:
+					+ root.a
+					+ root.first
+					+ root.bad
+					+ root.good
+		first:
+			second:
+				third:
+		bad:
+			worse:
+				worst:
+		good:
+			better:
+				best:
+	"""
+}
 
 private let expected = """
 {
@@ -84,7 +73,7 @@ private let expected = """
       ],
       "id" : "root",
       "synonyms" : {
-        "x_y_z" : "a.b.c"
+        "x_y_z" : "a.b.b.b.b.b"
       }
     },
     {
@@ -99,34 +88,42 @@ private let expected = """
     },
     {
       "id" : "root.a_&_root.bad",
-      "mixinChildren" : [
-        "root.bad.worse"
-      ],
-      "mixinType" : "root.bad",
+      "mixin" : {
+        "children" : {
+          "worse" : "root.bad.worse"
+        },
+        "type" : "root.bad"
+      },
       "supertype" : "root.a"
     },
     {
       "id" : "root.a_&_root.bad_&_root.first",
-      "mixinChildren" : [
-        "root.first.second"
-      ],
-      "mixinType" : "root.first",
+      "mixin" : {
+        "children" : {
+          "second" : "root.first.second"
+        },
+        "type" : "root.first"
+      },
       "supertype" : "root.a_&_root.bad"
     },
     {
       "id" : "root.a_&_root.bad_&_root.first_&_root.good",
-      "mixinChildren" : [
-        "root.good.better"
-      ],
-      "mixinType" : "root.good",
+      "mixin" : {
+        "children" : {
+          "better" : "root.good.better"
+        },
+        "type" : "root.good"
+      },
       "supertype" : "root.a_&_root.bad_&_root.first"
     },
     {
       "id" : "root.a_&_root.first",
-      "mixinChildren" : [
-        "root.first.second"
-      ],
-      "mixinType" : "root.first",
+      "mixin" : {
+        "children" : {
+          "second" : "root.first.second"
+        },
+        "type" : "root.first"
+      },
       "supertype" : "root.a"
     },
     {
@@ -236,7 +233,7 @@ private let expected = """
     },
     {
       "id" : "root.x_y_z",
-      "synonymOf" : "root.a.b.c"
+      "protonym" : "root.a.b"
     }
   ],
   "date" : 0,
