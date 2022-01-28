@@ -140,11 +140,11 @@ public extension TaskPaper {
 		encode(.init(name: name, root: node, date: date))
 	}
 	
-	static func encode(_ serialization: Lexicon.Graph) -> String {
+	static func encode(_ graph: Lexicon.Graph) -> String {
 		
 		var lines: [String] = []
 		
-		serialization.root.traverse(sorted: true, name: serialization.name) { id, name, node in
+		graph.root.traverse(sorted: true, name: graph.name) { id, name, node in
 			let depth = id.reduce(0){ a, e in e == "." ? a + 1 : a }
 			let tabs = "\t" * depth
 			lines.append("\(tabs)\(name):")

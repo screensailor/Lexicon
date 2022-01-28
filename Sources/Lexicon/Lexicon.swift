@@ -7,14 +7,14 @@ import Foundation
 @LexiconActor
 public class Lexicon: ObservableObject {
 	
-	@Published public private(set) var serialization: Graph
+	@Published public private(set) var graph: Graph // TODO: rename
 
 	public internal(set) var dictionary: [Lemma.ID: Lemma] = [:]
 	
 	private var lemma: Lemma!
     
     private init(_ o: Graph) {
-        serialization = o
+        graph = o
     }
 	
 	deinit {
@@ -26,32 +26,33 @@ public extension Lexicon {
 	
 	private(set) static var all: [Lexicon] = []
 
-    static func from(_ serialization: Graph) -> Lexicon {
-        let o = Lexicon(serialization)
-        connect(lexicon: o, with: serialization)
+    static func from(_ graph: Graph) -> Lexicon {
+        let o = Lexicon(graph)
+        connect(lexicon: o, with: graph)
 		all.append(o)
         return o
     }
 	
-	func reset(to serialization: Graph) {
-		Lexicon.connect(lexicon: self, with: serialization)
+	func reset(to graph: Graph) {
+		Lexicon.connect(lexicon: self, with: graph)
 	}
     
     private static func connect(lexicon o: Lexicon, with new: Graph? = nil) {
 		
-		let serialization = new ?? o.serialization
+		let graph = new ?? o.graph
 		
 		defer {
-			o.serialization = serialization
+			o.graph = graph
 		}
 
 		o.dictionary.removeAll(keepingCapacity: true)
         
-		o.lemma = Lemma(name: serialization.name, node: serialization.root, parent: nil, lexicon: o)
+		o.lemma = Lemma(name: graph.name, node: graph.root, parent: nil, lexicon: o)
 		
-		assert(o.dictionary[serialization.name] === o.lemma)
+		assert(o.dictionary[graph.name] === o.lemma)
 
 		for lemma in o.dictionary.values {
+            
 			guard let suffix = lemma.node.protonym else {
 				continue
 			}
@@ -101,7 +102,7 @@ public extension Lexicon {
         }
 		
 		defer {
-			serialization.date = .init()
+			graph.date = .init()
 		}
         
         let node: Graph.Node
@@ -130,14 +131,14 @@ public extension Lexicon {
     }
 	
 	@discardableResult
-	func add(child serialization: Graph, to lemma: Lemma) -> Lemma? {
-		add(child: serialization.name, node: serialization.root, to: lemma)
+	func add(child graph: Graph, to lemma: Lemma) -> Lemma? {
+		add(child: graph.name, node: graph.root, to: lemma)
 	}
 	
 	@discardableResult
 	func add(childrenOf node: Graph.Node, to lemma: Lemma) -> Lemma? {
 		defer {
-			serialization.date = .init()
+			graph.date = .init()
 		}
 		for (name, child) in node.children ?? [:] {
 			add(child: name, node: child, to: lemma, date: nil)
@@ -154,7 +155,7 @@ public extension Lexicon {
 		
 		defer {
 			if let date = date {
-				serialization.date = date
+				graph.date = date
 			}
 		}
 
@@ -177,7 +178,7 @@ public extension Lexicon {
 	@discardableResult
 	func delete(_ lemma: Lemma) -> Lemma? {
 		defer {
-			serialization.date = .init()
+			graph.date = .init()
 		}
 		return deleteWithRecursion(lemma)
 	}
@@ -220,7 +221,7 @@ public extension Lexicon {
         }
 		
 		guard let parent = lemma.parent else {
-			var new = serialization
+			var new = graph
 			new.name = name
 			new.date = .init()
 			Lexicon.connect(lexicon: self, with: new)
@@ -233,7 +234,7 @@ public extension Lexicon {
         
 		parent.node.children[name] = parent.node.children?.removeValue(forKey: lemma.name)
 
-        root.node.traverse(name: serialization.name) { id, name, node in
+        root.node.traverse(name: graph.name) { id, name, node in
             if let type = node.type {
                 guard type.contains(where: { id in id.starts(with: oldID) }) else {
                     return
@@ -280,7 +281,7 @@ public extension Lexicon {
             }
         }
         
-        serialization.date = .init()
+        graph.date = .init()
 
         return true
     }
@@ -288,7 +289,7 @@ public extension Lexicon {
 	@discardableResult
 	func remove(type: Lemma, from lemma: Lemma) -> Bool {
 		defer {
-			serialization.date = .init()
+			graph.date = .init()
 		}
 		return removeWithDeleteRecursion(type: type, from: lemma)
 	}
@@ -361,6 +362,6 @@ public extension Lexicon {
             lemma.protonym = nil
             lemma.type[lemma.id] = Unowned(lemma)
         }
-        serialization.date = .init()
+        graph.date = .init()
     }
 }

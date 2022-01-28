@@ -8,9 +8,9 @@ final class TaskPaper™: Hopes {
 		
 		let o = TaskPaper(taskpaper_example)
 		
-		let serialization = try o.decode()
+		let graph = try o.decode()
 		
-		let taskpaper = TaskPaper.encode(serialization)
+		let taskpaper = TaskPaper.encode(graph)
 		
 		hope(taskpaper) == taskpaper_example_clean
 	}

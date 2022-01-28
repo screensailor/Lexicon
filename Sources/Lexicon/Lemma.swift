@@ -49,8 +49,8 @@ public class Lemma {
 
 public extension Lemma {
 	
-	var serialization: Lexicon.Graph {
-		.init(name: name, root: node, date: lexicon.serialization.date)
+	var graph: Lexicon.Graph {
+		.init(name: name, root: node, date: lexicon.graph.date)
 	}
 }
 

@@ -54,3 +54,25 @@ extension Optional where Wrapped: SetProtocol {
         return self!.insert(newMember)
     }
 }
+
+extension Optional where Wrapped: Collection {
+    
+    @inlinable var isEmpty: Bool {
+        self?.isEmpty ?? true
+    }
+    
+    @inlinable var isNotEmpty: Bool {
+        !isEmpty
+    }
+}
+
+extension Optional {
+    
+    @inlinable var isNil: Bool {
+        self == nil
+    }
+    
+    @inlinable var isNotNil: Bool {
+        !isNil
+    }
+}

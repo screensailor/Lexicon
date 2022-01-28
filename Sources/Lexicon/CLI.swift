@@ -34,7 +34,7 @@ public extension CLI {
     static func with(lemma: Lemma, root: Lemma? = nil) -> CLI {
         let breadcrumbs = lemma.lineage.reversed()
         var o = CLI(
-            date: lemma.lexicon.serialization.date,
+            date: lemma.lexicon.graph.date,
             root: root ?? breadcrumbs.first!,
             breadcrumbs: breadcrumbs,
             suggestions: lemma.childrenSortedByType
@@ -236,7 +236,7 @@ public extension CLI {
     func updated(with lexicon: Lexicon? = nil) -> CLI {
         let lexicon = lexicon ?? self.lemma.lexicon
         var o = self
-        o.date = lexicon.serialization.date
+        o.date = lexicon.graph.date
         o.root = lexicon[o.root.id] ?? lexicon.root
         o.breadcrumbs = (lexicon[o.lemma.id] ?? lexicon.root).lineage.reversed()
         o = o.replacing(input: o.input)

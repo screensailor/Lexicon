@@ -3,23 +3,35 @@
 //
 
 import Hope
-import Lexicon
+@testable import Lexicon
 
 class CodeGeneration™: Hopes {
     
-    func test() async throws {
+    func test_classes_json() async throws {
         
-        let root = try await Lexicon.from(TaskPaper(taskpaper).decode()).root
-        
-        let o = await root.classes().values.sortedByDependancy()
+        let lexicon = try await Lexicon.from(TaskPaper(taskpaper).decode())
         
         let encoder = JSONEncoder()
+        
         encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
         
-        let data = try encoder.encode(o)
+        var json = await lexicon.json()
+        json.date = Date(timeIntervalSinceReferenceDate: 0)
+        
+        let data = try encoder.encode(json)
+        
         let encoded = try String(data: data, encoding: .utf8).hopefully()
 
-        hope(encoded) == json
+        hope(encoded) == expected
+    }
+    
+    func test_swift_generator() async throws {
+        
+        let lexicon = try await Lexicon.from(TaskPaper(taskpaper).decode())
+        
+        let json = await lexicon.json()
+        
+        print(json.swift())
     }
 }
 
@@ -31,7 +43,7 @@ root:
 		+ root.a
 			c:
 			+ root
-	x:
+	x_y_z:
 	= a.b.c
 	one:
 	+ root.a
@@ -59,169 +71,175 @@ root:
 """
 
 
-private let json = """
-[
-  {
-    "children" : [
-      "a",
-      "bad",
-      "first",
-      "good",
-      "one",
-      "x"
-    ],
-    "id" : "root"
-  },
-  {
-    "id" : "root.a.b.c",
-    "supertype" : "root",
-    "type" : [
-      "root"
-    ]
-  },
-  {
-    "children" : [
-      "b"
-    ],
-    "id" : "root.a",
-    "supertype" : "root.a.b.c",
-    "type" : [
-      "root.a.b.c"
-    ]
-  },
-  {
-    "children" : [
-      "c"
-    ],
-    "id" : "root.a.b",
-    "supertype" : "root.a",
-    "type" : [
-      "root.a"
-    ]
-  },
-  {
-    "id" : "root.a_&_root.bad",
-    "mixinChildren" : [
-      "root.bad.worse"
-    ],
-    "mixinType" : "root.bad",
-    "supertype" : "root.a"
-  },
-  {
-    "id" : "root.a_&_root.bad_&_root.first",
-    "mixinChildren" : [
-      "root.first.second"
-    ],
-    "mixinType" : "root.first",
-    "supertype" : "root.a_&_root.bad"
-  },
-  {
-    "id" : "root.a_&_root.bad_&_root.first_&_root.good",
-    "mixinChildren" : [
-      "root.good.better"
-    ],
-    "mixinType" : "root.good",
-    "supertype" : "root.a_&_root.bad_&_root.first"
-  },
-  {
-    "id" : "root.a_&_root.first",
-    "mixinChildren" : [
-      "root.first.second"
-    ],
-    "mixinType" : "root.first",
-    "supertype" : "root.a"
-  },
-  {
-    "children" : [
-      "worse"
-    ],
-    "id" : "root.bad"
-  },
-  {
-    "children" : [
-      "worst"
-    ],
-    "id" : "root.bad.worse"
-  },
-  {
-    "id" : "root.bad.worse.worst"
-  },
-  {
-    "children" : [
-      "second"
-    ],
-    "id" : "root.first"
-  },
-  {
-    "children" : [
-      "third"
-    ],
-    "id" : "root.first.second"
-  },
-  {
-    "id" : "root.first.second.third"
-  },
-  {
-    "children" : [
-      "better"
-    ],
-    "id" : "root.good"
-  },
-  {
-    "children" : [
-      "best"
-    ],
-    "id" : "root.good.better"
-  },
-  {
-    "id" : "root.good.better.best"
-  },
-  {
-    "children" : [
-      "two"
-    ],
-    "id" : "root.one",
-    "supertype" : "root.a",
-    "type" : [
-      "root.a"
-    ]
-  },
-  {
-    "children" : [
-      "three"
-    ],
-    "id" : "root.one.two",
-    "supertype" : "root.a_&_root.first",
-    "type" : [
-      "root.a",
-      "root.first"
-    ]
-  },
-  {
-    "children" : [
-      "four"
-    ],
-    "id" : "root.one.two.three",
-    "supertype" : "root.a_&_root.bad_&_root.first",
-    "type" : [
-      "root.a",
-      "root.bad",
-      "root.first"
-    ]
-  },
-  {
-    "id" : "root.one.two.three.four",
-    "supertype" : "root.a_&_root.bad_&_root.first_&_root.good",
-    "type" : [
-      "root.a",
-      "root.bad",
-      "root.first",
-      "root.good"
-    ]
-  },
-  {
-    "id" : "root.x",
-    "synonymOf" : "root.a.b.c"
-  }
-]
+private let expected = """
+{
+  "classes" : [
+    {
+      "children" : [
+        "a",
+        "bad",
+        "first",
+        "good",
+        "one"
+      ],
+      "id" : "root",
+      "synonyms" : {
+        "x_y_z" : "a.b.c"
+      }
+    },
+    {
+      "children" : [
+        "b"
+      ],
+      "id" : "root.a",
+      "supertype" : "root.a.b.c",
+      "type" : [
+        "root.a.b.c"
+      ]
+    },
+    {
+      "id" : "root.a_&_root.bad",
+      "mixinChildren" : [
+        "root.bad.worse"
+      ],
+      "mixinType" : "root.bad",
+      "supertype" : "root.a"
+    },
+    {
+      "id" : "root.a_&_root.bad_&_root.first",
+      "mixinChildren" : [
+        "root.first.second"
+      ],
+      "mixinType" : "root.first",
+      "supertype" : "root.a_&_root.bad"
+    },
+    {
+      "id" : "root.a_&_root.bad_&_root.first_&_root.good",
+      "mixinChildren" : [
+        "root.good.better"
+      ],
+      "mixinType" : "root.good",
+      "supertype" : "root.a_&_root.bad_&_root.first"
+    },
+    {
+      "id" : "root.a_&_root.first",
+      "mixinChildren" : [
+        "root.first.second"
+      ],
+      "mixinType" : "root.first",
+      "supertype" : "root.a"
+    },
+    {
+      "children" : [
+        "c"
+      ],
+      "id" : "root.a.b",
+      "supertype" : "root.a",
+      "type" : [
+        "root.a"
+      ]
+    },
+    {
+      "id" : "root.a.b.c",
+      "supertype" : "root",
+      "type" : [
+        "root"
+      ]
+    },
+    {
+      "children" : [
+        "worse"
+      ],
+      "id" : "root.bad"
+    },
+    {
+      "children" : [
+        "worst"
+      ],
+      "id" : "root.bad.worse"
+    },
+    {
+      "id" : "root.bad.worse.worst"
+    },
+    {
+      "children" : [
+        "second"
+      ],
+      "id" : "root.first"
+    },
+    {
+      "children" : [
+        "third"
+      ],
+      "id" : "root.first.second"
+    },
+    {
+      "id" : "root.first.second.third"
+    },
+    {
+      "children" : [
+        "better"
+      ],
+      "id" : "root.good"
+    },
+    {
+      "children" : [
+        "best"
+      ],
+      "id" : "root.good.better"
+    },
+    {
+      "id" : "root.good.better.best"
+    },
+    {
+      "children" : [
+        "two"
+      ],
+      "id" : "root.one",
+      "supertype" : "root.a",
+      "type" : [
+        "root.a"
+      ]
+    },
+    {
+      "children" : [
+        "three"
+      ],
+      "id" : "root.one.two",
+      "supertype" : "root.a_&_root.first",
+      "type" : [
+        "root.a",
+        "root.first"
+      ]
+    },
+    {
+      "children" : [
+        "four"
+      ],
+      "id" : "root.one.two.three",
+      "supertype" : "root.a_&_root.bad_&_root.first",
+      "type" : [
+        "root.a",
+        "root.bad",
+        "root.first"
+      ]
+    },
+    {
+      "id" : "root.one.two.three.four",
+      "supertype" : "root.a_&_root.bad_&_root.first_&_root.good",
+      "type" : [
+        "root.a",
+        "root.bad",
+        "root.first",
+        "root.good"
+      ]
+    },
+    {
+      "id" : "root.x_y_z",
+      "synonymOf" : "root.a.b.c"
+    }
+  ],
+  "date" : 0,
+  "name" : "root"
+}
 """

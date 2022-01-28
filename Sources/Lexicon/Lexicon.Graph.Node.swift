@@ -4,10 +4,11 @@
 
 public extension Lexicon.Graph {
 
-    class Node: Codable {
+    class Node {
         
         public typealias ID = String
         public typealias Name = String
+        public typealias Protonym = String
 
         public enum CodingKeys: String, CodingKey {
             case children = "."
@@ -16,16 +17,16 @@ public extension Lexicon.Graph {
         }
 
         public internal(set) var children: [Name: Node]?
-        public internal(set) var protonym: ID?
+        public internal(set) var protonym: Protonym?
         public internal(set) var type: Set<ID>?
-        
+
         public init(children: [Name: Node]? = nil, type: Set<ID>? = nil) {
             self.children = children.flatMap{ $0.isEmpty ? nil : $0 }
             self.type = type.flatMap{ $0.isEmpty ? nil : $0 }
             self.protonym = nil
         }
         
-        public init(protonym: ID) {
+        public init(protonym: Protonym) {
             self.protonym = protonym
         }
         

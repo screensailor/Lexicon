@@ -6,30 +6,38 @@ import Foundation
 
 public extension Lexicon {
     
-    struct Graph: Codable {
+    struct Graph {
 
         public internal(set) var date: Date
         public internal(set) var name: Lemma.Name
         public let root: Node
 
 		public init(name: Lemma.Name = "root", root: Node = .init(), date: Date = .init()) {
+            self.date = date
             self.name = name
             self.root = root
-            self.date = date
         }
     }
 }
 
-extension Lexicon.Graph {
-	
-	public func data(encoder: JSONEncoder = .init(), formatting: JSONEncoder.OutputFormatting = [.sortedKeys, .prettyPrinted]) -> Data {
-		encoder.outputFormatting = formatting
-		return try! encoder.encode(self)
-	}
-	
-	public func string(formatting: JSONEncoder.OutputFormatting = [.sortedKeys, .prettyPrinted]) -> String {
-		String(data: data(formatting: formatting), encoding: .utf8)!
-	}
+public extension Lexicon.Graph {
+    
+    struct JSON: Codable {
+        public var date: Date
+        public var name: Lemma.Name
+        public var classes: [Node.Class.JSON]
+    }
+}
+
+public extension Lexicon {
+    
+    func json() async -> Graph.JSON {
+        .init(
+            date: graph.date,
+            name: graph.name,
+            classes: await root.classes().values.map(\.json).sortedByLocalizedStandard(by: \.id)
+        )
+    }
 }
 
 #if canImport(NaturalLanguage)
@@ -43,9 +51,9 @@ public extension Lexicon.Graph {
 	@LexiconActor
 	static func from(sentences string: String, root name: Lemma.Name = "root") -> Lexicon.Graph {
 		
-		let root = Lexicon.Graph.Node()
-		let word = Lexicon.Graph.Node()
-		let sentence = Lexicon.Graph.Node()
+		let root = Node()
+		let word = Node()
+		let sentence = Node()
 		
 		root.children = [
 			"word": word,

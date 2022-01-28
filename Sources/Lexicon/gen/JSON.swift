@@ -4,16 +4,34 @@
 
 import Collections
 
+extension Lexicon.Graph.Node.Class: Encodable {
+    
+    public struct JSON: Codable {
+        public var id: Lemma.ID
+        public var synonymOf: Lemma.Protonym?
+        public var type: OrderedSet<Lemma.ID>?
+        public var children: OrderedSet<Lemma.Name>?
+        public var synonyms: [Lemma.Name: Lemma.Protonym]?
+        public var supertype: Lemma.ID?
+        public var mixinType: Lemma.ID?
+        public var mixinChildren: OrderedSet<Lemma.ID>?
+    }
+    
+    @inlinable public func encode(to encoder: Encoder) throws {
+        try json.encode(to: encoder)
+    }
+}
+
 extension Lemma {
     
     public func classes() async -> [ID: Lexicon.Graph.Node.Class] {
         
         var classes: [ID: Class] = await breadthFirstTraversal
             .map(Class.init)
-            .reduce(into: [:]){ $0[$1.id] = $1 }
+            .reduce(into: [:]){ $0[$1.json.id] = $1 }
         
         for klass in classes.values {
-            klass.supertype = Self.supertype(for: klass, in: &classes)
+            klass.json.supertype = Self.supertype(for: klass, in: &classes)
         }
         
         return classes
@@ -23,7 +41,7 @@ extension Lemma {
 public extension Sequence where Element == Lexicon.Graph.Node.Class {
     
     func sortedByDependancy() -> [Element] {
-        sorted{ l, r in l.id.lexicographicallyPrecedes(r.id) }.sorted{ l, r in
+        sorted{ l, r in l.json.id.lexicographicallyPrecedes(r.json.id) }.sorted{ l, r in
             r.is(l)
         }
     }
@@ -47,14 +65,14 @@ private extension Lemma {
     typealias Class = Lexicon.Graph.Node.Class
     
     static func supertype(for klass: Class, in classes: inout [ID: Class]) -> ID? {
-        guard let type = klass.type, let first = type.first else {
+        guard let type = klass.json.type, let first = type.first else {
             return nil
         }
         guard type.count > 1 else {
             return first
         }
         let orderedType = klass.lemma?.ownType.values.map(\.unwrapped).sortedByChildCount() ?? []
-        return mixin(forOrderedType: orderedType, in: &classes).id
+        return mixin(forOrderedType: orderedType, in: &classes).json.id
     }
     
     static func mixin(forOrderedType type: [Lemma], in classes: inout [ID: Class]) -> Class {
@@ -74,73 +92,77 @@ private extension Lemma {
         let mixin = classes[last.id]!
         let klass = Class(
             id: id,
-            supertype: supertype.id,
+            supertype: supertype.json.id,
             mixin: mixin,
             kind: supertype.kind.union(mixin.kind)
         )
-        classes[klass.id] = klass
+        classes[klass.json.id] = klass
         return klass
     }
 }
 
 public extension Lexicon.Graph.Node {
     
-    class Class: Hashable, Encodable {
+    class Class: Hashable {
         
-        public var id: Lemma.ID
-        public var synonymOf: Lemma.Protonym?
-        public var type: OrderedSet<Lemma.ID>?
-        public var children: OrderedSet<Lemma.Name>?
-        public var supertype: Lemma.ID?
-        public var mixinType: Lemma.ID?
-        public var mixinChildren: OrderedSet<Lemma.ID>?
-        
+        public var json: JSON
         public let lemma: Lemma?
         public var kind: Set<Lemma.ID>
-        
-        enum CodingKeys: String, CodingKey {
-            case id
-            case synonymOf
-            case type
-            case children
-            case supertype
-            case mixinType
-            case mixinChildren
-        }
         
         @LexiconActor
         init(lemma: Lemma) {
             
-            self.id = lemma.id
-            self.synonymOf = lemma.protonym?.id
-            self.children = OrderedSet(lemma.ownChildren.keys.sortedByLocalizedStandard()).unlessEmpty
-            self.type = OrderedSet(lemma.ownType.keys.sortedByLocalizedStandard()).unlessEmpty
-            
+            self.json = JSON(
+                id: lemma.id,
+                synonymOf: lemma.protonym?.id,
+                type: lemma.ownType
+                    .keys
+                    .sortedByLocalizedStandard()
+                    .unlessEmpty
+                    .map(OrderedSet.init),
+                children: lemma.ownChildren
+                    .filter(\.value.protonym.isNil)
+                    .keys
+                    .sortedByLocalizedStandard()
+                    .unlessEmpty
+                    .map(OrderedSet.init),
+                synonyms: lemma.ownChildren
+                    .compactMap{ (name, lemma) in lemma.node.protonym.map{ protonym in (name, protonym)  } }
+                    .unlessEmpty
+                    .map{ Dictionary($0){ _, last in last }}
+            )
+
             self.lemma = lemma
             self.kind = Set(lemma.type.keys)
         }
         
         @LexiconActor
         init(id: Lemma.ID, supertype: Lemma.ID, mixin: Lexicon.Graph.Node.Class, kind: Set<Lemma.ID>) {
-            self.id = id
-            self.supertype = supertype
-            self.mixinType = mixin.id
-            self.mixinChildren = (mixin.children?.map{ "\(mixin.id).\($0)" }).flatMap(OrderedSet.init)
+            
+            self.json = JSON(
+                id: id,
+                supertype: supertype,
+                mixinType: mixin.json.id,
+                mixinChildren: mixin.json.children?
+                    .map{ "\(mixin.json.id).\($0)" }
+                    .unlessEmpty
+                    .map(OrderedSet.init)
+            )
             
             self.lemma = nil
             self.kind = kind
         }
         
         @inlinable public func `is`(_ type: Class) -> Bool {
-            self.kind.contains(type.id)
+            self.kind.contains(type.json.id)
         }
         
         public func hash(into hasher: inout Hasher) {
-            hasher.combine(id)
+            hasher.combine(json.id)
         }
         
         public static func == (lhs: Class, rhs: Class) -> Bool {
-            lhs.id == rhs.id
+            lhs.json.id == rhs.json.id
         }
     }
 }
