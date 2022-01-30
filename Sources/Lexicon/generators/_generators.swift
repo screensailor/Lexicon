@@ -5,15 +5,16 @@
 import UniformTypeIdentifiers
 
 public protocol CodeGenerator {
-    static var type: UTType { get }
+    static var utType: UTType { get }
     static func generate(_ json: Lexicon.Graph.JSON) throws -> Data
 }
 
 public extension Lexicon.Graph.JSON {
     
-    static let generators: [CodeGenerator.Type] = [
-        GenJSON.self,
-        GenSwift.self,
-        GenJavaScript.self,
+    static let generators: [String: CodeGenerator.Type] = [
+        
+        "JSON Classes with Mixins": JSONClassesWithMixins.self,
+        
+        "Swift Classes with Mixins": SwiftClassesWithMixins.self,
     ]
 }

@@ -14,7 +14,7 @@ class JSON™: Hopes {
         var json = await lexicon.json()
         json.date = Date(timeIntervalSinceReferenceDate: 0)
         
-        let data = try GenJSON.generate(json)
+        let data = try JSONClassesWithMixins.generate(json)
         
         let encoded = try String(data: data, encoding: .utf8).hopefully()
         

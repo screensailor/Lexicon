@@ -5,9 +5,9 @@
 import Collections
 import UniformTypeIdentifiers
 
-public struct GenJSON: CodeGenerator {
+public enum JSONClassesWithMixins: CodeGenerator {
     
-    public static let type = UTType.json
+    public static let utType = UTType.json
     
     public static func generate(_ json: Lexicon.Graph.JSON) throws -> Data {
         let encoder = JSONEncoder()

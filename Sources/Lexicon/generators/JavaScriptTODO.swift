@@ -4,9 +4,11 @@
 
 import UniformTypeIdentifiers
 
-public struct GenJavaScript: CodeGenerator {
+public enum JavaScriptTODO: CodeGenerator {
     
-    public static let type = UTType.javaScript
+    public static var name = "JavaScript To Do..."
+    
+    public static let utType = UTType.javaScript
     public static var prefix = "L"
     
     public static func generate(_ json: Lexicon.Graph.JSON) throws -> Data {

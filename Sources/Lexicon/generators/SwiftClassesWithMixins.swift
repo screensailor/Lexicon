@@ -4,9 +4,9 @@
 
 import UniformTypeIdentifiers
 
-public struct GenSwift: CodeGenerator {
+public enum SwiftClassesWithMixins: CodeGenerator {
     
-    public static let type = UTType.swiftSource
+    public static let utType = UTType.swiftSource
     public static var prefix = "L"
     
     public static func generate(_ json: Lexicon.Graph.JSON) throws -> Data {

@@ -9,8 +9,8 @@ let package = Package(
         .library(name: "Lexicon", targets: ["Lexicon"]),
     ],
     dependencies: [
-        .package(url: "https://github.com/screensailor/Hope.git", .branch("trunk")),
-        .package(url: "https://github.com/apple/swift-collections.git", from: "1.0.0")
+        .package(url: "https://github.com/screensailor/Hope", .branch("trunk")),
+        .package(url: "https://github.com/apple/swift-collections", from: "1.0.0")
     ],
     targets: [
         .target(name: "Lexicon", dependencies: [
