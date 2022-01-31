@@ -176,11 +176,10 @@ public extension Lexicon.Graph.Node {
                 supertype: supertype,
                 mixin: JSON.Mixin(
                     type: mixin.json.id,
-                    children: (
-                        mixin.json.mixin == nil
-                        ? mixin.lemma?.children.map{ (name, child) in (name, "\(child.node.id)") }
-                        : mixin.json.children?.map{ child in (child, "\(mixin.json.id).\(child)") }
-                    )?.unlessEmpty.map{ Dictionary($0){ _, last in last }}
+                    children: mixin.lemma?.children
+                        .map{ (name, child) in (name, "\(child.node.id)") }
+                        .unlessEmpty
+                        .map{ Dictionary($0){ _, last in last } }
                 )
             )
             
