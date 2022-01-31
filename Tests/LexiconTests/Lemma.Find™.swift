@@ -2,9 +2,6 @@
 // github.com/screensailor 2022
 //
 
-import Hope
-import Lexicon
-
 class Lemma_Find™: Hopes {
     
     let sentences = """

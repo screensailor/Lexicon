@@ -6,8 +6,6 @@ import UniformTypeIdentifiers
 
 public enum JavaScriptTODO: CodeGenerator {
     
-    public static var name = "JavaScript To Do..."
-    
     public static let utType = UTType.javaScript
     public static var prefix = "L"
     
@@ -19,27 +17,20 @@ public enum JavaScriptTODO: CodeGenerator {
     }
 }
 
-public extension Lexicon.Graph.JSON {
+private extension Lexicon.Graph.JSON {
     
     func js(prefix L: String = "L") -> String {
         """
         // Generated on: \(date.iso())
 
-        \(classes.js(prefix: L))
+        \(classes.flatMap{ $0.js(prefix: L) }.joined(separator: "\n"))
         """
     }
 }
 
-extension Sequence where Element == Lexicon.Graph.Node.Class.JSON {
+private extension Lexicon.Graph.Node.Class.JSON {
     
-    func js(prefix L: String) -> String {
-        reduce(into: []) { $1.js(prefix: L, lines: &$0) }.joined(separator: "\n")
-    }
-}
-
-extension Lexicon.Graph.Node.Class.JSON {
-    
-    func js(prefix L: String, lines: inout [String]) {
-
+    func js(prefix L: String) -> [String] {
+        []
     }
 }

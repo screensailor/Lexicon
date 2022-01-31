@@ -2,27 +2,20 @@
 // github.com/screensailor 2022
 //
 
-import Hope
-@testable import Lexicon
-
-class JSON™: Hopes {
+class JSONClasses™: Hopes {
     
     func test() async throws {
         
-		let lexicon = try await Lexicon.from(TaskPaper(Self.taskpaper).decode())
-        
-        var json = await lexicon.json()
+        var json = try await JSONClasses™.taskpaper.lexicon().json()
         json.date = Date(timeIntervalSinceReferenceDate: 0)
+
+        let data = try JSONClasses.generate(json)
         
-        let data = try JSONClassesWithMixins.generate(json)
-        
-        let encoded = try String(data: data, encoding: .utf8).hopefully()
-        
-        hope(encoded) == expected
+        try hope(data.string()) == expected
     }
 }
 
-extension JSON™ {
+extension JSONClasses™ {
 
 	static let taskpaper = """
 	root:

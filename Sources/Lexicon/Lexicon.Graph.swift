@@ -28,6 +28,8 @@ public extension Lexicon {
 
 public extension Lexicon.Graph {
     
+    // TODO: array of referenced nodes (i.e. useful protocols/interfaces)
+    
     struct JSON: Codable {
         public var date: Date
         public var name: Lemma.Name

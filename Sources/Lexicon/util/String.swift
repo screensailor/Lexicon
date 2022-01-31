@@ -91,13 +91,13 @@ extension Sequence where Element: StringProtocol {
 
 extension String {
     
-    func idToTypeName(prefix: String) -> String {
-        "\(prefix)_\(idToTypeSuffix)"
-    }
-    
     var idToTypeSuffix: String {
         replacingOccurrences(of: "_", with: "__")
             .replacingOccurrences(of: ".", with: "_")
             .replacingOccurrences(of: "_&_", with: "_")
+    }
+    
+    @inlinable func `_`(_ other: String) -> String {
+        "_\(other)"
     }
 }

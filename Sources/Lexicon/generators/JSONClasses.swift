@@ -5,7 +5,7 @@
 import Collections
 import UniformTypeIdentifiers
 
-public enum JSONClassesWithMixins: CodeGenerator {
+public enum JSONClasses: CodeGenerator {
     
     public static let utType = UTType.json
     

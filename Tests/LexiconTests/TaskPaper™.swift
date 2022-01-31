@@ -2,7 +2,7 @@
 // github.com/screensailor 2022
 //
 
-final class TaskPaper™: Hopes {
+class TaskPaper™: Hopes {
 	
 	func test_root_only_taskpaper() async throws {
 		

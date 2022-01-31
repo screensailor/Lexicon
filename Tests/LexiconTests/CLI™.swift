@@ -2,10 +2,7 @@
 // github.com/screensailor 2021
 //
 
-import Lexicon
-import Hope
-
-final class CLI™: Hopes {
+class CLI™: Hopes {
 	
     func test() async throws {
 		

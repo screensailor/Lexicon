@@ -2,7 +2,7 @@
 // github.com/screensailor 2022
 //
 
-final class Sentences™: Hopes {
+class Sentences™: Hopes {
 	
 	func test() async throws {
 		

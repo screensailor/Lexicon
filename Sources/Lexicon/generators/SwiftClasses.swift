@@ -4,7 +4,7 @@
 
 import UniformTypeIdentifiers
 
-public enum SwiftClassesWithMixins: CodeGenerator {
+public enum SwiftClasses: CodeGenerator {
     
     public static let utType = UTType.swiftSource
     public static var prefix = "L"
@@ -17,9 +17,12 @@ public enum SwiftClassesWithMixins: CodeGenerator {
     }
 }
 
-public extension Lexicon.Graph.JSON {
+private extension Lexicon.Graph.JSON {
     
     func swift(prefix L: String = "L") -> String {
+        
+        // TODO: use swift file as template
+
         """
         // Generated on: \(date.iso())
         
@@ -50,64 +53,50 @@ public extension Lexicon.Graph.JSON {
             public var debugDescription: String { __id }
         }
 
-        \(classes.swift(prefix: L))
+        \(classes.flatMap { $0.swift(prefix: L) }.joined(separator: "\n"))
         """
     }
 }
 
-extension Sequence where Element == Lexicon.Graph.Node.Class.JSON {
+private extension Lexicon.Graph.Node.Class.JSON {
     
-    func swift(prefix L: String) -> String {
-        reduce(into: []) { $1.swift(prefix: L, lines: &$0) }.joined(separator: "\n")
-    }
-}
-
-extension Lexicon.Graph.Node.Class.JSON {
+    // TODO: make this more readable
     
-    func swift(prefix L: String, lines: inout [String]) {
+    func swift(prefix L: String) -> [String] {
+        
+        var lines: [String] = []
+        let T = id.idToTypeSuffix
         
         if let protonym = protonym {
-            let alias = id.idToTypeName(prefix: L)
-            let type = protonym.idToTypeName(prefix: L)
-            lines += "public typealias \(alias) = \(type)"
-            return
+            lines += "public typealias \(L)_\(T) = \(L)_\(protonym.idToTypeSuffix)"
+            return lines
         }
         
-        var line = "public class \(id.idToTypeName(prefix: L))"
-        
-        if let supertype = supertype {
-            line += ": \(L)_\(supertype.idToTypeSuffix)"
-        } else {
-            line += ": \(L)"
-        }
+        let line = "public class \(L)_\(T): \(L)\(supertype.map{ "_\($0.idToTypeSuffix)" } ?? "")"
         
         guard hasProperties else {
-            line += " {}"
-            lines += line
-            return
+            lines += line + " {}"
+            return lines
         }
         
-        line += " {"
-        lines += line
+        lines += line + " {"
         
         for child in children ?? [] {
             let id = "\(id).\(child)"
-            let type = id.idToTypeName(prefix: L)
-            lines += "    public var `\(child)`: \(type) { .init(\"\\(__id).\(child)\") }"
+            lines += "    public var `\(child)`: \(L)_\(id.idToTypeSuffix) { .init(\"\\(__id).\(child)\") }"
         }
         
         for (synonym, protonym) in (synonyms?.sortedByLocalizedStandard(by: \.key) ?? []) {
             let id = "\(id).\(synonym)"
-            let type = id.idToTypeName(prefix: L)
-            lines += "    public var `\(synonym)`: \(type) { \(protonym) }"
+            lines += "    public var `\(synonym)`: \(L)_\(id.idToTypeSuffix) { \(protonym) }"
         }
         
         for (name, id) in mixin?.children?.sortedByLocalizedStandard(by: \.key) ?? [] {
-            let type = id.idToTypeName(prefix: L)
-            lines += "    public var `\(name)`: \(type) { .init(\"\\(__id).\(name)\") }"
+            lines += "    public var `\(name)`: \(L)_\(id.idToTypeSuffix) { .init(\"\\(__id).\(name)\") }"
         }
         
-        line = "}"
-        lines += line
+        lines += "}"
+        
+        return lines
     }
 }

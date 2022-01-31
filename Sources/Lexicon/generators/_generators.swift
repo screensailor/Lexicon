@@ -13,8 +13,10 @@ public extension Lexicon.Graph.JSON {
     
     static let generators: [String: CodeGenerator.Type] = [
         
-        "JSON Classes with Mixins": JSONClassesWithMixins.self,
+        "JSON Classes": JSONClasses.self,
         
-        "Swift Classes with Mixins": SwiftClassesWithMixins.self,
+        "Swift Classes": SwiftClasses.self,
+        
+        "Swift Classes & Protocols": SwiftClassesAndProtocols.self,
     ]
 }
