@@ -46,61 +46,61 @@ extension L: CustomDebugStringConvertible {
 }
 
 public class L_root: L {
-    public var `a`: L_root_a { .init("\(__id).a") }
-    public var `bad`: L_root_bad { .init("\(__id).bad") }
-    public var `first`: L_root_first { .init("\(__id).first") }
-    public var `good`: L_root_good { .init("\(__id).good") }
-    public var `one`: L_root_one { .init("\(__id).one") }
+    public lazy var `a` = L_root_a("\(__id).a")
+    public lazy var `bad` = L_root_bad("\(__id).bad")
+    public lazy var `first` = L_root_first("\(__id).first")
+    public lazy var `good` = L_root_good("\(__id).good")
+    public lazy var `one` = L_root_one("\(__id).one")
     public var `x_y_z`: L_root_x__y__z { a.b.b.b.b.b }
 }
 public class L_root_a: L_root_a_b_c {
-    public var `b`: L_root_a_b { .init("\(__id).b") }
+    public lazy var `b` = L_root_a_b("\(__id).b")
 }
 public class L_root_a___root_bad: L_root_a {
-    public var `worse`: L_root_bad_worse { .init("\(__id).worse") }
+    public lazy var `worse` = L_root_bad_worse("\(__id).worse")
 }
 public class L_root_a___root_bad___root_first: L_root_a___root_bad {
-    public var `second`: L_root_first_second { .init("\(__id).second") }
+    public lazy var `second` = L_root_first_second("\(__id).second")
 }
 public class L_root_a___root_bad___root_first___root_good: L_root_a___root_bad___root_first {
-    public var `better`: L_root_good_better { .init("\(__id).better") }
+    public lazy var `better` = L_root_good_better("\(__id).better")
 }
 public class L_root_a___root_first: L_root_a {
-    public var `second`: L_root_first_second { .init("\(__id).second") }
+    public lazy var `second` = L_root_first_second("\(__id).second")
 }
 public class L_root_a_b: L_root_a {
-    public var `c`: L_root_a_b_c { .init("\(__id).c") }
+    public lazy var `c` = L_root_a_b_c("\(__id).c")
 }
 public class L_root_a_b_c: L_root {}
 public class L_root_bad: L {
-    public var `worse`: L_root_bad_worse { .init("\(__id).worse") }
+    public lazy var `worse` = L_root_bad_worse("\(__id).worse")
 }
 public class L_root_bad_worse: L {
-    public var `worst`: L_root_bad_worse_worst { .init("\(__id).worst") }
+    public lazy var `worst` = L_root_bad_worse_worst("\(__id).worst")
 }
 public class L_root_bad_worse_worst: L {}
 public class L_root_first: L {
-    public var `second`: L_root_first_second { .init("\(__id).second") }
+    public lazy var `second` = L_root_first_second("\(__id).second")
 }
 public class L_root_first_second: L {
-    public var `third`: L_root_first_second_third { .init("\(__id).third") }
+    public lazy var `third` = L_root_first_second_third("\(__id).third")
 }
 public class L_root_first_second_third: L {}
 public class L_root_good: L {
-    public var `better`: L_root_good_better { .init("\(__id).better") }
+    public lazy var `better` = L_root_good_better("\(__id).better")
 }
 public class L_root_good_better: L {
-    public var `best`: L_root_good_better_best { .init("\(__id).best") }
+    public lazy var `best` = L_root_good_better_best("\(__id).best")
 }
 public class L_root_good_better_best: L {}
 public class L_root_one: L_root_a {
-    public var `two`: L_root_one_two { .init("\(__id).two") }
+    public lazy var `two` = L_root_one_two("\(__id).two")
 }
 public class L_root_one_two: L_root_a___root_first {
-    public var `three`: L_root_one_two_three { .init("\(__id).three") }
+    public lazy var `three` = L_root_one_two_three("\(__id).three")
 }
 public class L_root_one_two_three: L_root_a___root_bad___root_first {
-    public var `four`: L_root_one_two_three_four { .init("\(__id).four") }
+    public lazy var `four` = L_root_one_two_three_four("\(__id).four")
 }
 public class L_root_one_two_three_four: L_root_a___root_bad___root_first___root_good {}
 public typealias L_root_x__y__z = L_root_a_b
