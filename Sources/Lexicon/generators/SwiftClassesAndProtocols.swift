@@ -113,7 +113,7 @@ private extension Lexicon.Graph.Node.Class.JSON {
 
         for child in children ?? [] {
             let id = "\(id).\(child)"
-            lines += "    public var `\(child)`: \(L)_\(id.idToTypeSuffix) { .init(\"\\(__id).\(child)\") }"
+            lines += "    public lazy var `\(child)` = \(L)_\(id.idToTypeSuffix)(\"\\(__id).\(child)\")"
         }
         
         for (synonym, protonym) in (synonyms?.sortedByLocalizedStandard(by: \.key) ?? []) {
@@ -122,7 +122,7 @@ private extension Lexicon.Graph.Node.Class.JSON {
         }
         
         for (name, id) in mixin?.children?.sortedByLocalizedStandard(by: \.key) ?? [] {
-            lines += "    public var `\(name)`: \(L)_\(id.idToTypeSuffix) { .init(\"\\(__id).\(name)\") }"
+            lines += "    public lazy var `\(name)` = \(L)_\(id.idToTypeSuffix)(\"\\(__id).\(name)\")"
         }
         
         lines += "}"

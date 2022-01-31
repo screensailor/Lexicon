@@ -5,13 +5,13 @@
 import Foundation
 
 public struct CLI: Equatable {
-    public private(set) var date: Date
-    public private(set) var root: Lemma
-    public private(set) var breadcrumbs: [Lemma]
-    public private(set) var error: Error = .none
-    public private(set) var input: String = ""
-    public private(set) var suggestions: [Lemma]
-    public private(set) var selectedIndex: Int?
+    public var date: Date
+    public var root: Lemma
+    public var breadcrumbs: [Lemma]
+    public var error: Error = .none
+    public var input: String = ""
+    public var suggestions: [Lemma]
+    public var selectedIndex: Int?
 }
 
 public extension CLI {
