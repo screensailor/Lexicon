@@ -2,6 +2,7 @@
 // github.com/screensailor 2022
 //
 
+import Collections
 import UniformTypeIdentifiers
 
 public protocol CodeGenerator {
@@ -11,12 +12,14 @@ public protocol CodeGenerator {
 
 public extension Lexicon.Graph.JSON {
     
-    static let generators: [String: CodeGenerator.Type] = [
+    static let generators: OrderedDictionary<String, CodeGenerator.Type> = [
         
         "JSON Classes": JSONClasses.self,
         
         "Swift Classes": SwiftClasses.self,
         
         "Swift Classes & Protocols": SwiftClassesAndProtocols.self,
+        
+        "Swift Structs & Protocols": SwiftStructsAndProtocols.self
     ]
 }

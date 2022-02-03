@@ -21,28 +21,24 @@ private let swift = #"""
 public let root = L_root("root")
 
 public class L {
-    fileprivate var __id: String
-    fileprivate init(_ id: String) { __id = id }
+    fileprivate var __: String
+    fileprivate init(_ id: String) { __ = id }
 }
-
 extension L {
-    public func callAsFunction() -> String { __id }
+    public func callAsFunction() -> String { __ }
 }
-
 extension L: Equatable {
     public static func == (lhs: L, rhs: L) -> Bool {
-        lhs.__id == rhs.__id
+        lhs.__ == rhs.__
     }
 }
-
 extension L: Hashable {
     public func hash(into hasher: inout Hasher) {
-        hasher.combine(__id)
+        hasher.combine(__)
     }
 }
-
 extension L: CustomDebugStringConvertible {
-    public var debugDescription: String { __id }
+    public var debugDescription: String { __ }
 }
 
 public class L_root: L {

@@ -96,8 +96,4 @@ extension String {
             .replacingOccurrences(of: ".", with: "_")
             .replacingOccurrences(of: "_&_", with: "_")
     }
-    
-    @inlinable func `_`(_ other: String) -> String {
-        "_\(other)"
-    }
 }

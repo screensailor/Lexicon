@@ -4,7 +4,7 @@
 
 import Foundation
 
-public struct CLI: Equatable {
+public struct CLI: Hashable {
     public var date: Date
     public var root: Lemma
     public var breadcrumbs: [Lemma]
@@ -16,7 +16,7 @@ public struct CLI: Equatable {
 
 public extension CLI {
 	
-	enum Error: Swift.Error, Equatable {
+	enum Error: Swift.Error, Hashable {
 		case none
 		case invalidInputCharacter(Character)
 		case noChildrenMatchInput(String)

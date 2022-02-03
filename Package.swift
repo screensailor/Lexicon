@@ -13,9 +13,15 @@ let package = Package(
         .package(url: "https://github.com/apple/swift-collections", from: "1.0.0")
     ],
     targets: [
-        .target(name: "Lexicon", dependencies: [
-            .product(name: "Collections", package: "swift-collections")
-        ]),
+        .target(
+            name: "Lexicon",
+            dependencies: [
+                .product(name: "Collections", package: "swift-collections")
+            ],
+            resources: [
+                .copy("Resources")
+            ]
+        ),
         .testTarget(name: "LexiconTests", dependencies: ["Hope", "Lexicon"]),
     ]
 )

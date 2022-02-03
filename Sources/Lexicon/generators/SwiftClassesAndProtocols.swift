@@ -7,10 +7,9 @@ import UniformTypeIdentifiers
 public enum SwiftClassesAndProtocols: CodeGenerator {
     
     public static let utType = UTType.swiftSource
-    public static var prefix = (class: "L", protocol: "I")
     
     public static func generate(_ json: Lexicon.Graph.JSON) throws -> Data {
-        guard let o = json.swift(prefix: prefix).data(using: .utf8) else {
+        guard let o = json.swift().data(using: .utf8) else {
             throw "Failed to generate Swift file"
         }
         return o
@@ -19,47 +18,16 @@ public enum SwiftClassesAndProtocols: CodeGenerator {
 
 private extension Lexicon.Graph.JSON {
     
-    func swift(prefix: (class: String, protocol: String) = SwiftClassesAndProtocols.prefix) -> String {
+    func swift() -> String {
         
-        let (L, I) = prefix
-        
-        // TODO: use swift file as template
+        let template = try! String.from(playgroundPage: "ClassesAndProtocols")
         
         return """
         // Generated on: \(date.iso())
         
-        public protocol \(I): CustomDebugStringConvertible {
-            func callAsFunction() -> String
-        }
-        
-        public let \(name) = \(L)_\(name)("\(name)")
-        
-        public class \(L): \(I) {
-            fileprivate var __id: String
-            fileprivate init(_ id: String) { __id = id }
-        }
-        
-        extension \(L) {
-            public func callAsFunction() -> String { __id }
-        }
-        
-        extension \(L): Equatable {
-            public static func == (lhs: \(L), rhs: \(L)) -> Bool {
-                lhs.__id == rhs.__id
-            }
-        }
-        
-        extension \(L): Hashable {
-            public func hash(into hasher: inout Hasher) {
-                hasher.combine(__id)
-            }
-        }
-        
-        extension \(L): CustomDebugStringConvertible {
-            public var debugDescription: String { __id }
-        }
-        
-        \(classes.flatMap{ $0.swift(prefix: prefix) }.joined(separator: "\n"))
+        public let \(name) = L_\(name)("\(name)")
+        \(template)
+        \(classes.flatMap{ $0.swift(prefix: ("L", "I")) }.joined(separator: "\n"))
         """
     }
 }
@@ -113,7 +81,7 @@ private extension Lexicon.Graph.Node.Class.JSON {
 
         for child in children ?? [] {
             let id = "\(id).\(child)"
-            lines += "    public lazy var `\(child)` = \(L)_\(id.idToTypeSuffix)(\"\\(__id).\(child)\")"
+            lines += "    public lazy var `\(child)` = \(L)_\(id.idToTypeSuffix)(\"\\(__).\(child)\")"
         }
         
         for (synonym, protonym) in (synonyms?.sortedByLocalizedStandard(by: \.key) ?? []) {
@@ -122,7 +90,7 @@ private extension Lexicon.Graph.Node.Class.JSON {
         }
         
         for (name, id) in mixin?.children?.sortedByLocalizedStandard(by: \.key) ?? [] {
-            lines += "    public lazy var `\(name)` = \(L)_\(id.idToTypeSuffix)(\"\\(__id).\(name)\")"
+            lines += "    public lazy var `\(name)` = \(L)_\(id.idToTypeSuffix)(\"\\(__).\(name)\")"
         }
         
         lines += "}"

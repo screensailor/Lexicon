@@ -17,42 +17,42 @@ public enum SwiftClasses: CodeGenerator {
     }
 }
 
+extension String {
+    
+    static func from(playgroundPage page: String) throws -> String {
+        guard let url = Bundle.module.url(
+            forResource: "Contents",
+            withExtension: "swift",
+            subdirectory: "Resources/Swift.playground/Pages/\(page).xcplaygroundpage"
+        ) else {
+            throw "Contents of the playground page '\(page)' not found"
+        }
+        let o = try String(contentsOf: url)
+        guard
+            let start =  o.range(of: "//: ## Template Start")?.upperBound,
+            let end = o.range(of: "//: ## Template End")?.lowerBound
+        else {
+            throw "Playground page \(page) is missing start and end markup"
+        }
+        return String(o[start..<end])
+    }
+}
+
 private extension Lexicon.Graph.JSON {
     
     func swift(prefix L: String = "L") -> String {
         
-        // TODO: use swift file as template
+        var template = try! String.from(playgroundPage: "Classes")
+        
+        if L != "L" {
+            template = template.replacingOccurrences(of: "L", with: L)
+        }
 
-        """
+        return """
         // Generated on: \(date.iso())
         
         public let \(name) = \(L)_\(name)("\(name)")
-        
-        public class \(L) {
-            fileprivate var __id: String
-            fileprivate init(_ id: String) { __id = id }
-        }
-        
-        extension \(L) {
-            public func callAsFunction() -> String { __id }
-        }
-        
-        extension \(L): Equatable {
-            public static func == (lhs: \(L), rhs: \(L)) -> Bool {
-                lhs.__id == rhs.__id
-            }
-        }
-        
-        extension \(L): Hashable {
-            public func hash(into hasher: inout Hasher) {
-                hasher.combine(__id)
-            }
-        }
-        
-        extension \(L): CustomDebugStringConvertible {
-            public var debugDescription: String { __id }
-        }
-
+        \(template)
         \(classes.flatMap { $0.swift(prefix: L) }.joined(separator: "\n"))
         """
     }
