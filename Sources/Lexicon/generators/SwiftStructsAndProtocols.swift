@@ -7,6 +7,7 @@ import UniformTypeIdentifiers
 public enum SwiftStructsAndProtocols: CodeGenerator {
     
     public static let utType = UTType.swiftSource
+    // TODO: prefixes
     
     public static func generate(_ json: Lexicon.Graph.JSON) throws -> Data {
         guard let o = json.swift().data(using: .utf8) else {
@@ -43,11 +44,11 @@ private extension Lexicon.Graph.Node.Class.JSON {
         }
         
         var lines: [String] = []
-        let T = id.idToTypeSuffix
+        let T = id.idToClassSuffix
         let (L, I) = prefix
         
         if let protonym = protonym {
-            lines += "public typealias \(L)_\(T) = \(L)_\(protonym.idToTypeSuffix)"
+            lines += "public typealias \(L)_\(T) = \(L)_\(protonym.idToClassSuffix)"
             return lines
         }
         
@@ -71,12 +72,12 @@ private extension Lexicon.Graph.Node.Class.JSON {
         
         for child in children ?? [] {
             let id = "\(id).\(child)"
-            lines += "    var `\(child)`: \(L)_\(id.idToTypeSuffix) { .init(__: \"\\(__).\(child)\") }"
+            lines += "    var `\(child)`: \(L)_\(id.idToClassSuffix) { .init(__: \"\\(__).\(child)\") }"
         }
         
         for (synonym, protonym) in (synonyms?.sortedByLocalizedStandard(by: \.key) ?? []) {
             let id = "\(id).\(synonym)"
-            lines += "    var `\(synonym)`: \(L)_\(id.idToTypeSuffix) { \(protonym) }"
+            lines += "    var `\(synonym)`: \(L)_\(id.idToClassSuffix) { \(protonym) }"
         }
         
         lines += "}"

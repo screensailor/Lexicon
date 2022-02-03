@@ -23,7 +23,38 @@ public extension Iextension {
     }}
 }
 //: ## Template End
+let root = L_root(__: "root")
 
+root.one.a
+root.one.b(\.id)
+
+extension Iextension {
+    
+    var parentId: (I) -> String? {{ a in
+        guard let i = a.__.lastIndex(of: ".") else {
+            return nil
+        }
+        return String(a.__.prefix(upTo: i))
+    }}
+    
+    var breadcrumbs: (I) -> [Substring] {{ a in
+        a.__.split(separator: ".")
+    }}
+}
+
+root.one.b(\.parentId)
+root.one.b(\.breadcrumbs)
+
+root.one.synonym
+
+
+
+let x: I = root.one
+
+switch x {
+    case is I_root_two: "✅"
+    default: "😱"
+}
 
 struct L_root: Hashable, I_root { let __: String }
 protocol I_root: I {}
@@ -50,35 +81,4 @@ extension I_root_two {
 
 struct L_root_two_b: Hashable, I_root_two_b { let __: String }
 protocol I_root_two_b: I {}
-
-let root = L_root(__: "root")
-
-root.one.a
-root.one.b(\.id)
-
-extension Iextension {
-
-    var parentId: (I) -> String? {{ a in
-        guard let i = a.__.lastIndex(of: ".") else {
-            return nil
-        }
-        return String(a.__.prefix(upTo: i))
-    }}
-
-    var breadcrumbs: (I) -> [Substring] {{ a in
-        a.__.split(separator: ".")
-    }}
-}
-
-root.one.b(\.parentId)
-root.one.b(\.breadcrumbs)
-
-root.one.synonym
-
-let x: I = root.one
-
-switch x {
-    case is I_root_two: "✅"
-    default: "😱"
-}
 

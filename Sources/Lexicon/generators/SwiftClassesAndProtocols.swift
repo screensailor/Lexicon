@@ -7,6 +7,7 @@ import UniformTypeIdentifiers
 public enum SwiftClassesAndProtocols: CodeGenerator {
     
     public static let utType = UTType.swiftSource
+    // TODO: prefixes
     
     public static func generate(_ json: Lexicon.Graph.JSON) throws -> Data {
         guard let o = json.swift().data(using: .utf8) else {
@@ -39,28 +40,28 @@ private extension Lexicon.Graph.Node.Class.JSON {
     func swift(prefix: (class: String, protocol: String)) -> [String] {
         
         var lines: [String] = []
-        let T = id.idToTypeSuffix
+        let T = id.idToClassSuffix
         let (L, I) = prefix
         
         if let protonym = protonym {
-            lines += "public typealias \(L)_\(T) = \(L)_\(protonym.idToTypeSuffix)"
+            lines += "public typealias \(L)_\(T) = \(L)_\(protonym.idToClassSuffix)"
             return lines
         }
 
         if mixin == nil {
-            let S = type?.map{ "\(I)_\($0.idToTypeSuffix)" }.unlessEmpty?.joined(separator: ", ") ?? "\(I)"
+            let S = type?.map{ "\(I)_\($0.idToClassSuffix)" }.unlessEmpty?.joined(separator: ", ") ?? "\(I)"
             let line = "public protocol \(I)_\(T): \(S) {"
             if hasProperties {
                 lines += line
                 
                 for child in children ?? [] {
                     let id = "\(id).\(child)"
-                    lines += "    var `\(child)`: \(L)_\(id.idToTypeSuffix) { get }"
+                    lines += "    var `\(child)`: \(L)_\(id.idToClassSuffix) { get }"
                 }
                 
                 for (synonym, _) in (synonyms?.sortedByLocalizedStandard(by: \.key) ?? []) {
                     let id = "\(id).\(synonym)"
-                    lines += "    var `\(synonym)`: \(L)_\(id.idToTypeSuffix) { get }"
+                    lines += "    var `\(synonym)`: \(L)_\(id.idToClassSuffix) { get }"
                 }
 
                 lines += "}"
@@ -70,7 +71,7 @@ private extension Lexicon.Graph.Node.Class.JSON {
             }
         }
         
-        let line = "public class \(L)_\(T): \(L)\(supertype.map{ "_\($0.idToTypeSuffix)" } ?? "")\(mixin == nil ? ", \(I)_\(T)" : "")"
+        let line = "public class \(L)_\(T): \(L)\(supertype.map{ "_\($0.idToClassSuffix)" } ?? "")\(mixin == nil ? ", \(I)_\(T)" : "")"
         
         guard hasProperties else {
             lines += line + " {}"
@@ -81,16 +82,16 @@ private extension Lexicon.Graph.Node.Class.JSON {
 
         for child in children ?? [] {
             let id = "\(id).\(child)"
-            lines += "    public lazy var `\(child)` = \(L)_\(id.idToTypeSuffix)(\"\\(__).\(child)\")"
+            lines += "    public lazy var `\(child)` = \(L)_\(id.idToClassSuffix)(\"\\(__).\(child)\")"
         }
         
         for (synonym, protonym) in (synonyms?.sortedByLocalizedStandard(by: \.key) ?? []) {
             let id = "\(id).\(synonym)"
-            lines += "    public var `\(synonym)`: \(L)_\(id.idToTypeSuffix) { \(protonym) }"
+            lines += "    public var `\(synonym)`: \(L)_\(id.idToClassSuffix) { \(protonym) }"
         }
         
         for (name, id) in mixin?.children?.sortedByLocalizedStandard(by: \.key) ?? [] {
-            lines += "    public lazy var `\(name)` = \(L)_\(id.idToTypeSuffix)(\"\\(__).\(name)\")"
+            lines += "    public lazy var `\(name)` = \(L)_\(id.idToClassSuffix)(\"\\(__).\(name)\")"
         }
         
         lines += "}"

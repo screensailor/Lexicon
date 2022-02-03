@@ -17,36 +17,12 @@ public enum SwiftClasses: CodeGenerator {
     }
 }
 
-extension String {
-    
-    static func from(playgroundPage page: String) throws -> String {
-        guard let url = Bundle.module.url(
-            forResource: "Contents",
-            withExtension: "swift",
-            subdirectory: "Resources/Swift.playground/Pages/\(page).xcplaygroundpage"
-        ) else {
-            throw "Contents of the playground page '\(page)' not found"
-        }
-        let o = try String(contentsOf: url)
-        guard
-            let start =  o.range(of: "//: ## Template Start")?.upperBound,
-            let end = o.range(of: "//: ## Template End")?.lowerBound
-        else {
-            throw "Playground page \(page) is missing start and end markup"
-        }
-        return String(o[start..<end])
-    }
-}
-
 private extension Lexicon.Graph.JSON {
     
     func swift(prefix L: String = "L") -> String {
         
-        var template = try! String.from(playgroundPage: "Classes")
-        
-        if L != "L" {
-            template = template.replacingOccurrences(of: "L", with: L)
-        }
+        let template = try! String.from(playgroundPage: "Classes")
+            .replacingOccurrences(of: "L", with: L)
 
         return """
         // Generated on: \(date.iso())
@@ -65,14 +41,14 @@ private extension Lexicon.Graph.Node.Class.JSON {
     func swift(prefix L: String) -> [String] {
         
         var lines: [String] = []
-        let T = id.idToTypeSuffix
+        let T = id.idToClassSuffix
         
         if let protonym = protonym {
-            lines += "public typealias \(L)_\(T) = \(L)_\(protonym.idToTypeSuffix)"
+            lines += "public typealias \(L)_\(T) = \(L)_\(protonym.idToClassSuffix)"
             return lines
         }
         
-        let line = "public class \(L)_\(T): \(L)\(supertype.map{ "_\($0.idToTypeSuffix)" } ?? "")"
+        let line = "public class \(L)_\(T): \(L)\(supertype.map{ "_\($0.idToClassSuffix)" } ?? "")"
         
         guard hasProperties else {
             lines += line + " {}"
@@ -83,16 +59,16 @@ private extension Lexicon.Graph.Node.Class.JSON {
         
         for child in children ?? [] {
             let id = "\(id).\(child)"
-            lines += "    public lazy var `\(child)` = \(L)_\(id.idToTypeSuffix)(\"\\(__id).\(child)\")"
+            lines += "    public lazy var `\(child)` = \(L)_\(id.idToClassSuffix)(\"\\(__id).\(child)\")"
         }
         
         for (synonym, protonym) in (synonyms?.sortedByLocalizedStandard(by: \.key) ?? []) {
             let id = "\(id).\(synonym)"
-            lines += "    public var `\(synonym)`: \(L)_\(id.idToTypeSuffix) { \(protonym) }"
+            lines += "    public var `\(synonym)`: \(L)_\(id.idToClassSuffix) { \(protonym) }"
         }
         
         for (name, id) in mixin?.children?.sortedByLocalizedStandard(by: \.key) ?? [] {
-            lines += "    public lazy var `\(name)` = \(L)_\(id.idToTypeSuffix)(\"\\(__id).\(name)\")"
+            lines += "    public lazy var `\(name)` = \(L)_\(id.idToClassSuffix)(\"\\(__id).\(name)\")"
         }
         
         lines += "}"
