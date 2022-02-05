@@ -16,16 +16,6 @@ public struct CLI: Hashable {
 
 public extension CLI {
 	
-	enum Error: Swift.Error, Hashable {
-		case none
-		case invalidInputCharacter(Character)
-		case noChildrenMatchInput(String)
-		case invalidSelection(index: Int?)
-	}
-}
-
-public extension CLI {
-	
     init(_ lemma: Lemma, root: Lemma? = nil) async {
         self = await CLI.with(lemma: lemma, root: root)
 	}
