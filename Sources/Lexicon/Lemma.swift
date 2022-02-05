@@ -10,7 +10,8 @@ public class Lemma {
     public typealias ID = String
     public typealias Name = String
     public typealias Protonym = String
-    
+    public typealias Description = String
+
 	nonisolated public let node: Lexicon.Graph.Node
 
     nonisolated public let id: ID

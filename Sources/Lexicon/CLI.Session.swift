@@ -16,12 +16,12 @@ public extension CLI {
             self.events = []
         }
         
-        public func event(cli: CLI, event: Lemma.ID) async -> Event {
+        // TODO: revisit with composable lexicons
+        public func event(cli: CLI, event: CustomDebugStringConvertible) async -> Event {
             Event(
-                event: event,
-                record: await cli.record(
-                    timestamp: CFAbsoluteTimeGetCurrent() - startTime
-                )
+                time: CFAbsoluteTimeGetCurrent() - startTime,
+                record: await cli.record(),
+                description: event.debugDescription
             )
         }
     }
@@ -56,13 +56,13 @@ extension CLI.Session: RangeReplaceableCollection {
 
 public extension CLI.Session {
     
-    struct Event: Codable {
-        public var event: Lemma.ID
+    struct Event: Codable, CustomStringConvertible {
+        public var time: Double
         public var record: Record
+        public var description: String
     }
     
     struct Record: Codable, Hashable {
-        public var timestamp: Double
         public var taskpaper: String
         public var root: Lemma.ID
         public var lemma: Lemma.ID
@@ -76,10 +76,8 @@ public extension CLI.Session {
 
 public extension CLI {
     
-    @LexiconActor
-    func record(timestamp: CFAbsoluteTime = CFAbsoluteTimeGetCurrent()) -> Session.Record {
+    @LexiconActor func record() -> Session.Record {
         .init(
-            timestamp: timestamp,
             taskpaper: TaskPaper.encode(lemma.lexicon.graph),
             root: root.id,
             lemma: lemma.id,
