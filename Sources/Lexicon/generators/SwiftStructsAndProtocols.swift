@@ -52,7 +52,12 @@ private extension Lexicon.Graph.Node.Class.JSON {
             return lines
         }
         
-        lines += "public struct \(L)_\(T): Hashable, \(I)_\(T) { public let __: String }"
+        lines += """
+        public struct \(L)_\(T): Hashable, \(I)_\(T) {
+            public static let localized = String(localized: "\(id)")
+            public let __: String
+        }
+        """
         
         let supertype = supertype?
             .replacingOccurrences(of: "_", with: "__")
