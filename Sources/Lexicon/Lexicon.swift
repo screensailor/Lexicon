@@ -7,7 +7,7 @@ import Foundation
 @LexiconActor
 public class Lexicon: ObservableObject {
 	
-	@Published public private(set) var graph: Graph // TODO: rename
+	@Published public private(set) var graph: Graph
 
 	public internal(set) var dictionary: [Lemma.ID: Lemma] = [:]
 	
