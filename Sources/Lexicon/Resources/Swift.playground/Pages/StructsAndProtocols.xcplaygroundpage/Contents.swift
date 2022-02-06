@@ -1,7 +1,7 @@
 //: # Swift Template with Structs & Protocols
 //: ## Template Start
 public protocol I: CustomDebugStringConvertible {
-    static var __: String { get }
+    static var localized: String { get }
     var __: String { get }
 }
 extension I {
@@ -22,8 +22,8 @@ public extension Iextension {
     var id: (I) -> String {{ a in
         a.__
     }}
-    var nodeId: (I) -> String {{ a in
-        type(of: a).__
+    var localized: (I) -> String {{ a in
+        type(of: a).localized
     }}
 }
 //: ## Template End
@@ -33,7 +33,7 @@ root.one.a
 root.one.b(\.id)
 
 let x: I = root.one.b
-x(\.nodeId) // localized stically
+x(\.localized) // localized stically
 
 extension Iextension {
     
