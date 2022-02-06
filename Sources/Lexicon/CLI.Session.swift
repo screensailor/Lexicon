@@ -8,6 +8,7 @@ public extension CLI {
     
     struct Session: Codable {
         
+        public var video: Video?
         public var startTime: Double
         public var events: [Event]
         
@@ -56,7 +57,7 @@ extension CLI.Session: RangeReplaceableCollection {
 
 public extension CLI.Session {
     
-    struct Event: Codable, CustomStringConvertible {
+    struct Event: Codable, Hashable, CustomStringConvertible {
         public var time: Double
         public var record: Record
         public var description: String
@@ -72,6 +73,11 @@ public extension CLI.Session {
         public var suggestions: [Lemma.ID]
         public var selectedIndex: Int?
     }
+    
+    struct Video: Codable, Hashable {
+        public var url: URL
+        public var start: Double
+    }
 }
 
 public extension CLI {
@@ -86,6 +92,35 @@ public extension CLI {
             input: input,
             suggestions: suggestions.map(\.id),
             selectedIndex: selectedIndex
+        )
+    }
+}
+
+public extension CLI.Session.Event {
+    
+    @LexiconActor func cli() async throws -> CLI {
+        
+        let graph = try TaskPaper(record.taskpaper).decode()
+        let lexicon = Lexicon.from(graph)
+        
+        var breadcrumbs: [Lemma] = []
+        for breadcrumb in record.breadcrumbs {
+            try breadcrumbs.append(lexicon[breadcrumb].or())
+        }
+        
+        var suggestions: [Lemma] = []
+        for suggestion in record.suggestions {
+            try suggestions.append(lexicon[suggestion].or())
+        }
+        
+        return CLI(
+            date: graph.date,
+            root: try lexicon[record.root].or(),
+            breadcrumbs: breadcrumbs,
+            error: record.error,
+            input: record.input,
+            suggestions: suggestions,
+            selectedIndex: record.selectedIndex
         )
     }
 }

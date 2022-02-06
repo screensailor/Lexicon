@@ -76,3 +76,23 @@ extension Optional {
         !isNil
     }
 }
+
+extension Optional {
+    
+    @inlinable public func or(_ `default`: Wrapped) -> Wrapped {
+        self ?? `default`
+    }
+    
+    @inlinable public func or(
+        _ function: String = #function,
+        _ file: String = #file,
+        _ line: Int = #line
+    ) throws -> Wrapped {
+        try or(throw: "⚠️ \(function):\(file):\(line)")
+    }
+    
+    @inlinable public func or(throw error: @autoclosure () -> Error) throws -> Wrapped {
+        guard let o = self else { throw error() }
+        return o
+    }
+}

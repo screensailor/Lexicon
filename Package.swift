@@ -22,6 +22,15 @@ let package = Package(
                 .copy("Resources")
             ]
         ),
-        .testTarget(name: "LexiconTests", dependencies: ["Hope", "Lexicon"]),
+        .testTarget(
+            name: "LexiconTests",
+            dependencies: [
+                "Hope",
+                "Lexicon"
+            ],
+            resources: [
+                .copy("Resources")
+            ]
+        ),
     ]
 )
