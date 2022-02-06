@@ -9,7 +9,7 @@ class CLI™: Hopes {
     
     func test() async throws {
         
-        let session: CLI.Session = try "test".json()
+        let session: CLI.Session = try "testCLI".json()
         
         var action: CLI.Session.Event?
         var expected: CLI.Session.Event?

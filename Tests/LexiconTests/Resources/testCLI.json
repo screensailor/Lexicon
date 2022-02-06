@@ -1,0 +1,2418 @@
+{
+  "video": {
+      "url": "https://youtu.be/UvdBxVmDpRY",
+      "start": 14
+  },
+  "events" : [
+    {
+      "description" : "app.event.cli[test].append[o]",
+      "record" : {
+        "breadcrumbs" : [
+          "test"
+        ],
+        "error" : {
+          "case" : "none"
+        },
+        "input" : "",
+        "lemma" : "test",
+        "root" : "test",
+        "suggestions" : [
+
+        ],
+        "taskpaper" : "test:"
+      },
+      "time" : 2.3169580698013306
+    },
+    {
+      "description" : "app.event.cli[test+o].did.change",
+      "record" : {
+        "breadcrumbs" : [
+          "test"
+        ],
+        "error" : {
+          "case" : "noChildrenMatchInput",
+          "string" : "o"
+        },
+        "input" : "o",
+        "lemma" : "test",
+        "root" : "test",
+        "suggestions" : [
+
+        ],
+        "taskpaper" : "test:"
+      },
+      "time" : 2.3557250499725342
+    },
+    {
+      "description" : "app.event.cli[test+o].append[n]",
+      "record" : {
+        "breadcrumbs" : [
+          "test"
+        ],
+        "error" : {
+          "case" : "noChildrenMatchInput",
+          "string" : "o"
+        },
+        "input" : "o",
+        "lemma" : "test",
+        "root" : "test",
+        "suggestions" : [
+
+        ],
+        "taskpaper" : "test:"
+      },
+      "time" : 2.5252290964126587
+    },
+    {
+      "description" : "app.event.cli[test+on].did.change",
+      "record" : {
+        "breadcrumbs" : [
+          "test"
+        ],
+        "error" : {
+          "case" : "noChildrenMatchInput",
+          "string" : "on"
+        },
+        "input" : "on",
+        "lemma" : "test",
+        "root" : "test",
+        "suggestions" : [
+
+        ],
+        "taskpaper" : "test:"
+      },
+      "time" : 2.5560170412063599
+    },
+    {
+      "description" : "app.event.cli[test+on].append[e]",
+      "record" : {
+        "breadcrumbs" : [
+          "test"
+        ],
+        "error" : {
+          "case" : "noChildrenMatchInput",
+          "string" : "on"
+        },
+        "input" : "on",
+        "lemma" : "test",
+        "root" : "test",
+        "suggestions" : [
+
+        ],
+        "taskpaper" : "test:"
+      },
+      "time" : 2.6641640663146973
+    },
+    {
+      "description" : "app.event.cli[test+one].did.change",
+      "record" : {
+        "breadcrumbs" : [
+          "test"
+        ],
+        "error" : {
+          "case" : "noChildrenMatchInput",
+          "string" : "one"
+        },
+        "input" : "one",
+        "lemma" : "test",
+        "root" : "test",
+        "suggestions" : [
+
+        ],
+        "taskpaper" : "test:"
+      },
+      "time" : 2.6877470016479492
+    },
+    {
+      "description" : "app.event.cli.commit",
+      "record" : {
+        "breadcrumbs" : [
+          "test"
+        ],
+        "error" : {
+          "case" : "noChildrenMatchInput",
+          "string" : "one"
+        },
+        "input" : "one",
+        "lemma" : "test",
+        "root" : "test",
+        "suggestions" : [
+
+        ],
+        "taskpaper" : "test:"
+      },
+      "time" : 3.3655780553817749
+    },
+    {
+      "description" : "app.event.cli[test].did.change",
+      "record" : {
+        "breadcrumbs" : [
+          "test"
+        ],
+        "error" : {
+          "case" : "none"
+        },
+        "input" : "",
+        "lemma" : "test",
+        "root" : "test",
+        "selectedIndex" : 0,
+        "suggestions" : [
+          "test.one"
+        ],
+        "taskpaper" : "test:\n\tone:"
+      },
+      "time" : 3.3902170658111572
+    },
+    {
+      "description" : "app.event.editor.did.show.popover.with.lemma[test.one]",
+      "record" : {
+        "breadcrumbs" : [
+          "test"
+        ],
+        "error" : {
+          "case" : "none"
+        },
+        "input" : "",
+        "lemma" : "test",
+        "root" : "test",
+        "selectedIndex" : 0,
+        "suggestions" : [
+          "test.one"
+        ],
+        "taskpaper" : "test:\n\tone:"
+      },
+      "time" : 3.4102790355682373
+    },
+    {
+      "description" : "app.event.cli[test].append[t]",
+      "record" : {
+        "breadcrumbs" : [
+          "test"
+        ],
+        "error" : {
+          "case" : "none"
+        },
+        "input" : "",
+        "lemma" : "test",
+        "root" : "test",
+        "selectedIndex" : 0,
+        "suggestions" : [
+          "test.one"
+        ],
+        "taskpaper" : "test:\n\tone:"
+      },
+      "time" : 3.9545910358428955
+    },
+    {
+      "description" : "app.event.cli[test+t].did.change",
+      "record" : {
+        "breadcrumbs" : [
+          "test"
+        ],
+        "error" : {
+          "case" : "noChildrenMatchInput",
+          "string" : "t"
+        },
+        "input" : "t",
+        "lemma" : "test",
+        "root" : "test",
+        "suggestions" : [
+
+        ],
+        "taskpaper" : "test:\n\tone:"
+      },
+      "time" : 3.9908930063247681
+    },
+    {
+      "description" : "app.event.cli[test+t].append[w]",
+      "record" : {
+        "breadcrumbs" : [
+          "test"
+        ],
+        "error" : {
+          "case" : "noChildrenMatchInput",
+          "string" : "t"
+        },
+        "input" : "t",
+        "lemma" : "test",
+        "root" : "test",
+        "suggestions" : [
+
+        ],
+        "taskpaper" : "test:\n\tone:"
+      },
+      "time" : 4.684319019317627
+    },
+    {
+      "description" : "app.event.cli[test+tw].did.change",
+      "record" : {
+        "breadcrumbs" : [
+          "test"
+        ],
+        "error" : {
+          "case" : "noChildrenMatchInput",
+          "string" : "tw"
+        },
+        "input" : "tw",
+        "lemma" : "test",
+        "root" : "test",
+        "suggestions" : [
+
+        ],
+        "taskpaper" : "test:\n\tone:"
+      },
+      "time" : 4.7217620611190796
+    },
+    {
+      "description" : "app.event.cli[test+tw].append[o]",
+      "record" : {
+        "breadcrumbs" : [
+          "test"
+        ],
+        "error" : {
+          "case" : "noChildrenMatchInput",
+          "string" : "tw"
+        },
+        "input" : "tw",
+        "lemma" : "test",
+        "root" : "test",
+        "suggestions" : [
+
+        ],
+        "taskpaper" : "test:\n\tone:"
+      },
+      "time" : 4.8288630247116089
+    },
+    {
+      "description" : "app.event.cli[test+two].did.change",
+      "record" : {
+        "breadcrumbs" : [
+          "test"
+        ],
+        "error" : {
+          "case" : "noChildrenMatchInput",
+          "string" : "two"
+        },
+        "input" : "two",
+        "lemma" : "test",
+        "root" : "test",
+        "suggestions" : [
+
+        ],
+        "taskpaper" : "test:\n\tone:"
+      },
+      "time" : 4.8517700433731079
+    },
+    {
+      "description" : "app.event.cli.commit",
+      "record" : {
+        "breadcrumbs" : [
+          "test"
+        ],
+        "error" : {
+          "case" : "noChildrenMatchInput",
+          "string" : "two"
+        },
+        "input" : "two",
+        "lemma" : "test",
+        "root" : "test",
+        "suggestions" : [
+
+        ],
+        "taskpaper" : "test:\n\tone:"
+      },
+      "time" : 5.4013680219650269
+    },
+    {
+      "description" : "app.event.cli[test].did.change",
+      "record" : {
+        "breadcrumbs" : [
+          "test"
+        ],
+        "error" : {
+          "case" : "none"
+        },
+        "input" : "",
+        "lemma" : "test",
+        "root" : "test",
+        "selectedIndex" : 1,
+        "suggestions" : [
+          "test.one",
+          "test.two"
+        ],
+        "taskpaper" : "test:\n\tone:\n\ttwo:"
+      },
+      "time" : 5.4309890270233154
+    },
+    {
+      "description" : "app.event.editor.did.show.popover.with.lemma[test.two]",
+      "record" : {
+        "breadcrumbs" : [
+          "test"
+        ],
+        "error" : {
+          "case" : "none"
+        },
+        "input" : "",
+        "lemma" : "test",
+        "root" : "test",
+        "selectedIndex" : 1,
+        "suggestions" : [
+          "test.one",
+          "test.two"
+        ],
+        "taskpaper" : "test:\n\tone:\n\ttwo:"
+      },
+      "time" : 5.4515100717544556
+    },
+    {
+      "description" : "app.event.cli.enter",
+      "record" : {
+        "breadcrumbs" : [
+          "test"
+        ],
+        "error" : {
+          "case" : "none"
+        },
+        "input" : "",
+        "lemma" : "test",
+        "root" : "test",
+        "selectedIndex" : 1,
+        "suggestions" : [
+          "test.one",
+          "test.two"
+        ],
+        "taskpaper" : "test:\n\tone:\n\ttwo:"
+      },
+      "time" : 7.4798870086669922
+    },
+    {
+      "description" : "app.event.cli[test.two].did.change",
+      "record" : {
+        "breadcrumbs" : [
+          "test",
+          "test.two"
+        ],
+        "error" : {
+          "case" : "none"
+        },
+        "input" : "",
+        "lemma" : "test.two",
+        "root" : "test",
+        "suggestions" : [
+
+        ],
+        "taskpaper" : "test:\n\tone:\n\ttwo:"
+      },
+      "time" : 7.5236530303955078
+    },
+    {
+      "description" : "app.event.cli[test.two].append[a]",
+      "record" : {
+        "breadcrumbs" : [
+          "test",
+          "test.two"
+        ],
+        "error" : {
+          "case" : "none"
+        },
+        "input" : "",
+        "lemma" : "test.two",
+        "root" : "test",
+        "suggestions" : [
+
+        ],
+        "taskpaper" : "test:\n\tone:\n\ttwo:"
+      },
+      "time" : 9.8448560237884521
+    },
+    {
+      "description" : "app.event.cli[test.two+a].did.change",
+      "record" : {
+        "breadcrumbs" : [
+          "test",
+          "test.two"
+        ],
+        "error" : {
+          "case" : "noChildrenMatchInput",
+          "string" : "a"
+        },
+        "input" : "a",
+        "lemma" : "test.two",
+        "root" : "test",
+        "suggestions" : [
+
+        ],
+        "taskpaper" : "test:\n\tone:\n\ttwo:"
+      },
+      "time" : 9.8928101062774658
+    },
+    {
+      "description" : "app.event.cli.commit",
+      "record" : {
+        "breadcrumbs" : [
+          "test",
+          "test.two"
+        ],
+        "error" : {
+          "case" : "noChildrenMatchInput",
+          "string" : "a"
+        },
+        "input" : "a",
+        "lemma" : "test.two",
+        "root" : "test",
+        "suggestions" : [
+
+        ],
+        "taskpaper" : "test:\n\tone:\n\ttwo:"
+      },
+      "time" : 11.174044013023376
+    },
+    {
+      "description" : "app.event.cli[test.two].did.change",
+      "record" : {
+        "breadcrumbs" : [
+          "test",
+          "test.two"
+        ],
+        "error" : {
+          "case" : "none"
+        },
+        "input" : "",
+        "lemma" : "test.two",
+        "root" : "test",
+        "selectedIndex" : 0,
+        "suggestions" : [
+          "test.two.a"
+        ],
+        "taskpaper" : "test:\n\tone:\n\ttwo:\n\t\ta:"
+      },
+      "time" : 11.214751005172729
+    },
+    {
+      "description" : "app.event.editor.did.show.popover.with.lemma[test.two.a]",
+      "record" : {
+        "breadcrumbs" : [
+          "test",
+          "test.two"
+        ],
+        "error" : {
+          "case" : "none"
+        },
+        "input" : "",
+        "lemma" : "test.two",
+        "root" : "test",
+        "selectedIndex" : 0,
+        "suggestions" : [
+          "test.two.a"
+        ],
+        "taskpaper" : "test:\n\tone:\n\ttwo:\n\t\ta:"
+      },
+      "time" : 11.254878044128418
+    },
+    {
+      "description" : "app.event.cli[test.two].append[b]",
+      "record" : {
+        "breadcrumbs" : [
+          "test",
+          "test.two"
+        ],
+        "error" : {
+          "case" : "none"
+        },
+        "input" : "",
+        "lemma" : "test.two",
+        "root" : "test",
+        "selectedIndex" : 0,
+        "suggestions" : [
+          "test.two.a"
+        ],
+        "taskpaper" : "test:\n\tone:\n\ttwo:\n\t\ta:"
+      },
+      "time" : 12.720129013061523
+    },
+    {
+      "description" : "app.event.cli[test.two+b].did.change",
+      "record" : {
+        "breadcrumbs" : [
+          "test",
+          "test.two"
+        ],
+        "error" : {
+          "case" : "noChildrenMatchInput",
+          "string" : "b"
+        },
+        "input" : "b",
+        "lemma" : "test.two",
+        "root" : "test",
+        "suggestions" : [
+
+        ],
+        "taskpaper" : "test:\n\tone:\n\ttwo:\n\t\ta:"
+      },
+      "time" : 12.768246054649353
+    },
+    {
+      "description" : "app.event.cli.commit",
+      "record" : {
+        "breadcrumbs" : [
+          "test",
+          "test.two"
+        ],
+        "error" : {
+          "case" : "noChildrenMatchInput",
+          "string" : "b"
+        },
+        "input" : "b",
+        "lemma" : "test.two",
+        "root" : "test",
+        "suggestions" : [
+
+        ],
+        "taskpaper" : "test:\n\tone:\n\ttwo:\n\t\ta:"
+      },
+      "time" : 13.571759104728699
+    },
+    {
+      "description" : "app.event.cli[test.two].did.change",
+      "record" : {
+        "breadcrumbs" : [
+          "test",
+          "test.two"
+        ],
+        "error" : {
+          "case" : "none"
+        },
+        "input" : "",
+        "lemma" : "test.two",
+        "root" : "test",
+        "selectedIndex" : 1,
+        "suggestions" : [
+          "test.two.a",
+          "test.two.b"
+        ],
+        "taskpaper" : "test:\n\tone:\n\ttwo:\n\t\ta:\n\t\tb:"
+      },
+      "time" : 13.617784023284912
+    },
+    {
+      "description" : "app.event.editor.did.show.popover.with.lemma[test.two.b]",
+      "record" : {
+        "breadcrumbs" : [
+          "test",
+          "test.two"
+        ],
+        "error" : {
+          "case" : "none"
+        },
+        "input" : "",
+        "lemma" : "test.two",
+        "root" : "test",
+        "selectedIndex" : 1,
+        "suggestions" : [
+          "test.two.a",
+          "test.two.b"
+        ],
+        "taskpaper" : "test:\n\tone:\n\ttwo:\n\t\ta:\n\t\tb:"
+      },
+      "time" : 13.654832005500793
+    },
+    {
+      "description" : "app.event.cli[test.one].did.change",
+      "record" : {
+        "breadcrumbs" : [
+          "test",
+          "test.one"
+        ],
+        "error" : {
+          "case" : "none"
+        },
+        "input" : "",
+        "lemma" : "test.one",
+        "root" : "test",
+        "suggestions" : [
+
+        ],
+        "taskpaper" : "test:\n\tone:\n\ttwo:\n\t\ta:\n\t\tb:"
+      },
+      "time" : 15.551133036613464
+    },
+    {
+      "description" : "app.event.cli[test.one].append[c]",
+      "record" : {
+        "breadcrumbs" : [
+          "test",
+          "test.one"
+        ],
+        "error" : {
+          "case" : "none"
+        },
+        "input" : "",
+        "lemma" : "test.one",
+        "root" : "test",
+        "suggestions" : [
+
+        ],
+        "taskpaper" : "test:\n\tone:\n\ttwo:\n\t\ta:\n\t\tb:"
+      },
+      "time" : 19.1770840883255
+    },
+    {
+      "description" : "app.event.cli[test.one+c].did.change",
+      "record" : {
+        "breadcrumbs" : [
+          "test",
+          "test.one"
+        ],
+        "error" : {
+          "case" : "noChildrenMatchInput",
+          "string" : "c"
+        },
+        "input" : "c",
+        "lemma" : "test.one",
+        "root" : "test",
+        "suggestions" : [
+
+        ],
+        "taskpaper" : "test:\n\tone:\n\ttwo:\n\t\ta:\n\t\tb:"
+      },
+      "time" : 19.226152062416077
+    },
+    {
+      "description" : "app.event.cli.commit",
+      "record" : {
+        "breadcrumbs" : [
+          "test",
+          "test.one"
+        ],
+        "error" : {
+          "case" : "noChildrenMatchInput",
+          "string" : "c"
+        },
+        "input" : "c",
+        "lemma" : "test.one",
+        "root" : "test",
+        "suggestions" : [
+
+        ],
+        "taskpaper" : "test:\n\tone:\n\ttwo:\n\t\ta:\n\t\tb:"
+      },
+      "time" : 19.776080012321472
+    },
+    {
+      "description" : "app.event.cli[test.one].did.change",
+      "record" : {
+        "breadcrumbs" : [
+          "test",
+          "test.one"
+        ],
+        "error" : {
+          "case" : "none"
+        },
+        "input" : "",
+        "lemma" : "test.one",
+        "root" : "test",
+        "selectedIndex" : 0,
+        "suggestions" : [
+          "test.one.c"
+        ],
+        "taskpaper" : "test:\n\tone:\n\t\tc:\n\ttwo:\n\t\ta:\n\t\tb:"
+      },
+      "time" : 19.816762089729309
+    },
+    {
+      "description" : "app.event.editor.did.show.popover.with.lemma[test.one.c]",
+      "record" : {
+        "breadcrumbs" : [
+          "test",
+          "test.one"
+        ],
+        "error" : {
+          "case" : "none"
+        },
+        "input" : "",
+        "lemma" : "test.one",
+        "root" : "test",
+        "selectedIndex" : 0,
+        "suggestions" : [
+          "test.one.c"
+        ],
+        "taskpaper" : "test:\n\tone:\n\t\tc:\n\ttwo:\n\t\ta:\n\t\tb:"
+      },
+      "time" : 19.855607032775879
+    },
+    {
+      "description" : "app.event.cli[test.one].append[d]",
+      "record" : {
+        "breadcrumbs" : [
+          "test",
+          "test.one"
+        ],
+        "error" : {
+          "case" : "none"
+        },
+        "input" : "",
+        "lemma" : "test.one",
+        "root" : "test",
+        "selectedIndex" : 0,
+        "suggestions" : [
+          "test.one.c"
+        ],
+        "taskpaper" : "test:\n\tone:\n\t\tc:\n\ttwo:\n\t\ta:\n\t\tb:"
+      },
+      "time" : 20.443359017372131
+    },
+    {
+      "description" : "app.event.cli[test.one+d].did.change",
+      "record" : {
+        "breadcrumbs" : [
+          "test",
+          "test.one"
+        ],
+        "error" : {
+          "case" : "noChildrenMatchInput",
+          "string" : "d"
+        },
+        "input" : "d",
+        "lemma" : "test.one",
+        "root" : "test",
+        "suggestions" : [
+
+        ],
+        "taskpaper" : "test:\n\tone:\n\t\tc:\n\ttwo:\n\t\ta:\n\t\tb:"
+      },
+      "time" : 20.493368029594421
+    },
+    {
+      "description" : "app.event.cli.commit",
+      "record" : {
+        "breadcrumbs" : [
+          "test",
+          "test.one"
+        ],
+        "error" : {
+          "case" : "noChildrenMatchInput",
+          "string" : "d"
+        },
+        "input" : "d",
+        "lemma" : "test.one",
+        "root" : "test",
+        "suggestions" : [
+
+        ],
+        "taskpaper" : "test:\n\tone:\n\t\tc:\n\ttwo:\n\t\ta:\n\t\tb:"
+      },
+      "time" : 21.324116110801697
+    },
+    {
+      "description" : "app.event.cli[test.one].did.change",
+      "record" : {
+        "breadcrumbs" : [
+          "test",
+          "test.one"
+        ],
+        "error" : {
+          "case" : "none"
+        },
+        "input" : "",
+        "lemma" : "test.one",
+        "root" : "test",
+        "selectedIndex" : 1,
+        "suggestions" : [
+          "test.one.c",
+          "test.one.d"
+        ],
+        "taskpaper" : "test:\n\tone:\n\t\tc:\n\t\td:\n\ttwo:\n\t\ta:\n\t\tb:"
+      },
+      "time" : 21.36552107334137
+    },
+    {
+      "description" : "app.event.editor.did.show.popover.with.lemma[test.one.d]",
+      "record" : {
+        "breadcrumbs" : [
+          "test",
+          "test.one"
+        ],
+        "error" : {
+          "case" : "none"
+        },
+        "input" : "",
+        "lemma" : "test.one",
+        "root" : "test",
+        "selectedIndex" : 1,
+        "suggestions" : [
+          "test.one.c",
+          "test.one.d"
+        ],
+        "taskpaper" : "test:\n\tone:\n\t\tc:\n\t\td:\n\ttwo:\n\t\ta:\n\t\tb:"
+      },
+      "time" : 21.403081059455872
+    },
+    {
+      "description" : "app.event.cli.select.next",
+      "record" : {
+        "breadcrumbs" : [
+          "test",
+          "test.one"
+        ],
+        "error" : {
+          "case" : "none"
+        },
+        "input" : "",
+        "lemma" : "test.one",
+        "root" : "test",
+        "selectedIndex" : 1,
+        "suggestions" : [
+          "test.one.c",
+          "test.one.d"
+        ],
+        "taskpaper" : "test:\n\tone:\n\t\tc:\n\t\td:\n\ttwo:\n\t\ta:\n\t\tb:"
+      },
+      "time" : 28.143408060073853
+    },
+    {
+      "description" : "app.event.cli[test.one].did.change",
+      "record" : {
+        "breadcrumbs" : [
+          "test",
+          "test.one"
+        ],
+        "error" : {
+          "case" : "none"
+        },
+        "input" : "",
+        "lemma" : "test.one",
+        "root" : "test",
+        "selectedIndex" : 0,
+        "suggestions" : [
+          "test.one.c",
+          "test.one.d"
+        ],
+        "taskpaper" : "test:\n\tone:\n\t\tc:\n\t\td:\n\ttwo:\n\t\ta:\n\t\tb:"
+      },
+      "time" : 28.157099008560181
+    },
+    {
+      "description" : "app.event.cli.backspace",
+      "record" : {
+        "breadcrumbs" : [
+          "test",
+          "test.one"
+        ],
+        "error" : {
+          "case" : "none"
+        },
+        "input" : "",
+        "lemma" : "test.one",
+        "root" : "test",
+        "selectedIndex" : 0,
+        "suggestions" : [
+          "test.one.c",
+          "test.one.d"
+        ],
+        "taskpaper" : "test:\n\tone:\n\t\tc:\n\t\td:\n\ttwo:\n\t\ta:\n\t\tb:"
+      },
+      "time" : 28.838772058486938
+    },
+    {
+      "description" : "app.event.cli[test].did.change",
+      "record" : {
+        "breadcrumbs" : [
+          "test"
+        ],
+        "error" : {
+          "case" : "none"
+        },
+        "input" : "",
+        "lemma" : "test",
+        "root" : "test",
+        "selectedIndex" : 0,
+        "suggestions" : [
+          "test.one",
+          "test.two"
+        ],
+        "taskpaper" : "test:\n\tone:\n\t\tc:\n\t\td:\n\ttwo:\n\t\ta:\n\t\tb:"
+      },
+      "time" : 28.883033037185669
+    },
+    {
+      "description" : "app.event.cli.select.next",
+      "record" : {
+        "breadcrumbs" : [
+          "test"
+        ],
+        "error" : {
+          "case" : "none"
+        },
+        "input" : "",
+        "lemma" : "test",
+        "root" : "test",
+        "selectedIndex" : 0,
+        "suggestions" : [
+          "test.one",
+          "test.two"
+        ],
+        "taskpaper" : "test:\n\tone:\n\t\tc:\n\t\td:\n\ttwo:\n\t\ta:\n\t\tb:"
+      },
+      "time" : 29.355791091918945
+    },
+    {
+      "description" : "app.event.cli[test].did.change",
+      "record" : {
+        "breadcrumbs" : [
+          "test"
+        ],
+        "error" : {
+          "case" : "none"
+        },
+        "input" : "",
+        "lemma" : "test",
+        "root" : "test",
+        "selectedIndex" : 1,
+        "suggestions" : [
+          "test.one",
+          "test.two"
+        ],
+        "taskpaper" : "test:\n\tone:\n\t\tc:\n\t\td:\n\ttwo:\n\t\ta:\n\t\tb:"
+      },
+      "time" : 29.360559105873108
+    },
+    {
+      "description" : "app.event.editor.did.show.popover.with.lemma[test.two.b]",
+      "record" : {
+        "breadcrumbs" : [
+          "test"
+        ],
+        "error" : {
+          "case" : "none"
+        },
+        "input" : "",
+        "lemma" : "test",
+        "root" : "test",
+        "selectedIndex" : 1,
+        "suggestions" : [
+          "test.one",
+          "test.two"
+        ],
+        "taskpaper" : "test:\n\tone:\n\t\tc:\n\t\td:\n\ttwo:\n\t\ta:\n\t\tb:"
+      },
+      "time" : 29.408488035202026
+    },
+    {
+      "description" : "app.event.editor.did.show.popover.with.lemma[test.two.a]",
+      "record" : {
+        "breadcrumbs" : [
+          "test"
+        ],
+        "error" : {
+          "case" : "none"
+        },
+        "input" : "",
+        "lemma" : "test",
+        "root" : "test",
+        "selectedIndex" : 1,
+        "suggestions" : [
+          "test.one",
+          "test.two"
+        ],
+        "taskpaper" : "test:\n\tone:\n\t\tc:\n\t\td:\n\ttwo:\n\t\ta:\n\t\tb:"
+      },
+      "time" : 29.408508062362671
+    },
+    {
+      "description" : "app.event.cli.enter",
+      "record" : {
+        "breadcrumbs" : [
+          "test"
+        ],
+        "error" : {
+          "case" : "none"
+        },
+        "input" : "",
+        "lemma" : "test",
+        "root" : "test",
+        "selectedIndex" : 1,
+        "suggestions" : [
+          "test.one",
+          "test.two"
+        ],
+        "taskpaper" : "test:\n\tone:\n\t\tc:\n\t\td:\n\ttwo:\n\t\ta:\n\t\tb:"
+      },
+      "time" : 29.778019070625305
+    },
+    {
+      "description" : "app.event.cli[test.two].did.change",
+      "record" : {
+        "breadcrumbs" : [
+          "test",
+          "test.two"
+        ],
+        "error" : {
+          "case" : "none"
+        },
+        "input" : "",
+        "lemma" : "test.two",
+        "root" : "test",
+        "selectedIndex" : 0,
+        "suggestions" : [
+          "test.two.a",
+          "test.two.b"
+        ],
+        "taskpaper" : "test:\n\tone:\n\t\tc:\n\t\td:\n\ttwo:\n\t\ta:\n\t\tb:"
+      },
+      "time" : 29.810582995414734
+    },
+    {
+      "description" : "app.event.cli.enter",
+      "record" : {
+        "breadcrumbs" : [
+          "test",
+          "test.two"
+        ],
+        "error" : {
+          "case" : "none"
+        },
+        "input" : "",
+        "lemma" : "test.two",
+        "root" : "test",
+        "selectedIndex" : 0,
+        "suggestions" : [
+          "test.two.a",
+          "test.two.b"
+        ],
+        "taskpaper" : "test:\n\tone:\n\t\tc:\n\t\td:\n\ttwo:\n\t\ta:\n\t\tb:"
+      },
+      "time" : 32.79831600189209
+    },
+    {
+      "description" : "app.event.cli[test.two.a].did.change",
+      "record" : {
+        "breadcrumbs" : [
+          "test",
+          "test.two",
+          "test.two.a"
+        ],
+        "error" : {
+          "case" : "none"
+        },
+        "input" : "",
+        "lemma" : "test.two.a",
+        "root" : "test",
+        "suggestions" : [
+
+        ],
+        "taskpaper" : "test:\n\tone:\n\t\tc:\n\t\td:\n\ttwo:\n\t\ta:\n\t\tb:"
+      },
+      "time" : 32.850911021232605
+    },
+    {
+      "description" : "app.event.cli[test.two.a].append[p]",
+      "record" : {
+        "breadcrumbs" : [
+          "test",
+          "test.two",
+          "test.two.a"
+        ],
+        "error" : {
+          "case" : "none"
+        },
+        "input" : "",
+        "lemma" : "test.two.a",
+        "root" : "test",
+        "suggestions" : [
+
+        ],
+        "taskpaper" : "test:\n\tone:\n\t\tc:\n\t\td:\n\ttwo:\n\t\ta:\n\t\tb:"
+      },
+      "time" : 34.075194001197815
+    },
+    {
+      "description" : "app.event.cli[test.two.a+p].did.change",
+      "record" : {
+        "breadcrumbs" : [
+          "test",
+          "test.two",
+          "test.two.a"
+        ],
+        "error" : {
+          "case" : "noChildrenMatchInput",
+          "string" : "p"
+        },
+        "input" : "p",
+        "lemma" : "test.two.a",
+        "root" : "test",
+        "suggestions" : [
+
+        ],
+        "taskpaper" : "test:\n\tone:\n\t\tc:\n\t\td:\n\ttwo:\n\t\ta:\n\t\tb:"
+      },
+      "time" : 34.13318407535553
+    },
+    {
+      "description" : "app.event.cli[test.two.a+p].append[e]",
+      "record" : {
+        "breadcrumbs" : [
+          "test",
+          "test.two",
+          "test.two.a"
+        ],
+        "error" : {
+          "case" : "noChildrenMatchInput",
+          "string" : "p"
+        },
+        "input" : "p",
+        "lemma" : "test.two.a",
+        "root" : "test",
+        "suggestions" : [
+
+        ],
+        "taskpaper" : "test:\n\tone:\n\t\tc:\n\t\td:\n\ttwo:\n\t\ta:\n\t\tb:"
+      },
+      "time" : 34.190562009811401
+    },
+    {
+      "description" : "app.event.cli[test.two.a+pe].did.change",
+      "record" : {
+        "breadcrumbs" : [
+          "test",
+          "test.two",
+          "test.two.a"
+        ],
+        "error" : {
+          "case" : "noChildrenMatchInput",
+          "string" : "pe"
+        },
+        "input" : "pe",
+        "lemma" : "test.two.a",
+        "root" : "test",
+        "suggestions" : [
+
+        ],
+        "taskpaper" : "test:\n\tone:\n\t\tc:\n\t\td:\n\ttwo:\n\t\ta:\n\t\tb:"
+      },
+      "time" : 34.215188026428223
+    },
+    {
+      "description" : "app.event.cli[test.two.a+pe].append[r]",
+      "record" : {
+        "breadcrumbs" : [
+          "test",
+          "test.two",
+          "test.two.a"
+        ],
+        "error" : {
+          "case" : "noChildrenMatchInput",
+          "string" : "pe"
+        },
+        "input" : "pe",
+        "lemma" : "test.two.a",
+        "root" : "test",
+        "suggestions" : [
+
+        ],
+        "taskpaper" : "test:\n\tone:\n\t\tc:\n\t\td:\n\ttwo:\n\t\ta:\n\t\tb:"
+      },
+      "time" : 34.301197052001953
+    },
+    {
+      "description" : "app.event.cli[test.two.a+per].did.change",
+      "record" : {
+        "breadcrumbs" : [
+          "test",
+          "test.two",
+          "test.two.a"
+        ],
+        "error" : {
+          "case" : "noChildrenMatchInput",
+          "string" : "per"
+        },
+        "input" : "per",
+        "lemma" : "test.two.a",
+        "root" : "test",
+        "suggestions" : [
+
+        ],
+        "taskpaper" : "test:\n\tone:\n\t\tc:\n\t\td:\n\ttwo:\n\t\ta:\n\t\tb:"
+      },
+      "time" : 34.331935048103333
+    },
+    {
+      "description" : "app.event.cli[test.two.a+per].append[f]",
+      "record" : {
+        "breadcrumbs" : [
+          "test",
+          "test.two",
+          "test.two.a"
+        ],
+        "error" : {
+          "case" : "noChildrenMatchInput",
+          "string" : "per"
+        },
+        "input" : "per",
+        "lemma" : "test.two.a",
+        "root" : "test",
+        "suggestions" : [
+
+        ],
+        "taskpaper" : "test:\n\tone:\n\t\tc:\n\t\td:\n\ttwo:\n\t\ta:\n\t\tb:"
+      },
+      "time" : 35.247048020362854
+    },
+    {
+      "description" : "app.event.cli[test.two.a+perf].did.change",
+      "record" : {
+        "breadcrumbs" : [
+          "test",
+          "test.two",
+          "test.two.a"
+        ],
+        "error" : {
+          "case" : "noChildrenMatchInput",
+          "string" : "perf"
+        },
+        "input" : "perf",
+        "lemma" : "test.two.a",
+        "root" : "test",
+        "suggestions" : [
+
+        ],
+        "taskpaper" : "test:\n\tone:\n\t\tc:\n\t\td:\n\ttwo:\n\t\ta:\n\t\tb:"
+      },
+      "time" : 35.291245102882385
+    },
+    {
+      "description" : "app.event.cli[test.two.a+perf].append[e]",
+      "record" : {
+        "breadcrumbs" : [
+          "test",
+          "test.two",
+          "test.two.a"
+        ],
+        "error" : {
+          "case" : "noChildrenMatchInput",
+          "string" : "perf"
+        },
+        "input" : "perf",
+        "lemma" : "test.two.a",
+        "root" : "test",
+        "suggestions" : [
+
+        ],
+        "taskpaper" : "test:\n\tone:\n\t\tc:\n\t\td:\n\ttwo:\n\t\ta:\n\t\tb:"
+      },
+      "time" : 35.37376606464386
+    },
+    {
+      "description" : "app.event.cli[test.two.a+perfe].did.change",
+      "record" : {
+        "breadcrumbs" : [
+          "test",
+          "test.two",
+          "test.two.a"
+        ],
+        "error" : {
+          "case" : "noChildrenMatchInput",
+          "string" : "perfe"
+        },
+        "input" : "perfe",
+        "lemma" : "test.two.a",
+        "root" : "test",
+        "suggestions" : [
+
+        ],
+        "taskpaper" : "test:\n\tone:\n\t\tc:\n\t\td:\n\ttwo:\n\t\ta:\n\t\tb:"
+      },
+      "time" : 35.400712013244629
+    },
+    {
+      "description" : "app.event.cli[test.two.a+perfe].append[c]",
+      "record" : {
+        "breadcrumbs" : [
+          "test",
+          "test.two",
+          "test.two.a"
+        ],
+        "error" : {
+          "case" : "noChildrenMatchInput",
+          "string" : "perfe"
+        },
+        "input" : "perfe",
+        "lemma" : "test.two.a",
+        "root" : "test",
+        "suggestions" : [
+
+        ],
+        "taskpaper" : "test:\n\tone:\n\t\tc:\n\t\td:\n\ttwo:\n\t\ta:\n\t\tb:"
+      },
+      "time" : 35.714605093002319
+    },
+    {
+      "description" : "app.event.cli[test.two.a+perfec].did.change",
+      "record" : {
+        "breadcrumbs" : [
+          "test",
+          "test.two",
+          "test.two.a"
+        ],
+        "error" : {
+          "case" : "noChildrenMatchInput",
+          "string" : "perfec"
+        },
+        "input" : "perfec",
+        "lemma" : "test.two.a",
+        "root" : "test",
+        "suggestions" : [
+
+        ],
+        "taskpaper" : "test:\n\tone:\n\t\tc:\n\t\td:\n\ttwo:\n\t\ta:\n\t\tb:"
+      },
+      "time" : 35.76737904548645
+    },
+    {
+      "description" : "app.event.cli.backspace",
+      "record" : {
+        "breadcrumbs" : [
+          "test",
+          "test.two",
+          "test.two.a"
+        ],
+        "error" : {
+          "case" : "noChildrenMatchInput",
+          "string" : "perfec"
+        },
+        "input" : "perfec",
+        "lemma" : "test.two.a",
+        "root" : "test",
+        "suggestions" : [
+
+        ],
+        "taskpaper" : "test:\n\tone:\n\t\tc:\n\t\td:\n\ttwo:\n\t\ta:\n\t\tb:"
+      },
+      "time" : 36.200696110725403
+    },
+    {
+      "description" : "app.event.cli[test.two.a+perfe].did.change",
+      "record" : {
+        "breadcrumbs" : [
+          "test",
+          "test.two",
+          "test.two.a"
+        ],
+        "error" : {
+          "case" : "noChildrenMatchInput",
+          "string" : "perfe"
+        },
+        "input" : "perfe",
+        "lemma" : "test.two.a",
+        "root" : "test",
+        "suggestions" : [
+
+        ],
+        "taskpaper" : "test:\n\tone:\n\t\tc:\n\t\td:\n\ttwo:\n\t\ta:\n\t\tb:"
+      },
+      "time" : 36.248958110809326
+    },
+    {
+      "description" : "app.event.cli.backspace",
+      "record" : {
+        "breadcrumbs" : [
+          "test",
+          "test.two",
+          "test.two.a"
+        ],
+        "error" : {
+          "case" : "noChildrenMatchInput",
+          "string" : "perfe"
+        },
+        "input" : "perfe",
+        "lemma" : "test.two.a",
+        "root" : "test",
+        "suggestions" : [
+
+        ],
+        "taskpaper" : "test:\n\tone:\n\t\tc:\n\t\td:\n\ttwo:\n\t\ta:\n\t\tb:"
+      },
+      "time" : 36.502068996429443
+    },
+    {
+      "description" : "app.event.cli[test.two.a+perf].did.change",
+      "record" : {
+        "breadcrumbs" : [
+          "test",
+          "test.two",
+          "test.two.a"
+        ],
+        "error" : {
+          "case" : "noChildrenMatchInput",
+          "string" : "perf"
+        },
+        "input" : "perf",
+        "lemma" : "test.two.a",
+        "root" : "test",
+        "suggestions" : [
+
+        ],
+        "taskpaper" : "test:\n\tone:\n\t\tc:\n\t\td:\n\ttwo:\n\t\ta:\n\t\tb:"
+      },
+      "time" : 36.551634073257446
+    },
+    {
+      "description" : "app.event.cli.backspace",
+      "record" : {
+        "breadcrumbs" : [
+          "test",
+          "test.two",
+          "test.two.a"
+        ],
+        "error" : {
+          "case" : "noChildrenMatchInput",
+          "string" : "perf"
+        },
+        "input" : "perf",
+        "lemma" : "test.two.a",
+        "root" : "test",
+        "suggestions" : [
+
+        ],
+        "taskpaper" : "test:\n\tone:\n\t\tc:\n\t\td:\n\ttwo:\n\t\ta:\n\t\tb:"
+      },
+      "time" : 36.670708060264587
+    },
+    {
+      "description" : "app.event.cli[test.two.a+per].did.change",
+      "record" : {
+        "breadcrumbs" : [
+          "test",
+          "test.two",
+          "test.two.a"
+        ],
+        "error" : {
+          "case" : "noChildrenMatchInput",
+          "string" : "per"
+        },
+        "input" : "per",
+        "lemma" : "test.two.a",
+        "root" : "test",
+        "suggestions" : [
+
+        ],
+        "taskpaper" : "test:\n\tone:\n\t\tc:\n\t\td:\n\ttwo:\n\t\ta:\n\t\tb:"
+      },
+      "time" : 36.700634002685547
+    },
+    {
+      "description" : "app.event.cli.backspace",
+      "record" : {
+        "breadcrumbs" : [
+          "test",
+          "test.two",
+          "test.two.a"
+        ],
+        "error" : {
+          "case" : "noChildrenMatchInput",
+          "string" : "per"
+        },
+        "input" : "per",
+        "lemma" : "test.two.a",
+        "root" : "test",
+        "suggestions" : [
+
+        ],
+        "taskpaper" : "test:\n\tone:\n\t\tc:\n\t\td:\n\ttwo:\n\t\ta:\n\t\tb:"
+      },
+      "time" : 37.063632011413574
+    },
+    {
+      "description" : "app.event.cli[test.two.a+pe].did.change",
+      "record" : {
+        "breadcrumbs" : [
+          "test",
+          "test.two",
+          "test.two.a"
+        ],
+        "error" : {
+          "case" : "noChildrenMatchInput",
+          "string" : "pe"
+        },
+        "input" : "pe",
+        "lemma" : "test.two.a",
+        "root" : "test",
+        "suggestions" : [
+
+        ],
+        "taskpaper" : "test:\n\tone:\n\t\tc:\n\t\td:\n\ttwo:\n\t\ta:\n\t\tb:"
+      },
+      "time" : 37.115523099899292
+    },
+    {
+      "description" : "app.event.cli.backspace",
+      "record" : {
+        "breadcrumbs" : [
+          "test",
+          "test.two",
+          "test.two.a"
+        ],
+        "error" : {
+          "case" : "noChildrenMatchInput",
+          "string" : "pe"
+        },
+        "input" : "pe",
+        "lemma" : "test.two.a",
+        "root" : "test",
+        "suggestions" : [
+
+        ],
+        "taskpaper" : "test:\n\tone:\n\t\tc:\n\t\td:\n\ttwo:\n\t\ta:\n\t\tb:"
+      },
+      "time" : 37.226955056190491
+    },
+    {
+      "description" : "app.event.cli[test.two.a+p].did.change",
+      "record" : {
+        "breadcrumbs" : [
+          "test",
+          "test.two",
+          "test.two.a"
+        ],
+        "error" : {
+          "case" : "noChildrenMatchInput",
+          "string" : "p"
+        },
+        "input" : "p",
+        "lemma" : "test.two.a",
+        "root" : "test",
+        "suggestions" : [
+
+        ],
+        "taskpaper" : "test:\n\tone:\n\t\tc:\n\t\td:\n\ttwo:\n\t\ta:\n\t\tb:"
+      },
+      "time" : 37.259071111679077
+    },
+    {
+      "description" : "app.event.cli.backspace",
+      "record" : {
+        "breadcrumbs" : [
+          "test",
+          "test.two",
+          "test.two.a"
+        ],
+        "error" : {
+          "case" : "noChildrenMatchInput",
+          "string" : "p"
+        },
+        "input" : "p",
+        "lemma" : "test.two.a",
+        "root" : "test",
+        "suggestions" : [
+
+        ],
+        "taskpaper" : "test:\n\tone:\n\t\tc:\n\t\td:\n\ttwo:\n\t\ta:\n\t\tb:"
+      },
+      "time" : 37.725276112556458
+    },
+    {
+      "description" : "app.event.cli[test.two.a].did.change",
+      "record" : {
+        "breadcrumbs" : [
+          "test",
+          "test.two",
+          "test.two.a"
+        ],
+        "error" : {
+          "case" : "none"
+        },
+        "input" : "",
+        "lemma" : "test.two.a",
+        "root" : "test",
+        "suggestions" : [
+
+        ],
+        "taskpaper" : "test:\n\tone:\n\t\tc:\n\t\td:\n\ttwo:\n\t\ta:\n\t\tb:"
+      },
+      "time" : 37.775527000427246
+    },
+    {
+      "description" : "app.event.cli[test.two.a].append[g]",
+      "record" : {
+        "breadcrumbs" : [
+          "test",
+          "test.two",
+          "test.two.a"
+        ],
+        "error" : {
+          "case" : "none"
+        },
+        "input" : "",
+        "lemma" : "test.two.a",
+        "root" : "test",
+        "suggestions" : [
+
+        ],
+        "taskpaper" : "test:\n\tone:\n\t\tc:\n\t\td:\n\ttwo:\n\t\ta:\n\t\tb:"
+      },
+      "time" : 38.810778021812439
+    },
+    {
+      "description" : "app.event.cli[test.two.a+g].did.change",
+      "record" : {
+        "breadcrumbs" : [
+          "test",
+          "test.two",
+          "test.two.a"
+        ],
+        "error" : {
+          "case" : "noChildrenMatchInput",
+          "string" : "g"
+        },
+        "input" : "g",
+        "lemma" : "test.two.a",
+        "root" : "test",
+        "suggestions" : [
+
+        ],
+        "taskpaper" : "test:\n\tone:\n\t\tc:\n\t\td:\n\ttwo:\n\t\ta:\n\t\tb:"
+      },
+      "time" : 38.860473036766052
+    },
+    {
+      "description" : "app.event.cli[test.two.a+g].append[o]",
+      "record" : {
+        "breadcrumbs" : [
+          "test",
+          "test.two",
+          "test.two.a"
+        ],
+        "error" : {
+          "case" : "noChildrenMatchInput",
+          "string" : "g"
+        },
+        "input" : "g",
+        "lemma" : "test.two.a",
+        "root" : "test",
+        "suggestions" : [
+
+        ],
+        "taskpaper" : "test:\n\tone:\n\t\tc:\n\t\td:\n\ttwo:\n\t\ta:\n\t\tb:"
+      },
+      "time" : 38.951239109039307
+    },
+    {
+      "description" : "app.event.cli[test.two.a+go].did.change",
+      "record" : {
+        "breadcrumbs" : [
+          "test",
+          "test.two",
+          "test.two.a"
+        ],
+        "error" : {
+          "case" : "noChildrenMatchInput",
+          "string" : "go"
+        },
+        "input" : "go",
+        "lemma" : "test.two.a",
+        "root" : "test",
+        "suggestions" : [
+
+        ],
+        "taskpaper" : "test:\n\tone:\n\t\tc:\n\t\td:\n\ttwo:\n\t\ta:\n\t\tb:"
+      },
+      "time" : 38.983640074729919
+    },
+    {
+      "description" : "app.event.cli[test.two.a+go].append[o]",
+      "record" : {
+        "breadcrumbs" : [
+          "test",
+          "test.two",
+          "test.two.a"
+        ],
+        "error" : {
+          "case" : "noChildrenMatchInput",
+          "string" : "go"
+        },
+        "input" : "go",
+        "lemma" : "test.two.a",
+        "root" : "test",
+        "suggestions" : [
+
+        ],
+        "taskpaper" : "test:\n\tone:\n\t\tc:\n\t\td:\n\ttwo:\n\t\ta:\n\t\tb:"
+      },
+      "time" : 39.181550025939941
+    },
+    {
+      "description" : "app.event.cli[test.two.a+goo].did.change",
+      "record" : {
+        "breadcrumbs" : [
+          "test",
+          "test.two",
+          "test.two.a"
+        ],
+        "error" : {
+          "case" : "noChildrenMatchInput",
+          "string" : "goo"
+        },
+        "input" : "goo",
+        "lemma" : "test.two.a",
+        "root" : "test",
+        "suggestions" : [
+
+        ],
+        "taskpaper" : "test:\n\tone:\n\t\tc:\n\t\td:\n\ttwo:\n\t\ta:\n\t\tb:"
+      },
+      "time" : 39.223264098167419
+    },
+    {
+      "description" : "app.event.cli[test.two.a+goo].append[d]",
+      "record" : {
+        "breadcrumbs" : [
+          "test",
+          "test.two",
+          "test.two.a"
+        ],
+        "error" : {
+          "case" : "noChildrenMatchInput",
+          "string" : "goo"
+        },
+        "input" : "goo",
+        "lemma" : "test.two.a",
+        "root" : "test",
+        "suggestions" : [
+
+        ],
+        "taskpaper" : "test:\n\tone:\n\t\tc:\n\t\td:\n\ttwo:\n\t\ta:\n\t\tb:"
+      },
+      "time" : 39.349187016487122
+    },
+    {
+      "description" : "app.event.cli[test.two.a+good].did.change",
+      "record" : {
+        "breadcrumbs" : [
+          "test",
+          "test.two",
+          "test.two.a"
+        ],
+        "error" : {
+          "case" : "noChildrenMatchInput",
+          "string" : "good"
+        },
+        "input" : "good",
+        "lemma" : "test.two.a",
+        "root" : "test",
+        "suggestions" : [
+
+        ],
+        "taskpaper" : "test:\n\tone:\n\t\tc:\n\t\td:\n\ttwo:\n\t\ta:\n\t\tb:"
+      },
+      "time" : 39.384182095527649
+    },
+    {
+      "description" : "app.event.cli.commit",
+      "record" : {
+        "breadcrumbs" : [
+          "test",
+          "test.two",
+          "test.two.a"
+        ],
+        "error" : {
+          "case" : "noChildrenMatchInput",
+          "string" : "good"
+        },
+        "input" : "good",
+        "lemma" : "test.two.a",
+        "root" : "test",
+        "suggestions" : [
+
+        ],
+        "taskpaper" : "test:\n\tone:\n\t\tc:\n\t\td:\n\ttwo:\n\t\ta:\n\t\tb:"
+      },
+      "time" : 41.230386018753052
+    },
+    {
+      "description" : "app.event.cli[test.two.a].did.change",
+      "record" : {
+        "breadcrumbs" : [
+          "test",
+          "test.two",
+          "test.two.a"
+        ],
+        "error" : {
+          "case" : "none"
+        },
+        "input" : "",
+        "lemma" : "test.two.a",
+        "root" : "test",
+        "selectedIndex" : 0,
+        "suggestions" : [
+          "test.two.a.good"
+        ],
+        "taskpaper" : "test:\n\tone:\n\t\tc:\n\t\td:\n\ttwo:\n\t\ta:\n\t\t\tgood:\n\t\tb:"
+      },
+      "time" : 41.267956018447876
+    },
+    {
+      "description" : "app.event.editor.did.show.popover.with.lemma[test.two.a.good]",
+      "record" : {
+        "breadcrumbs" : [
+          "test",
+          "test.two",
+          "test.two.a"
+        ],
+        "error" : {
+          "case" : "none"
+        },
+        "input" : "",
+        "lemma" : "test.two.a",
+        "root" : "test",
+        "selectedIndex" : 0,
+        "suggestions" : [
+          "test.two.a.good"
+        ],
+        "taskpaper" : "test:\n\tone:\n\t\tc:\n\t\td:\n\ttwo:\n\t\ta:\n\t\t\tgood:\n\t\tb:"
+      },
+      "time" : 41.309843063354492
+    },
+    {
+      "description" : "app.event.cli[test.two.a].append[s]",
+      "record" : {
+        "breadcrumbs" : [
+          "test",
+          "test.two",
+          "test.two.a"
+        ],
+        "error" : {
+          "case" : "none"
+        },
+        "input" : "",
+        "lemma" : "test.two.a",
+        "root" : "test",
+        "selectedIndex" : 0,
+        "suggestions" : [
+          "test.two.a.good"
+        ],
+        "taskpaper" : "test:\n\tone:\n\t\tc:\n\t\td:\n\ttwo:\n\t\ta:\n\t\t\tgood:\n\t\tb:"
+      },
+      "time" : 42.546658039093018
+    },
+    {
+      "description" : "app.event.cli[test.two.a+s].did.change",
+      "record" : {
+        "breadcrumbs" : [
+          "test",
+          "test.two",
+          "test.two.a"
+        ],
+        "error" : {
+          "case" : "noChildrenMatchInput",
+          "string" : "s"
+        },
+        "input" : "s",
+        "lemma" : "test.two.a",
+        "root" : "test",
+        "suggestions" : [
+
+        ],
+        "taskpaper" : "test:\n\tone:\n\t\tc:\n\t\td:\n\ttwo:\n\t\ta:\n\t\t\tgood:\n\t\tb:"
+      },
+      "time" : 42.601256012916565
+    },
+    {
+      "description" : "app.event.cli[test.two.a+s].append[t]",
+      "record" : {
+        "breadcrumbs" : [
+          "test",
+          "test.two",
+          "test.two.a"
+        ],
+        "error" : {
+          "case" : "noChildrenMatchInput",
+          "string" : "s"
+        },
+        "input" : "s",
+        "lemma" : "test.two.a",
+        "root" : "test",
+        "suggestions" : [
+
+        ],
+        "taskpaper" : "test:\n\tone:\n\t\tc:\n\t\td:\n\ttwo:\n\t\ta:\n\t\t\tgood:\n\t\tb:"
+      },
+      "time" : 42.691442012786865
+    },
+    {
+      "description" : "app.event.cli[test.two.a+st].did.change",
+      "record" : {
+        "breadcrumbs" : [
+          "test",
+          "test.two",
+          "test.two.a"
+        ],
+        "error" : {
+          "case" : "noChildrenMatchInput",
+          "string" : "st"
+        },
+        "input" : "st",
+        "lemma" : "test.two.a",
+        "root" : "test",
+        "suggestions" : [
+
+        ],
+        "taskpaper" : "test:\n\tone:\n\t\tc:\n\t\td:\n\ttwo:\n\t\ta:\n\t\t\tgood:\n\t\tb:"
+      },
+      "time" : 42.724148035049438
+    },
+    {
+      "description" : "app.event.cli.backspace",
+      "record" : {
+        "breadcrumbs" : [
+          "test",
+          "test.two",
+          "test.two.a"
+        ],
+        "error" : {
+          "case" : "noChildrenMatchInput",
+          "string" : "st"
+        },
+        "input" : "st",
+        "lemma" : "test.two.a",
+        "root" : "test",
+        "suggestions" : [
+
+        ],
+        "taskpaper" : "test:\n\tone:\n\t\tc:\n\t\td:\n\ttwo:\n\t\ta:\n\t\t\tgood:\n\t\tb:"
+      },
+      "time" : 43.523848056793213
+    },
+    {
+      "description" : "app.event.cli[test.two.a+s].did.change",
+      "record" : {
+        "breadcrumbs" : [
+          "test",
+          "test.two",
+          "test.two.a"
+        ],
+        "error" : {
+          "case" : "noChildrenMatchInput",
+          "string" : "s"
+        },
+        "input" : "s",
+        "lemma" : "test.two.a",
+        "root" : "test",
+        "suggestions" : [
+
+        ],
+        "taskpaper" : "test:\n\tone:\n\t\tc:\n\t\td:\n\ttwo:\n\t\ta:\n\t\t\tgood:\n\t\tb:"
+      },
+      "time" : 43.566409111022949
+    },
+    {
+      "description" : "app.event.cli.backspace",
+      "record" : {
+        "breadcrumbs" : [
+          "test",
+          "test.two",
+          "test.two.a"
+        ],
+        "error" : {
+          "case" : "noChildrenMatchInput",
+          "string" : "s"
+        },
+        "input" : "s",
+        "lemma" : "test.two.a",
+        "root" : "test",
+        "suggestions" : [
+
+        ],
+        "taskpaper" : "test:\n\tone:\n\t\tc:\n\t\td:\n\ttwo:\n\t\ta:\n\t\t\tgood:\n\t\tb:"
+      },
+      "time" : 43.746591091156006
+    },
+    {
+      "description" : "app.event.cli[test.two.a].did.change",
+      "record" : {
+        "breadcrumbs" : [
+          "test",
+          "test.two",
+          "test.two.a"
+        ],
+        "error" : {
+          "case" : "none"
+        },
+        "input" : "",
+        "lemma" : "test.two.a",
+        "root" : "test",
+        "selectedIndex" : 0,
+        "suggestions" : [
+          "test.two.a.good"
+        ],
+        "taskpaper" : "test:\n\tone:\n\t\tc:\n\t\td:\n\ttwo:\n\t\ta:\n\t\t\tgood:\n\t\tb:"
+      },
+      "time" : 43.790653109550476
+    },
+    {
+      "description" : "app.event.cli.enter",
+      "record" : {
+        "breadcrumbs" : [
+          "test",
+          "test.two",
+          "test.two.a"
+        ],
+        "error" : {
+          "case" : "none"
+        },
+        "input" : "",
+        "lemma" : "test.two.a",
+        "root" : "test",
+        "selectedIndex" : 0,
+        "suggestions" : [
+          "test.two.a.good"
+        ],
+        "taskpaper" : "test:\n\tone:\n\t\tc:\n\t\td:\n\ttwo:\n\t\ta:\n\t\t\tgood:\n\t\tb:"
+      },
+      "time" : 44.579492092132568
+    },
+    {
+      "description" : "app.event.cli[test.two.a.good].did.change",
+      "record" : {
+        "breadcrumbs" : [
+          "test",
+          "test.two",
+          "test.two.a",
+          "test.two.a.good"
+        ],
+        "error" : {
+          "case" : "none"
+        },
+        "input" : "",
+        "lemma" : "test.two.a.good",
+        "root" : "test",
+        "suggestions" : [
+
+        ],
+        "taskpaper" : "test:\n\tone:\n\t\tc:\n\t\td:\n\ttwo:\n\t\ta:\n\t\t\tgood:\n\t\tb:"
+      },
+      "time" : 44.618752002716064
+    },
+    {
+      "description" : "app.event.cli[test.two.a.good].append[s]",
+      "record" : {
+        "breadcrumbs" : [
+          "test",
+          "test.two",
+          "test.two.a",
+          "test.two.a.good"
+        ],
+        "error" : {
+          "case" : "none"
+        },
+        "input" : "",
+        "lemma" : "test.two.a.good",
+        "root" : "test",
+        "suggestions" : [
+
+        ],
+        "taskpaper" : "test:\n\tone:\n\t\tc:\n\t\td:\n\ttwo:\n\t\ta:\n\t\t\tgood:\n\t\tb:"
+      },
+      "time" : 45.212148070335388
+    },
+    {
+      "description" : "app.event.cli[test.two.a.good+s].did.change",
+      "record" : {
+        "breadcrumbs" : [
+          "test",
+          "test.two",
+          "test.two.a",
+          "test.two.a.good"
+        ],
+        "error" : {
+          "case" : "noChildrenMatchInput",
+          "string" : "s"
+        },
+        "input" : "s",
+        "lemma" : "test.two.a.good",
+        "root" : "test",
+        "suggestions" : [
+
+        ],
+        "taskpaper" : "test:\n\tone:\n\t\tc:\n\t\td:\n\ttwo:\n\t\ta:\n\t\t\tgood:\n\t\tb:"
+      },
+      "time" : 45.264899015426636
+    },
+    {
+      "description" : "app.event.cli[test.two.a.good+s].append[t]",
+      "record" : {
+        "breadcrumbs" : [
+          "test",
+          "test.two",
+          "test.two.a",
+          "test.two.a.good"
+        ],
+        "error" : {
+          "case" : "noChildrenMatchInput",
+          "string" : "s"
+        },
+        "input" : "s",
+        "lemma" : "test.two.a.good",
+        "root" : "test",
+        "suggestions" : [
+
+        ],
+        "taskpaper" : "test:\n\tone:\n\t\tc:\n\t\td:\n\ttwo:\n\t\ta:\n\t\t\tgood:\n\t\tb:"
+      },
+      "time" : 45.364038109779358
+    },
+    {
+      "description" : "app.event.cli[test.two.a.good+st].did.change",
+      "record" : {
+        "breadcrumbs" : [
+          "test",
+          "test.two",
+          "test.two.a",
+          "test.two.a.good"
+        ],
+        "error" : {
+          "case" : "noChildrenMatchInput",
+          "string" : "st"
+        },
+        "input" : "st",
+        "lemma" : "test.two.a.good",
+        "root" : "test",
+        "suggestions" : [
+
+        ],
+        "taskpaper" : "test:\n\tone:\n\t\tc:\n\t\td:\n\ttwo:\n\t\ta:\n\t\t\tgood:\n\t\tb:"
+      },
+      "time" : 45.371906995773315
+    },
+    {
+      "description" : "app.event.cli[test.two.a.good+st].append[a]",
+      "record" : {
+        "breadcrumbs" : [
+          "test",
+          "test.two",
+          "test.two.a",
+          "test.two.a.good"
+        ],
+        "error" : {
+          "case" : "noChildrenMatchInput",
+          "string" : "st"
+        },
+        "input" : "st",
+        "lemma" : "test.two.a.good",
+        "root" : "test",
+        "suggestions" : [
+
+        ],
+        "taskpaper" : "test:\n\tone:\n\t\tc:\n\t\td:\n\ttwo:\n\t\ta:\n\t\t\tgood:\n\t\tb:"
+      },
+      "time" : 45.534613013267517
+    },
+    {
+      "description" : "app.event.cli[test.two.a.good+sta].did.change",
+      "record" : {
+        "breadcrumbs" : [
+          "test",
+          "test.two",
+          "test.two.a",
+          "test.two.a.good"
+        ],
+        "error" : {
+          "case" : "noChildrenMatchInput",
+          "string" : "sta"
+        },
+        "input" : "sta",
+        "lemma" : "test.two.a.good",
+        "root" : "test",
+        "suggestions" : [
+
+        ],
+        "taskpaper" : "test:\n\tone:\n\t\tc:\n\t\td:\n\ttwo:\n\t\ta:\n\t\t\tgood:\n\t\tb:"
+      },
+      "time" : 45.568963050842285
+    },
+    {
+      "description" : "app.event.cli[test.two.a.good+sta].append[r]",
+      "record" : {
+        "breadcrumbs" : [
+          "test",
+          "test.two",
+          "test.two.a",
+          "test.two.a.good"
+        ],
+        "error" : {
+          "case" : "noChildrenMatchInput",
+          "string" : "sta"
+        },
+        "input" : "sta",
+        "lemma" : "test.two.a.good",
+        "root" : "test",
+        "suggestions" : [
+
+        ],
+        "taskpaper" : "test:\n\tone:\n\t\tc:\n\t\td:\n\ttwo:\n\t\ta:\n\t\t\tgood:\n\t\tb:"
+      },
+      "time" : 45.661846995353699
+    },
+    {
+      "description" : "app.event.cli[test.two.a.good+star].did.change",
+      "record" : {
+        "breadcrumbs" : [
+          "test",
+          "test.two",
+          "test.two.a",
+          "test.two.a.good"
+        ],
+        "error" : {
+          "case" : "noChildrenMatchInput",
+          "string" : "star"
+        },
+        "input" : "star",
+        "lemma" : "test.two.a.good",
+        "root" : "test",
+        "suggestions" : [
+
+        ],
+        "taskpaper" : "test:\n\tone:\n\t\tc:\n\t\td:\n\ttwo:\n\t\ta:\n\t\t\tgood:\n\t\tb:"
+      },
+      "time" : 45.690641045570374
+    },
+    {
+      "description" : "app.event.cli[test.two.a.good+star].append[t]",
+      "record" : {
+        "breadcrumbs" : [
+          "test",
+          "test.two",
+          "test.two.a",
+          "test.two.a.good"
+        ],
+        "error" : {
+          "case" : "noChildrenMatchInput",
+          "string" : "star"
+        },
+        "input" : "star",
+        "lemma" : "test.two.a.good",
+        "root" : "test",
+        "suggestions" : [
+
+        ],
+        "taskpaper" : "test:\n\tone:\n\t\tc:\n\t\td:\n\ttwo:\n\t\ta:\n\t\t\tgood:\n\t\tb:"
+      },
+      "time" : 45.865690112113953
+    },
+    {
+      "description" : "app.event.cli[test.two.a.good+start].did.change",
+      "record" : {
+        "breadcrumbs" : [
+          "test",
+          "test.two",
+          "test.two.a",
+          "test.two.a.good"
+        ],
+        "error" : {
+          "case" : "noChildrenMatchInput",
+          "string" : "start"
+        },
+        "input" : "start",
+        "lemma" : "test.two.a.good",
+        "root" : "test",
+        "suggestions" : [
+
+        ],
+        "taskpaper" : "test:\n\tone:\n\t\tc:\n\t\td:\n\ttwo:\n\t\ta:\n\t\t\tgood:\n\t\tb:"
+      },
+      "time" : 45.907990097999573
+    },
+    {
+      "description" : "app.event.cli.commit",
+      "record" : {
+        "breadcrumbs" : [
+          "test",
+          "test.two",
+          "test.two.a",
+          "test.two.a.good"
+        ],
+        "error" : {
+          "case" : "noChildrenMatchInput",
+          "string" : "start"
+        },
+        "input" : "start",
+        "lemma" : "test.two.a.good",
+        "root" : "test",
+        "suggestions" : [
+
+        ],
+        "taskpaper" : "test:\n\tone:\n\t\tc:\n\t\td:\n\ttwo:\n\t\ta:\n\t\t\tgood:\n\t\tb:"
+      },
+      "time" : 46.538420081138611
+    },
+    {
+      "description" : "app.event.cli[test.two.a.good].did.change",
+      "record" : {
+        "breadcrumbs" : [
+          "test",
+          "test.two",
+          "test.two.a",
+          "test.two.a.good"
+        ],
+        "error" : {
+          "case" : "none"
+        },
+        "input" : "",
+        "lemma" : "test.two.a.good",
+        "root" : "test",
+        "selectedIndex" : 0,
+        "suggestions" : [
+          "test.two.a.good.start"
+        ],
+        "taskpaper" : "test:\n\tone:\n\t\tc:\n\t\td:\n\ttwo:\n\t\ta:\n\t\t\tgood:\n\t\t\t\tstart:\n\t\tb:"
+      },
+      "time" : 46.583416104316711
+    },
+    {
+      "description" : "app.event.editor.did.show.popover.with.lemma[test.two.a.good.start]",
+      "record" : {
+        "breadcrumbs" : [
+          "test",
+          "test.two",
+          "test.two.a",
+          "test.two.a.good"
+        ],
+        "error" : {
+          "case" : "none"
+        },
+        "input" : "",
+        "lemma" : "test.two.a.good",
+        "root" : "test",
+        "selectedIndex" : 0,
+        "suggestions" : [
+          "test.two.a.good.start"
+        ],
+        "taskpaper" : "test:\n\tone:\n\t\tc:\n\t\td:\n\ttwo:\n\t\ta:\n\t\t\tgood:\n\t\t\t\tstart:\n\t\tb:"
+      },
+      "time" : 46.623537063598633
+    },
+    {
+      "description" : "app.event.menu.edit.recording.stop",
+      "record" : {
+        "breadcrumbs" : [
+          "test",
+          "test.two",
+          "test.two.a",
+          "test.two.a.good"
+        ],
+        "error" : {
+          "case" : "none"
+        },
+        "input" : "",
+        "lemma" : "test.two.a.good",
+        "root" : "test",
+        "selectedIndex" : 0,
+        "suggestions" : [
+          "test.two.a.good.start"
+        ],
+        "taskpaper" : "test:\n\tone:\n\t\tc:\n\t\td:\n\ttwo:\n\t\ta:\n\t\t\tgood:\n\t\t\t\tstart:\n\t\tb:"
+      },
+      "time" : 56.70993709564209
+    }
+  ],
+  "startTime" : 665789138.77827895
+}
