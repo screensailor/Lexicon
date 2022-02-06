@@ -71,7 +71,7 @@ class CLI™: Hopes {
                 switch id {
                         
                     case "app.event.cli.append":
-                        let character = try data["app.event.cli.append"].hopefully().first.hopefully()
+                        let character = try data["app.event.cli.append"].try().first.try()
                         await cli.append(character)
                         
                     case "app.event.cli.backspace":

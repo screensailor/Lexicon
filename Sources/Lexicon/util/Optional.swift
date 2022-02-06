@@ -83,7 +83,7 @@ extension Optional {
         self ?? `default`
     }
     
-    @inlinable public func or(
+    @inlinable public func `try`(
         _ function: String = #function,
         _ file: String = #file,
         _ line: Int = #line

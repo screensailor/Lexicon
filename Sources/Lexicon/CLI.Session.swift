@@ -105,17 +105,17 @@ public extension CLI.Session.Event {
         
         var breadcrumbs: [Lemma] = []
         for breadcrumb in record.breadcrumbs {
-            try breadcrumbs.append(lexicon[breadcrumb].or())
+            try breadcrumbs.append(lexicon[breadcrumb].try())
         }
         
         var suggestions: [Lemma] = []
         for suggestion in record.suggestions {
-            try suggestions.append(lexicon[suggestion].or())
+            try suggestions.append(lexicon[suggestion].try())
         }
         
         return CLI(
             date: graph.date,
-            root: try lexicon[record.root].or(),
+            root: try lexicon[record.root].try(),
             breadcrumbs: breadcrumbs,
             error: record.error,
             input: record.input,
