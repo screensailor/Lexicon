@@ -5,6 +5,10 @@
 import Collections
 import UniformTypeIdentifiers
 
+public extension UTType {
+    static var taskpaper = UTType(importedAs: "com.taskpaper.plain-text")
+}
+
 public protocol CodeGenerator {
     static var utType: UTType { get }
     static func generate(_ json: Lexicon.Graph.JSON) throws -> Data

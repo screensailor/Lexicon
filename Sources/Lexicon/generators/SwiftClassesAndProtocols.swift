@@ -36,8 +36,63 @@ private extension Lexicon.Graph.JSON {
 private extension Lexicon.Graph.Node.Class.JSON {
     
     // TODO: make this more readable
-    
+
     func swift(prefix: (class: String, protocol: String)) -> [String] {
+        
+        guard mixin == nil else {
+            return []
+        }
+        
+        var lines: [String] = []
+        let T = id.idToClassSuffix
+        let (L, I) = prefix
+        
+        if let protonym = protonym {
+            lines += "public typealias \(L)_\(T) = \(L)_\(protonym.idToClassSuffix)"
+            return lines
+        }
+        
+        lines += """
+        public final class \(L)_\(T): L, \(I)_\(T) {
+            public override class var localized: String { .init(localized: "\(id)") }
+        }
+        """
+        
+        let supertype = supertype?
+            .replacingOccurrences(of: "_", with: "__")
+            .replacingOccurrences(of: ".", with: "_")
+            .replacingOccurrences(of: "__&__", with: ", I_")
+        
+        lines += "public protocol \(I)_\(T): \(I)\(supertype.map{ "_\($0)" } ?? "") {}"
+        
+        guard hasProperties else {
+            return lines
+        }
+        
+        let line = "public extension \(I)_\(T)"
+        
+        lines += line + " {"
+        
+        for child in children ?? [] {
+            let id = "\(id).\(child)"
+            lines += "    var `\(child)`: \(L)_\(id.idToClassSuffix) { .init(\"\\(__).\(child)\") }"
+        }
+        
+        for (synonym, protonym) in (synonyms?.sortedByLocalizedStandard(by: \.key) ?? []) {
+            let id = "\(id).\(synonym)"
+            lines += "    var `\(synonym)`: \(L)_\(id.idToClassSuffix) { \(protonym) }"
+        }
+        
+        lines += "}"
+        
+        return lines
+    }
+
+}
+
+private extension Lexicon.Graph.Node.Class.JSON {
+    
+    func swift_with_mixins(prefix: (class: String, protocol: String)) -> [String] {
         
         var lines: [String] = []
         let T = id.idToClassSuffix

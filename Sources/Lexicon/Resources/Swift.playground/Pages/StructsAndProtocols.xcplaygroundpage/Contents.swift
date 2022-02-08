@@ -1,49 +1,52 @@
 //: # Swift Template with Structs & Protocols
+/*:
+ ## To Do
+ * Export shared Swift dependencies as a module
+ */
 //: ## Template Start
-public protocol I: CustomDebugStringConvertible {
+public protocol TypeLocalized {
     static var localized: String { get }
+}
+public protocol SourceCodeIdentifiable: CustomDebugStringConvertible {
     var __: String { get }
 }
-extension I {
+extension SourceCodeIdentifiable {
     public var debugDescription: String { __ }
 }
-public func == (lhs: I, rhs: I) -> Bool {
-    lhs.__ == rhs.__
-}
-public extension I {
-    func callAsFunction<A>(_ keyPath: KeyPath<Iextension, (I) -> A>) -> A {
-        Iextension.from[keyPath: keyPath](self)
-    }
-}
-public enum Iextension {
+public enum CallAsFunctionExtensions<X> {
     case from
 }
-public extension Iextension {
-    var id: (I) -> String {{ a in
-        a.__
-    }}
-    var localized: (I) -> String {{ a in
-        type(of: a).localized
-    }}
+public protocol I: SourceCodeIdentifiable, TypeLocalized {}
+public func == (lhs: I, rhs: I) -> Bool { lhs.__ == rhs.__ }
+public extension I {
+    func callAsFunction<Property>(_ keyPath: KeyPath<CallAsFunctionExtensions<I>, (I) -> Property>) -> Property {
+        CallAsFunctionExtensions.from[keyPath: keyPath](self)
+    }
+}
+public extension CallAsFunctionExtensions where X == I {
+    var id: (I) -> String {{ $0.__ }}
+    var localized: (I) -> String {{ type(of: $0).localized }}
 }
 //: ## Template End
 let root = L_root(__: "root")
 
 root.one.a
 root.one.b(\.id)
+root.one.b(\.localized)
 
 let x: I = root.one.b
-x(\.localized) // localized stically
+x(\.id)
+x(\.localized)
 
-extension Iextension {
-    
+extension CallAsFunctionExtensions where X == I {
+
     var parentId: (I) -> String? {{ a in
         guard let i = a.__.lastIndex(of: ".") else {
             return nil
         }
         return String(a.__.prefix(upTo: i))
     }}
-    
+
     var breadcrumbs: (I) -> [Substring] {{ a in
         a.__.split(separator: ".")
     }}

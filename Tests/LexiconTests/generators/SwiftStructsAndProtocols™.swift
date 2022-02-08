@@ -20,31 +20,28 @@ private let swift = #"""
 
 public let root = L_root(__: "root")
 
-public protocol I: CustomDebugStringConvertible {
+public protocol TypeLocalized {
     static var localized: String { get }
+}
+public protocol SourceCodeIdentifiable: CustomDebugStringConvertible {
     var __: String { get }
 }
-extension I {
+extension SourceCodeIdentifiable {
     public var debugDescription: String { __ }
 }
-public func == (lhs: I, rhs: I) -> Bool {
-    lhs.__ == rhs.__
-}
-public extension I {
-    func callAsFunction<A>(_ keyPath: KeyPath<Iextension, (I) -> A>) -> A {
-        Iextension.from[keyPath: keyPath](self)
-    }
-}
-public enum Iextension {
+public enum CallAsFunctionExtensions<X> {
     case from
 }
-public extension Iextension {
-    var id: (I) -> String {{ a in
-        a.__
-    }}
-    var localized: (I) -> String {{ a in
-        type(of: a).localized
-    }}
+public protocol I: SourceCodeIdentifiable, TypeLocalized {}
+public func == (lhs: I, rhs: I) -> Bool { lhs.__ == rhs.__ }
+public extension I {
+    func callAsFunction<Property>(_ keyPath: KeyPath<CallAsFunctionExtensions<I>, (I) -> Property>) -> Property {
+        CallAsFunctionExtensions.from[keyPath: keyPath](self)
+    }
+}
+public extension CallAsFunctionExtensions where X == I {
+    var id: (I) -> String {{ $0.__ }}
+    var localized: (I) -> String {{ type(of: $0).localized }}
 }
 
 public struct L_root: Hashable, I_root {
@@ -81,7 +78,6 @@ public struct L_root_a_b_c: Hashable, I_root_a_b_c {
     public let __: String
 }
 public protocol I_root_a_b_c: I_root {}
-public extension I_root_a_b_c {}
 public struct L_root_bad: Hashable, I_root_bad {
     public static let localized = String(localized: "root.bad")
     public let __: String
@@ -103,7 +99,6 @@ public struct L_root_bad_worse_worst: Hashable, I_root_bad_worse_worst {
     public let __: String
 }
 public protocol I_root_bad_worse_worst: I {}
-public extension I_root_bad_worse_worst {}
 public struct L_root_first: Hashable, I_root_first {
     public static let localized = String(localized: "root.first")
     public let __: String
@@ -125,7 +120,6 @@ public struct L_root_first_second_third: Hashable, I_root_first_second_third {
     public let __: String
 }
 public protocol I_root_first_second_third: I {}
-public extension I_root_first_second_third {}
 public struct L_root_good: Hashable, I_root_good {
     public static let localized = String(localized: "root.good")
     public let __: String
@@ -147,7 +141,6 @@ public struct L_root_good_better_best: Hashable, I_root_good_better_best {
     public let __: String
 }
 public protocol I_root_good_better_best: I {}
-public extension I_root_good_better_best {}
 public struct L_root_one: Hashable, I_root_one {
     public static let localized = String(localized: "root.one")
     public let __: String
@@ -177,7 +170,6 @@ public struct L_root_one_two_three_four: Hashable, I_root_one_two_three_four {
     public let __: String
 }
 public protocol I_root_one_two_three_four: I_root_a, I_root_bad, I_root_first, I_root_good {}
-public extension I_root_one_two_three_four {}
 public typealias L_root_x__y__z = L_root_a_b
 """#
 

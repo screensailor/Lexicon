@@ -66,12 +66,11 @@ private extension Lexicon.Graph.Node.Class.JSON {
 
         lines += "public protocol \(I)_\(T): \(I)\(supertype.map{ "_\($0)" } ?? "") {}"
         
-        let line = "public extension \(I)_\(T)"
-
         guard hasProperties else {
-            lines += line + " {}"
             return lines
         }
+        
+        let line = "public extension \(I)_\(T)"
         
         lines += line + " {"
         
