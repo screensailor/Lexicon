@@ -1,5 +1,6 @@
 //: # Swift Template with Classes & Protocols
 //: ## Template Start
+import Foundation
 public protocol TypeLocalized {
     static var localized: String { get }
 }
@@ -9,7 +10,6 @@ public protocol SourceCodeIdentifiable: CustomDebugStringConvertible {
 extension SourceCodeIdentifiable {
     public var debugDescription: String { __ }
 }
-
 public protocol I: TypeLocalized, SourceCodeIdentifiable {
     
 }
@@ -24,7 +24,6 @@ extension L: Equatable {
 extension L: Hashable {
     public func hash(into hasher: inout Hasher) { hasher.combine(__) }
 }
-
 public enum CallAsFunctionExtensions<X> {
     case from
 }
@@ -37,7 +36,6 @@ public extension CallAsFunctionExtensions where X == L {
     var id: (L) -> String {{ $0.__ }}
     var localizedType: (L) -> String {{ type(of: $0).localized }}
 }
-
 //: ## Template End
 public let root = L_root("root")
 

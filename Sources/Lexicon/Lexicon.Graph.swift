@@ -26,28 +26,6 @@ public extension Lexicon {
     }
 }
 
-public extension Lexicon.Graph {
-    
-    // TODO: array of referenced nodes (i.e. useful protocols/interfaces)
-    
-    struct JSON: Codable {
-        public var date: Date
-        public var name: Lemma.Name
-        public var classes: [Node.Class.JSON]
-    }
-}
-
-public extension Lexicon {
-    
-    func json() async -> Graph.JSON {
-        .init(
-            date: graph.date,
-            name: graph.name,
-            classes: await root.classes().values.map(\.json).sortedByLocalizedStandard(by: \.id)
-        )
-    }
-}
-
 #if canImport(NaturalLanguage)
 import NaturalLanguage
 

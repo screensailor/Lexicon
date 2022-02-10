@@ -4,7 +4,7 @@
 
 import Foundation
 
-// TODO: sort & refactor!
+// TODO: sort, document & refactor!
 
 extension String: Error {} // TODO: dedicated error types
 
@@ -73,7 +73,7 @@ extension NSRegularExpression {
 	}
 }
 
-extension Sequence {
+public extension Sequence {
     
     @inlinable func sortedByLocalizedStandard<S: StringProtocol>(by keyPath: KeyPath<Element, S>, _ order: ComparisonResult = .orderedAscending) -> [Element] {
         sorted { l, r in
@@ -88,35 +88,5 @@ extension Sequence where Element: StringProtocol {
         sorted { l, r in
             l.localizedStandardCompare(r) == order
         }
-    }
-}
-
-extension String {
-    
-    var idToClassSuffix: String {
-        replacingOccurrences(of: "_", with: "__")
-            .replacingOccurrences(of: ".", with: "_")
-            .replacingOccurrences(of: "_&_", with: "_")
-    }
-}
-
-extension String {
-    
-    static func from(playgroundPage page: String) throws -> String {
-        guard let url = Bundle.module.url(
-            forResource: "Contents",
-            withExtension: "swift",
-            subdirectory: "Resources/Swift.playground/Pages/\(page).xcplaygroundpage"
-        ) else {
-            throw "Contents of the playground page '\(page)' not found"
-        }
-        let o = try String(contentsOf: url)
-        guard
-            let start =  o.range(of: "//: ## Template Start")?.upperBound,
-            let end = o.range(of: "//: ## Template End")?.lowerBound
-        else {
-            throw "Playground page \(page) is missing start and end markup"
-        }
-        return String(o[start..<end])
     }
 }

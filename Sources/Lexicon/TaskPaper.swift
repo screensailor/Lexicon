@@ -3,6 +3,11 @@
 //
 
 import Foundation
+import UniformTypeIdentifiers
+
+public extension UTType {
+    static var taskpaper = UTType(importedAs: "com.taskpaper.plain-text")
+}
 
 public class TaskPaper {
 	

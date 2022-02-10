@@ -4,6 +4,7 @@
  * Export shared Swift dependencies as a module
  */
 //: ## Template Start
+import Foundation
 public protocol TypeLocalized {
     static var localized: String { get }
 }

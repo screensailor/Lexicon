@@ -4,7 +4,7 @@
 
 import Foundation
 
-extension Collection {
+public extension Collection {
     
     @inlinable var isNotEmpty: Bool {
         !isEmpty
@@ -15,7 +15,7 @@ extension Collection {
     }
 }
 
-extension RangeReplaceableCollection {
+public extension RangeReplaceableCollection {
     
     static func += (lhs: inout Self, rhs: Element) {
         lhs.append(rhs)
