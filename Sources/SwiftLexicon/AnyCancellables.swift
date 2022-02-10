@@ -4,7 +4,9 @@
 
 import Combine
 
-@resultBuilder public enum AnyCancellables {
+@resultBuilder public enum AnyCancellables {}
+    
+public extension AnyCancellables {
     
     static func buildArray(_ components: [[AnyCancellable]]) -> [AnyCancellable] {
         components.flatMap{ $0 }
