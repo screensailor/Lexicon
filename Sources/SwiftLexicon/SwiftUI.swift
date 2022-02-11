@@ -15,20 +15,20 @@ public extension EnvironmentValues {
 
 public extension View {
     
-    func on(_ event: I, _ ƒ: @escaping @MainActor (Event) -> ()) -> some View {
-        modifier(OnEvent(event: event, ƒ: ƒ))
+    func on(_ first: I, _ rest: I..., ƒ: @escaping @MainActor (Event) -> ()) -> some View {
+        modifier(OnEvents(types: [first] + rest, ƒ: ƒ))
     }
 }
 
-public struct OnEvent: ViewModifier {
+struct OnEvents: ViewModifier {
     
     @Environment(\.events) var events
     
-    let event: I
+    let types: [I]
     let ƒ: @MainActor (Event) -> ()
     
-    public func body(content: Content) -> some View {
-        content.onReceive(events.filter{ $0.is(event) }) { event in
+    func body(content: Content) -> some View {
+        content.onReceive(events.filter{ types.contains(where: $0.is) }) { event in
             ƒ(event)
         }
     }
