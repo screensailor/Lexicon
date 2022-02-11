@@ -28,7 +28,7 @@ public extension Publisher where Failure == Never {
     
     func sink(receiveValue: @escaping ((Output) async -> Void)) -> AnyCancellable {
         sink { (o: Output) -> Void in
-            Task {
+            Task { // TODO: guarantee order
                 await receiveValue(o)
             }
         }

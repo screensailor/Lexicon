@@ -108,7 +108,6 @@ final class SwiftLexicon™: Hopes {
                 return
             }
             all.append(o)
-            print(all)
             if all == ["✅", "❌", "✅"] {
                 promiseAll.fulfill()
             }

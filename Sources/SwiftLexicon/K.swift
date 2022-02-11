@@ -80,7 +80,7 @@ public extension K {
 public enum CallAsFunctionKExtensions {}
 
 public extension CallAsFunctionKExtensions {
-    var L: GetL { fatalError() }
+    var L: GetL { .init() }
     struct GetL {}
 }
 
