@@ -28,4 +28,8 @@ public extension Set where Element == AnyCancellable {
     static func += <A: Collection>(lhs: inout Self, rhs: A) where A.Element == AnyCancellable {
         lhs.formUnion(rhs)
     }
+    
+    static func += (lhs: inout Self, rhs: AnyCancellable) {
+        lhs.insert(rhs)
+    }
 }

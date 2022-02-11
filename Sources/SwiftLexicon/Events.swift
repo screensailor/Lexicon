@@ -3,17 +3,8 @@
 //
 
 import Combine
-import SwiftUI
 
 public typealias Events = PassthroughSubject<Event, Never>
-
-private struct EventsKey: EnvironmentKey {
-    static let defaultValue: Events = .init()
-}
-
-public extension EnvironmentValues {
-    var events: Events { self[EventsKey.self] }
-}
 
 // MARK: send
 
@@ -33,44 +24,6 @@ public func >> <A: L, Publisher: Subject>(event: K<A>, publisher: Publisher) whe
 
 // MARK: receive
 
-public func >> <A: L, Publisher>(event: A, then: Then<Publisher>) -> AnyCancellable
-where
-Publisher: Combine.Publisher,
-Publisher.Failure == Never,
-Publisher.Output == Event
-{
-    then.publisher.filter{ $0.is(event) }.sink { o in
-        Task { @MainActor in
-            await then.ƒ(o)
-        }
-    }
-}
-
-public func >> <A: L, Publisher>(event: K<A>, then: Then<Publisher>) -> AnyCancellable
-where
-Publisher: Combine.Publisher,
-Publisher.Failure == Never,
-Publisher.Output == Event
-{
-    then.publisher.filter{ $0.is(event) }.sink { o in
-        Task { @MainActor in
-            await then.ƒ(o)
-        }
-    }
-}
-
-public extension Publisher where Failure == Never {
-    
-    func then(_ ƒ: @escaping (Output) async -> ()) -> Then<Self> {
-        Then(publisher: self, ƒ: ƒ)
-    }
-}
-
-public struct Then<Publisher: Combine.Publisher> {
-    public let publisher: Publisher
-    public let ƒ: (Publisher.Output) async -> ()
-}
-
 public extension Publisher where Failure == Never {
     
     func sink(receiveValue: @escaping ((Output) async -> Void)) -> AnyCancellable {
@@ -82,3 +35,74 @@ public extension Publisher where Failure == Never {
     }
 }
 
+// MARK: receive out of context
+
+public extension Then {
+    
+    static func >> <A: L>(event: A, then: Self) -> AnyCancellable {
+        then.publisher.filter{ $0.is(event) }.sink { @MainActor event in
+            await then.ƒ(event)
+        }
+    }
+    
+    static func >> <A: L>(event: K<A>, then: Self) -> AnyCancellable {
+        then.publisher.filter{ $0.is(event) }.sink { @MainActor event in
+            await then.ƒ(event)
+        }
+    }
+}
+
+public extension Publisher where Failure == Never, Output == Event {
+    
+    func then(_ ƒ: @escaping (Output) async -> ()) -> Then<Self> {
+        Then(publisher: self, ƒ: ƒ)
+    }
+}
+
+public struct Then<Publisher>
+where Publisher: Combine.Publisher, Publisher.Failure == Never, Publisher.Output == Event
+{
+    public let publisher: Publisher
+    public let ƒ: (Publisher.Output) async -> ()
+}
+
+// MARK: receive in context
+
+public extension EventContext {
+    
+    func then(_ ƒ: @escaping (Self, Event) async -> ()) -> ThenInContext<Self, Events> {
+        ThenInContext(context: self, publisher: events, ƒ: ƒ)
+    }
+}
+
+public extension ThenInContext {
+    
+    static func >> <A: L>(event: A, then: Self) -> AnyCancellable {
+        then.publisher.filter{ $0.is(event) }.sink { @MainActor event in
+            guard let context = then.context else { return }
+            await then.ƒ(context, event)
+        }
+    }
+    
+    static func >> <A: L>(event: K<A>, then: Self) -> AnyCancellable {
+        then.publisher.filter{ $0.is(event) }.sink { @MainActor event in
+            guard let context = then.context else { return }
+            await then.ƒ(context, event)
+        }
+    }
+}
+
+public extension Publisher where Failure == Never, Output == Event {
+
+    func `in`<Context: AnyObject>(_ context: Context, _ ƒ: @escaping (Context, Output) async -> ()) -> ThenInContext<Context, Self> {
+        ThenInContext(context: context, publisher: self, ƒ: ƒ)
+    }
+}
+
+public struct ThenInContext<Context, Publisher>
+where Context: AnyObject, Publisher: Combine.Publisher, Publisher.Failure == Never, Publisher.Output == Event
+{
+    public private(set) var context: Context?
+    public let publisher: Publisher
+    public let ƒ: (Context, Publisher.Output) async -> ()
+}

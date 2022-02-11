@@ -2,9 +2,16 @@
 // github.com/screensailor 2022
 //
 
-public struct Event: @unchecked Sendable, Hashable, Identifiable {
+import Foundation
+
+public struct Event: @unchecked Sendable, Hashable, Identifiable, CustomStringConvertible { // TODO: Codable?
     
-    public let id: String
+    private static var count: UInt = 0
+    private static let lock = NSLock()
+    
+    public let id: UInt
+    public let description: String
+    
     public let k: KProtocol
     public let base: AnyHashable
     public let `is`: (I) -> Bool
@@ -14,15 +21,22 @@ public struct Event: @unchecked Sendable, Hashable, Identifiable {
     }
     
     public init<A: L>(_ k: K<A>) {
+        
+        Self.lock.lock()
+        Self.count += 1
+        self.id = Self.count
+        Self.lock.unlock()
+        
         self.k = k
-        self.id = k.__
         self.base = k
+        self.description = k.__
+        
         self.is = { x in
             switch x {
                 case let x as L: return x is A
                     
-                case let x as K<A>: return x.____.allSatisfy {
-                    dump(k.____[$0] == $1)
+                case let x as KProtocol where x(\.L) is A: return x.____.allSatisfy {
+                    k.____[$0] == $1
                 }
                     
                 default: return false

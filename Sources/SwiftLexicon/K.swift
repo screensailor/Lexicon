@@ -9,20 +9,17 @@ public extension I where Self: L {
     }
 }
 
-public protocol KProtocol: I {
-    subscript() -> Any? { get }
-    subscript(key: L) -> Any? { get }
-    subscript<A>(as type: A.Type) -> A { get throws }
-    subscript<A>(key: L, as type: A.Type) -> A { get throws }
-}
-
 @dynamicMemberLookup public struct K<A: L>: @unchecked Sendable, Hashable, KProtocol {
     
     public let __: String
     public let ___: A
     public let ____: [L: AnyHashable]
     
-    internal init(_ l: A, _ d: [L: AnyHashable] = [:]) {
+    public init(_ a: A) {
+        self.init(a, [:])
+    }
+    
+    internal init(_ l: A, _ d: [L: AnyHashable]) {
         self.____ = d
         self.___ = l
         self.__ = d.sorted(by: { $0.key.__.count > $1.key.__.count }).reduce(into: l.__) { (o, e) in
@@ -61,6 +58,30 @@ public extension K {
     @inlinable subscript<A>(key: L, as type: A.Type = A.self) -> A {
         get throws { try (self[key] as? A).try() }
     }
+}
+
+public protocol KProtocol: I {
+    var __: String { get }
+    var ____: [L: AnyHashable] { get }
+    subscript() -> Any? { get }
+    subscript(key: L) -> Any? { get }
+    subscript<A>(as type: A.Type) -> A { get throws }
+    subscript<A>(key: L, as type: A.Type) -> A { get throws }
+    func callAsFunction(_: KeyPath<CallAsFunctionKExtensions, CallAsFunctionKExtensions.GetL>) -> L
+}
+
+public extension K {
+    
+    @inlinable func callAsFunction(_: KeyPath<CallAsFunctionKExtensions, CallAsFunctionKExtensions.GetL>) -> L {
+        ___
+    }
+}
+
+public enum CallAsFunctionKExtensions {}
+
+public extension CallAsFunctionKExtensions {
+    var L: GetL { fatalError() }
+    struct GetL {}
 }
 
 extension K { // TODO: ↓
