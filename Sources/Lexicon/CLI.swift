@@ -4,8 +4,8 @@
 
 import Foundation
 
-public struct CLI: Hashable {
-    public var date: Date
+public struct CLI: @unchecked Sendable, Hashable {
+    public var date: Date // date is not sendable?
     public var root: Lemma
     public var breadcrumbs: [Lemma]
     public var error: Error = .none
