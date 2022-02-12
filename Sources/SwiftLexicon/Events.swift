@@ -8,9 +8,7 @@ public typealias Events = PassthroughSubject<Event, Never>
 
 // MARK: send
 
-public func >> <Event, Publisher: Subject>(event: Event, publisher: Publisher)
-where Publisher.Output == Event
-{
+public func >> <Publisher: Subject>(event: Event, publisher: Publisher) where Publisher.Output == Event {
     publisher.send(event)
 }
 
