@@ -222,6 +222,20 @@ extension Lemma: CustomStringConvertible {
     }
 }
 
+public extension Lemma {
+    
+    nonisolated static let numericPrefixCharacterSet = CharacterSet(charactersIn: "_")
+    
+    nonisolated var displayName: Lemma.Name {
+        switch name.isEmpty {
+            case true: return "_"
+            case false: return name
+                    .trimmingCharacters(in: Self.numericPrefixCharacterSet)
+                    .replacingOccurrences(of: "_", with: " ")
+        }
+    }
+}
+
 extension Lemma {
     
     func lazy_children() -> [Name: Lemma] {
