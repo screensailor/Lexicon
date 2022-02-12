@@ -103,7 +103,7 @@ final class SwiftLexicon™: Hopes {
             }
         }
         
-        let oAll = test.one >> events.receive(on: RunLoop.main).then { event in
+        let oAll = I_test_one.self >> events.then { event in
             guard let o: String = try? event[test.one.more.time] else {
                 return
             }
@@ -120,5 +120,71 @@ final class SwiftLexicon™: Hopes {
         wait(for: 1)
         oTicks.cancel()
         oAll.cancel()
+    }
+}
+
+// MARK: ↓ demonstrating the limitations of purely static type constraints
+
+extension SwiftLexicon™ {
+    
+    private var eventL: Event { Event(test.one) }
+    
+    func test_Event_L_is_L() throws {
+        hope(that: eventL.is(test)) == false
+        hope(that: eventL.is(test.one)) == true
+        hope(that: eventL.is(test.two)) == false
+        hope(that: eventL.is(test.type.odd)) == false
+    }
+    
+    func test_Event_L_is_I() throws {
+        hope(that: eventL.is(I_test_one.self)) == true
+        hope(that: eventL.l is I_test_one) == true
+        hope(that: eventL.l is I_test_two) == false
+        hope(that: eventL.l is I_test_type_odd) == true
+    }
+    
+    func test_Event_L_is_any_I() throws {
+        hope(that: eventL.is(test.one as I)) == true
+        hope(that: eventL.is(test.two as I)) == false
+        hope(that: eventL.is(test.one[4] as I)) == false
+    }
+    
+    func test_Event_L_is_K() throws {
+        hope(that: eventL.is(test.one[4])) == false
+        hope(that: eventL.is(test.two[4])) == false
+    }
+}
+
+extension SwiftLexicon™ {
+    
+    private var eventK: Event { Event(test.one[4].good) }
+    
+    func test_Event_K_is_L() throws {
+        hope(that: eventK.is(test)) == false
+        hope(that: eventK.is(test.one)) == false
+        hope(that: eventK.is(test.one.good)) == true
+        hope(that: eventK.is(test.type.odd.good)) == false
+    }
+    
+    func test_Event_K_is_I() throws {
+        hope(that: eventK.l is I_test) == false
+        hope(that: eventK.l is I_test_one) == false
+        hope(that: eventK.l is I_test_type_odd_good) == true
+    }
+    
+    func test_Event_K_is_any_I() throws {
+        hope(that: eventK.is(test.two.no.good as I)) == false
+        hope(that: eventK.is(test.one.good as I)) == true
+        hope(that: eventK.is(test.one[4] as I)) == false
+        hope(that: eventK.is(test.one[2].good as I)) == false
+        hope(that: eventK.is(test.one[4].good as I)) == true
+        hope(that: eventK.is(test.type.odd[4].good as I)) == false
+    }
+    
+    func test_Event_K_is_K() throws {
+        hope(that: eventK.is(test.one[4])) == false
+        hope(that: eventK.is(test.one[2].good)) == false
+        hope(that: eventK.is(test.one[4].good)) == true
+        hope(that: eventK.is(test.type.odd[4].good)) == false
     }
 }

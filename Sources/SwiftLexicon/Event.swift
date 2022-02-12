@@ -12,9 +12,9 @@ public struct Event: @unchecked Sendable, Hashable, Identifiable, CustomStringCo
     public let id: UInt
     public let description: String
     
+    public let l: L
     public let k: KProtocol
     public let base: AnyHashable
-    public let `is`: (I) -> Bool
     
     public init(_ l: L) {
         self.init(K(l))
@@ -27,20 +27,34 @@ public struct Event: @unchecked Sendable, Hashable, Identifiable, CustomStringCo
         self.id = Self.count
         Self.lock.unlock()
         
+        self.l = k.___
         self.k = k
         self.base = k
         self.description = k.__
-        
-        self.is = { x in
-            switch x {
-                case let x as L: return x is A
-                    
-                case let x as KProtocol where x(\.L) is A: return x.____.allSatisfy {
+    }
+    
+    public func `is`(_ i: I) -> Bool {
+        switch i {
+            case let i as L:
+                return k(\.L) == i
+                
+            case let i as KProtocol:
+                return k(\.L) == i(\.L) && i.____.allSatisfy {
                     k.____[$0] == $1
                 }
-                    
-                default: return false
-            }
+                
+            default:
+                return false
+        }
+    }
+    
+    public func `is`<A>(_: A.Type) -> Bool {
+        k(\.L) is A
+    }
+
+    public func `is`<A: I>(_ a: K<A>) -> Bool {
+        k is A && a.____.allSatisfy {
+            k.____[$0] == $1
         }
     }
 }

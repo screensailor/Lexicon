@@ -37,12 +37,18 @@ public extension Publisher where Failure == Never {
 
 public extension Then {
     
+    static func >> <A>(event: A.Type, then: Self) -> AnyCancellable {
+        then.publisher.filter{ $0.is(A.self) }.sink { @MainActor event in
+            await then.ƒ(event)
+        }
+    }
+    
     static func >> <A: L>(event: A, then: Self) -> AnyCancellable {
         then.publisher.filter{ $0.is(event) }.sink { @MainActor event in
             await then.ƒ(event)
         }
     }
-    
+
     static func >> <A: L>(event: K<A>, then: Self) -> AnyCancellable {
         then.publisher.filter{ $0.is(event) }.sink { @MainActor event in
             await then.ƒ(event)
@@ -75,13 +81,20 @@ public extension EventContext {
 
 public extension ThenInContext {
     
+    static func >> <A: L>(event: A.Type, then: Self) -> AnyCancellable {
+        then.publisher.filter{ $0.is(A.self) }.sink { @MainActor event in
+            guard let context = then.context else { return }
+            await then.ƒ(context, event)
+        }
+    }
+    
     static func >> <A: L>(event: A, then: Self) -> AnyCancellable {
         then.publisher.filter{ $0.is(event) }.sink { @MainActor event in
             guard let context = then.context else { return }
             await then.ƒ(context, event)
         }
     }
-    
+
     static func >> <A: L>(event: K<A>, then: Self) -> AnyCancellable {
         then.publisher.filter{ $0.is(event) }.sink { @MainActor event in
             guard let context = then.context else { return }
