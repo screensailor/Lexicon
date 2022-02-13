@@ -4,6 +4,9 @@
 
 import Combine
 
+public typealias BearIn = AnyCancellables
+public typealias Mind = [AnyCancellable] // TODO: Set<AnyCancellable>
+
 @resultBuilder public enum AnyCancellables {}
     
 public extension AnyCancellables {
@@ -25,11 +28,19 @@ public extension AnyCancellables {
 
 public extension Set where Element == AnyCancellable {
     
-    static func += <A: Collection>(lhs: inout Self, rhs: A) where A.Element == AnyCancellable {
+    @inlinable static func += <A: Collection>(lhs: inout Self, rhs: A) where A.Element == AnyCancellable {
         lhs.formUnion(rhs)
     }
     
-    static func += (lhs: inout Self, rhs: AnyCancellable) {
+    @inlinable static func += (lhs: inout Self, rhs: AnyCancellable) {
         lhs.insert(rhs)
+    }
+    
+    @inlinable mutating func `in`(_ mind: AnyCancellable) {
+        insert(mind)
+    }
+    
+    @inlinable mutating func `in`<A: Sequence>(_ mind: A) where A.Element == AnyCancellable {
+        formUnion(mind)
     }
 }
