@@ -85,10 +85,10 @@ public extension Event {
     }
     
     @inlinable static func == (lhs: Event, rhs: Event) -> Bool {
-        lhs.base == rhs.base
+        lhs.id == rhs.id
     }
     
     @inlinable func hash(into hasher: inout Hasher) {
-        hasher.combine(base)
+        hasher.combine(id)
     }
 }

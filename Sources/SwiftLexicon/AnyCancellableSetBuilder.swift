@@ -4,23 +4,22 @@
 
 import Combine
 
-public typealias BearIn = AnyCancellables
-public typealias Mind = [AnyCancellable] // TODO: Set<AnyCancellable>
+public typealias Bear = AnyCancellableSetBuilder
+public typealias Mind = Set<AnyCancellable>
 
-@resultBuilder public enum AnyCancellables {}
+@resultBuilder public enum AnyCancellableSetBuilder {}
     
-public extension AnyCancellables {
+public extension AnyCancellableSetBuilder {
     
-    static func buildArray(_ components: [[AnyCancellable]]) -> [AnyCancellable] {
-        components.flatMap{ $0 }
+    typealias Element = AnyCancellable
+    typealias Component = Set<Element>
+    
+    static func buildBlock(_ components: Element...) -> Component {
+        components.reduce(into: [], +=)
     }
     
-    static func buildBlock(_ components: AnyCancellable...) -> [AnyCancellable] {
-        components
-    }
-    
-    static func buildBlock(_ first: [AnyCancellable], _ rest: [AnyCancellable]...) -> [AnyCancellable] {
-        ([first] + rest).flatMap{ $0 }
+    static func buildBlock(_ first: Component, _ rest: Component...) -> Component {
+        ([first] + rest).reduce(into: [], +=)
     }
     
     // TODO: ...

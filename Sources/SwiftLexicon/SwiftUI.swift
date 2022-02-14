@@ -13,8 +13,6 @@ public extension EnvironmentValues {
     var events: Events { self[EventsKey.self] }
 }
 
-// TODO: consider whether `@AnyCancellables var mind: [AnyCancellable]` is a better pattern than ↓
-
 public extension View {
     
     func on(_ first: I, _ rest: I..., ƒ: @escaping @MainActor (Event) -> ()) -> some View {
