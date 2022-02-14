@@ -94,9 +94,19 @@ public extension ThenInContext {
             await then.ƒ(context, event)
         }
     }
-
+    
     static func >> <A: L>(event: K<A>, then: Self) -> AnyCancellable {
         then.publisher.filter{ $0.is(event) }.sink { @MainActor event in
+            guard let context = then.context else { return }
+            await then.ƒ(context, event)
+        }
+    }
+}
+
+public extension ThenInContext {
+    
+    static func >> (events: [I], then: Self) -> AnyCancellable {
+        then.publisher.filter{ event in events.contains(where: event.is) }.sink { @MainActor event in
             guard let context = then.context else { return }
             await then.ƒ(context, event)
         }
