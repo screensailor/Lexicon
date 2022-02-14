@@ -24,9 +24,9 @@ public func >> <A: L, Publisher: Subject>(event: K<A>, publisher: Publisher) whe
 
 public extension Publisher where Failure == Never {
     
-    func sink(receiveValue: @escaping ((Output) async -> Void)) -> AnyCancellable {
-        sink { (o: Output) -> Void in
-            Task { // TODO: guarantee order
+    @inlinable func sink(receiveValue: @escaping ((Output) async -> Void)) -> AnyCancellable {
+        self.sink { (o: Output) -> Void in
+            Task { // TODO: detached?
                 await receiveValue(o)
             }
         }
@@ -113,7 +113,7 @@ public extension Publisher where Failure == Never, Output == Event {
 public struct ThenInContext<Context, Publisher>
 where Context: AnyObject, Publisher: Combine.Publisher, Publisher.Failure == Never, Publisher.Output == Event
 {
-    public private(set) var context: Context?
+    public private(set) weak var context: Context?
     public let publisher: Publisher
     public let ƒ: (Context, Publisher.Output) async -> ()
 }
