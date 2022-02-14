@@ -46,7 +46,7 @@ final class SwiftLexicon™: Hopes {
         wait(for: 1)
         o.cancel()
         
-        hope(result) == Event(l)
+        hope(result?.l) == l
     }
     
     func test_Event() throws {
@@ -75,7 +75,7 @@ final class SwiftLexicon™: Hopes {
         
         let x = try result.try()
         
-        hope(x) == Event(k)
+        hope(x.k(\.id)) == k(\.id)
         
         try hope(x[]) == 0
         try hope(x[test.one]) == 1
