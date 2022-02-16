@@ -142,9 +142,8 @@ public extension Lemma {
         self.type.keys.contains(type.id)
     }
 	
-	func isNotInherited() -> Bool { // TODO: lazy var?
-		guard let parent = parent else { return true }
-		return parent.ownChildren.values.contains(self) && parent.isNotInherited()
+    @inlinable func isNotInherited() -> Bool {
+        id == node.id
 	}
 	
 	@inlinable func isInherited() -> Bool {
