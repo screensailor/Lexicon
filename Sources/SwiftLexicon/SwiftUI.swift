@@ -47,3 +47,11 @@ struct OnEvents: ViewModifier {
         }
     }
 }
+
+public extension View {
+    
+    func update<A: AnyObject, B>(_ a: A, _ k: ReferenceWritableKeyPath<A, B>, to b: B) -> Self {
+        a[keyPath: k] = b
+        return self
+    }
+}
