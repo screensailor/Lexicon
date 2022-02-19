@@ -42,6 +42,14 @@ public extension Publisher where Output == Event, Failure == Never {
     }
 }
 
+public func >> <A, P>(event: A.Type, context: (P, (Event) async -> ())) -> AnyCancellable
+where P: Publisher, P.Output == Event, P.Failure == Never
+{
+    context.0.filter{ $0.k(\.L) is A }.sink { @MainActor event in
+        await context.1(event)
+    }
+}
+
 public func >> <A, P>(event: A, context: (P, (Event) async -> ())) -> AnyCancellable
 where A: L, P: Publisher, P.Output == Event, P.Failure == Never
 {
