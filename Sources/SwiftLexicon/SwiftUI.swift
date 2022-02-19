@@ -5,12 +5,15 @@
 import Combine
 import SwiftUI
 
-private struct EventsKey: EnvironmentKey {
-    static let defaultValue: Events = .init()
-}
-
 public extension EnvironmentValues {
-    var events: Events { self[EventsKey.self] }
+    
+    var events: Events {
+        self[EventsKey.self]
+    }
+    
+    private struct EventsKey: EnvironmentKey {
+        static let defaultValue: Events = .init()
+    }
 }
 
 public extension View {

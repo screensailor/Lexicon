@@ -35,95 +35,76 @@ public extension Publisher where Failure == Never {
 
 // MARK: receive out of context
 
-public extension Then {
+public extension Publisher where Output == Event, Failure == Never {
     
-    static func >> <A>(event: A.Type, then: Self) -> AnyCancellable {
-        then.publisher.filter{ $0.is(A.self) }.sink { @MainActor event in
-            await then.ƒ(event)
-        }
-    }
-    
-    static func >> <A: L>(event: A, then: Self) -> AnyCancellable {
-        then.publisher.filter{ $0.is(event) }.sink { @MainActor event in
-            await then.ƒ(event)
-        }
-    }
-
-    static func >> <A: L>(event: K<A>, then: Self) -> AnyCancellable {
-        then.publisher.filter{ $0.is(event) }.sink { @MainActor event in
-            await then.ƒ(event)
-        }
+    func then(_ ƒ: @escaping (Event) async -> ()) -> (Self, (Event) async -> ()) {
+        (self, ƒ)
     }
 }
 
-public extension Publisher where Failure == Never, Output == Event {
-    
-    func then(_ ƒ: @escaping (Output) async -> ()) -> Then<Self> {
-        Then(publisher: self, ƒ: ƒ)
-    }
-}
-
-public struct Then<Publisher>
-where Publisher: Combine.Publisher, Publisher.Failure == Never, Publisher.Output == Event
+public func >> <A, P>(event: A, context: (P, (Event) async -> ())) -> AnyCancellable
+where A: L, P: Publisher, P.Output == Event, P.Failure == Never
 {
-    public let publisher: Publisher
-    public let ƒ: (Publisher.Output) async -> ()
+    context.0.filter{ $0.is(event) }.sink { @MainActor event in
+        await context.1(event)
+    }
+}
+
+public func >> <A, P>(event: K<A>, context: (P, (Event) async -> ())) -> AnyCancellable
+where A: L, P: Publisher, P.Output == Event, P.Failure == Never
+{
+    context.0.filter{ $0.is(event) }.sink { @MainActor event in
+        await context.1(event)
+    }
 }
 
 // MARK: receive in context
 
 public extension EventContext {
     
-    func then(_ ƒ: @escaping (Self, Event) async -> ()) -> ThenInContext<Self, Events> {
-        ThenInContext(context: self, publisher: events, ƒ: ƒ)
+    func context<P, E>(_ p: P) -> (@escaping (Self, E) async -> ()) -> (Self?, P, (Self, E) async -> ())
+    where P: Publisher, P.Output == E, P.Failure == Never
+    {
+        { [weak self] in (self, p, $0) }
     }
-}
 
-public extension ThenInContext {
-    
-    static func >> <A: L>(event: A.Type, then: Self) -> AnyCancellable {
-        then.publisher.filter{ $0.is(A.self) }.sink { @MainActor event in
-            guard let context = then.context else { return }
-            await then.ƒ(context, event)
+    func context(_ when: @escaping (Self, Event) -> Bool) -> (@escaping (Self, Event) async -> ()) -> (Self?, AnyPublisher<Event, Never>, (Self, Event) async -> ()) {
+        let p = events.filter{ [weak self] event in
+            guard let self = self else { return false }
+            return when(self, event)
         }
+        return { [weak self] in (self, p.share().eraseToAnyPublisher(), $0) }
     }
     
-    static func >> <A: L>(event: A, then: Self) -> AnyCancellable {
-        then.publisher.filter{ $0.is(event) }.sink { @MainActor event in
-            guard let context = then.context else { return }
-            await then.ƒ(context, event)
+    func context(_ when: @escaping (Self) -> Bool) -> (@escaping (Self, Event) async -> ()) -> (Self?, AnyPublisher<Event, Never>, (Self, Event) async -> ()) {
+        let p = events.filter{ [weak self] event in
+            guard let self = self else { return false }
+            return when(self)
         }
+        return { [weak self] in (self, p.share().eraseToAnyPublisher(), $0) }
     }
     
-    static func >> <A: L>(event: K<A>, then: Self) -> AnyCancellable {
-        then.publisher.filter{ $0.is(event) }.sink { @MainActor event in
-            guard let context = then.context else { return }
-            await then.ƒ(context, event)
-        }
-    }
-}
-
-public extension ThenInContext {
-    
-    static func >> (events: [I], then: Self) -> AnyCancellable {
-        then.publisher.filter{ event in events.contains(where: event.is) }.sink { @MainActor event in
-            guard let context = then.context else { return }
-            await then.ƒ(context, event)
+    func context() -> (@escaping (Self, Event) async -> ()) -> (Self?, AnyPublisher<Event, Never>, (Self, Event) async -> ()) {
+        { [weak self] in
+            (self, self?.events.share().eraseToAnyPublisher() ?? Empty().eraseToAnyPublisher(), $0)
         }
     }
 }
 
-public extension Publisher where Failure == Never, Output == Event {
-
-    func `in`<Context: AnyObject>(_ context: Context, _ ƒ: @escaping (Context, Output) async -> ()) -> ThenInContext<Context, Self> {
-        ThenInContext(context: context, publisher: self, ƒ: ƒ)
-    }
-}
-
-public struct ThenInContext<Context, Publisher>
-where Context: AnyObject, Publisher: Combine.Publisher, Publisher.Failure == Never, Publisher.Output == Event
+public func >> <O, P, A>(event: A, context: (O?, P, (O, Event) async -> ())) -> AnyCancellable
+where A: L, O: AnyObject, P: Publisher, P.Output == Event, P.Failure == Never
 {
-    public private(set) weak var context: Context?
-    public let publisher: Publisher
-    public let ƒ: (Context, Publisher.Output) async -> ()
+    context.1.filter{ $0.is(event) }.sink { @MainActor [weak o = context.0, ƒ = context.2] event in
+        guard let o = o else { return }
+        await ƒ(o, event)
+    }
+}
+
+public func >> <O, P, A>(event: K<A>, context: (O?, P, (O, Event) async -> ())) -> AnyCancellable
+where A: L, O: AnyObject, P: Publisher, P.Output == Event, P.Failure == Never
+{
+    context.1.filter{ $0.is(event) }.sink { @MainActor [weak o = context.0, ƒ = context.2] event in
+        guard let o = o else { return }
+        await ƒ(o, event)
+    }
 }
