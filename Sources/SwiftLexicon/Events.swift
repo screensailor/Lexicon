@@ -100,6 +100,15 @@ public extension EventContext {
 }
 
 public func >> <O, P, A>(event: A, context: (O?, P, (O, Event) async -> ())) -> AnyCancellable
+where O: AnyObject, P: Publisher, P.Output == Event, P.Failure == Never
+{
+    context.1.filter{ $0.k(\.L) is A }.sink { @MainActor [weak o = context.0, ƒ = context.2] event in
+        guard let o = o else { return }
+        await ƒ(o, event)
+    }
+}
+
+public func >> <O, P, A>(event: A, context: (O?, P, (O, Event) async -> ())) -> AnyCancellable
 where A: L, O: AnyObject, P: Publisher, P.Output == Event, P.Failure == Never
 {
     context.1.filter{ $0.is(event) }.sink { @MainActor [weak o = context.0, ƒ = context.2] event in
