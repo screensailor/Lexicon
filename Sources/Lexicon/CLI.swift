@@ -282,14 +282,23 @@ public extension Lemma {
 }
 
 public extension CLI {
-	
-	static func isValid(character: Character, appendingTo input: String)  -> Bool {
-		CharacterSet(charactersIn: String(character)).isSubset(
-			of: input.isEmpty
-				? Lemma.validFirstCharacterOfName
-				: Lemma.validCharacterOfName
-		)
-	}
+    
+    static func isValid(name: String) -> Bool {
+        guard
+            let first = name.first,
+            CharacterSet(charactersIn: String(first)).isSubset(of: Lemma.validFirstCharacterOfName),
+            CharacterSet(charactersIn: String(name.dropFirst())).isSubset(of: Lemma.validCharacterOfName)
+        else { return false }
+        return true
+    }
+    
+    static func isValid(character: Character, appendingTo input: String) -> Bool {
+        CharacterSet(charactersIn: String(character)).isSubset(
+            of: input.isEmpty
+            ? Lemma.validFirstCharacterOfName
+            : Lemma.validCharacterOfName
+        )
+    }
 }
 
 extension CLI: CustomStringConvertible {
