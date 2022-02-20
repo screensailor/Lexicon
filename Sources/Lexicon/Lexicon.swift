@@ -305,8 +305,13 @@ public extension Lexicon { // MARK: non-additive mutations
 
 	func remove(type: Lemma, from lemma: Lemma) -> Lemma? {
         
-        guard lemma.node.type.remove(type.id).isNotNil else {
-            return nil
+        if lemma.node.type.remove(type.id).isNil {
+            guard
+                let id = lemma.ownType.first(where: { k, v in v.unwrapped == type })?.key,
+                lemma.node.type.remove(id).isNotNil
+            else {
+                return nil
+            }
         }
                 
         defer {
