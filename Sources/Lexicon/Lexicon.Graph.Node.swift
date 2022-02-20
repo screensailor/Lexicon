@@ -34,7 +34,9 @@ public extension Lexicon.Graph {
             return o
         }
         
-		public func traverse(sorted: Bool = false, parent: ID? = nil, name: Name, yield: ((id: ID, name: Name, node: Node)) -> ()) {
+        // TODO: rewrite to reflect Node changes
+		public func traverse(sorted: Bool = false, parent: ID? = nil, name: Name? = nil, yield: ((id: ID, name: Name, node: Node)) -> ()) {
+            let name = name ?? self.name
             let id = parent.map{ "\($0).\(name)" } ?? name
             yield((id, name, self))
 			let nodes = sorted ? AnyCollection(children.sorted(by: { $0.key < $1.key })) : AnyCollection(children)

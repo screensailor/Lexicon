@@ -49,6 +49,13 @@ public class Lemma {
 }
 
 public extension Lemma {
+    
+    var rootProtonym: Lemma? {
+        guard let protonym = protonym else {
+            return nil
+        }
+        return Array(sequence(first: protonym, next: \.protonym)).last!
+    }
 	
 	var graph: Lexicon.Graph {
 		.init(root: node, date: lexicon.graph.date)
@@ -93,7 +100,7 @@ public extension Lemma {
 		lexicon.add(childrenOf: node, to: self)
 	}
 
-    @discardableResult @inlinable func rename(to name: Lemma.Name) -> Lemma? {
+    @inlinable func rename(to name: Lemma.Name) -> Lemma? {
         lexicon.rename(self, to: name)
     }
 
@@ -105,11 +112,11 @@ public extension Lemma {
         lexicon.add(type: type, to: self)
     }
     
-    @discardableResult @inlinable func remove(type: Lemma) -> Bool {
+    @inlinable func remove(type: Lemma) -> Lemma? {
         lexicon.remove(type: type, from: self)
     }
     
-    @inlinable func set(protonym: Lemma?) {
+    @inlinable func set(protonym: Lemma?) -> Lemma? {
         lexicon.set(protonym: protonym, of: self)
     }
 }
@@ -141,14 +148,14 @@ public extension Lemma {
     @inlinable func `is`(_ type: Lemma) -> Bool {
         self.type.keys.contains(type.id)
     }
-	
-    @inlinable func isNotInherited() -> Bool {
+    
+    @inlinable func isGraphNode() -> Bool { // TODO: property
         id == node.id
-	}
-	
-	@inlinable func isInherited() -> Bool {
-		!isNotInherited()
-	}
+    }
+    
+    @inlinable func graphNode() -> Lexicon.Graph.Node? { // TODO: property
+        isGraphNode() ? node : nil
+    }
 
     func validated(protonym: Lemma) -> (Protonym, Lemma)? {
         let protonym = Array(sequence(first: protonym, next: \.protonym)).last!

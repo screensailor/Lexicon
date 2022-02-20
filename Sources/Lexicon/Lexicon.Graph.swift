@@ -26,6 +26,14 @@ public extension Lexicon {
     }
 }
 
+extension Lexicon.Graph: Equatable {
+
+    public static func == (lhs: Lexicon.Graph, rhs: Lexicon.Graph) -> Bool {
+        lhs.date == rhs.date &&
+        lhs.name == rhs.name
+    }
+}
+
 #if canImport(NaturalLanguage)
 import NaturalLanguage
 

@@ -37,6 +37,17 @@ public extension Lexicon {
 		Lexicon.connect(lexicon: self, with: graph)
 	}
     
+    /// Poor performance!
+    ///
+    /// However, this will resolve implications of mutations for synonyms correctly.
+    /// Using this shortcut will give us time to build up testing facilities to more
+    /// easily develop performant solutions.
+    func reserialize() throws {
+        let string = TaskPaper.encode(graph)
+        let newGraph = try TaskPaper(string).decode()
+        reset(to: newGraph)
+    }
+    
     private static func connect(lexicon o: Lexicon, with new: Graph? = nil) {
 		
 		let graph = new ?? o.graph
@@ -175,89 +186,95 @@ public extension Lexicon {
 		return child
 	}
 
-	@discardableResult
-	func delete(_ lemma: Lemma) -> Lemma? {
-		defer {
-			graph.date = .init()
-		}
-		return deleteWithRecursion(lemma)
-	}
-    
-    private func deleteWithRecursion(_ lemma: Lemma) -> Lemma? {
+    func delete(_ lemma: Lemma) -> Lemma? { // TODO: throws
         
-        guard let parent = lemma.parent else {
+        guard
+            let parent = lemma.parent?.node,
+            let node = lemma.graphNode()
+        else {
             return nil
         }
         
-		parent.node.children.removeValue(forKey: lemma.name)
+        defer {
+            graph.date = .init()
+        }
         
-        parent.ownChildren.removeValue(forKey: lemma.name)
-        parent.children.removeValue(forKey: lemma.name)
+        parent.children.removeValue(forKey: node.name)
 
-        dictionary.removeValue(forKey: lemma.id)
-
-        for id in dictionary.keys {
-            guard let o = dictionary[id] else {
-                continue
-            }
-            if o.protonym == lemma {
-				let parent = deleteWithRecursion(o)
-				assert(parent != nil)
-            }
-			else if let lemma = o.type[lemma.id]?.unwrapped {
-				let success = removeWithDeleteRecursion(type: lemma, from: o) // TODO: there's more to remove!
-				assert(success)
+        root.node.traverse { (_, _, otherNode) in
+            otherNode.type = otherNode.type.filter{ id in
+                !id.starts(with: node.id)
             }
         }
-		
-		return parent
+        
+        do {
+            try reserialize()
+        } catch {
+            print("😱", #function, error)
+        }
+
+        return self[parent.id]
     }
     
-    @discardableResult
     func rename(_ lemma: Lemma, to name: Lemma.Name) -> Lemma? {
         
-        guard lemma.isValid(newName: name) else {
+        guard let node = lemma.graphNode(), lemma.isValid(newName: name) else {
             return nil
         }
-		
-		guard let parent = lemma.parent else {
-			var new = graph
-			new.name = name
-			new.date = .init()
-			Lexicon.connect(lexicon: self, with: new)
-			assert(root.name == name)
-			return root
-		}
         
-        let oldID = lemma.id
-        let newID = "\(parent.id).\(name)"
+        let old = (
+            id: node.id,
+            name: node.name
+        )
         
-		parent.node.children[name] = parent.node.children.removeValue(forKey: lemma.name)
+        let new = (
+            id: String(node.id.dropLast(old.name.count) + name),
+            name: name
+        )
+        
+        defer {
+            graph.date = .init()
+        }
 
-        root.node.traverse(name: graph.name) { id, name, node in
-            if node.type.contains(where: { id in id.starts(with: oldID) }) {
-                node.type = Set(
-                    node.type.map { id in
-                        id == oldID ? newID : "\(newID)\(id.dropFirst(oldID.count))"
-                    }
-                )
+        node.id = new.id
+        node.name = new.name
+        
+        if let parent = lemma.parent?.node {
+            parent.children[old.name] = nil
+            parent.children[new.name] = node
+        } else {
+            graph.name = new.name
+        }
+        
+        root.node.traverse { (_, _, otherNode) in
+            if
+                let protonym = otherNode.protonym?.split(separator: "."),
+                protonym.contains(where: { $0 == old.name }), // TODO: performance - not necessarily our node
+                let protonymLemma = self[otherNode.id]
+            {
+                otherNode.protonym = sequence(first: protonymLemma, next: \.parent)
+                    .prefix(protonym.count)
+                    .map(\.node.name)
+                    .reversed()
+                    .joined(separator: ".")
             }
-            else if let protonym = node.protonym {
-                guard newID.starts(with: id.dropLast(name.count)) else {
-                    return
-                }
-                let old = oldID.dropFirst(id.count - name.count)
-                guard protonym.starts(with: old) else {
-                    return
-                }
-                let new = newID.dropFirst(id.count - name.count)
-                node.protonym = "\(new)\(protonym.dropFirst(old.count))"
+            else {
+                otherNode.type = Set(otherNode.type.map{ id in
+                    guard id.starts(with: old.id) else { // TODO: user range(of:)
+                        return id
+                    }
+                    return String(new.id + id.dropFirst(old.id.count)) // TODO: preformance (use range)
+                }) // TODO: performance
             }
         }
         
-        Lexicon.connect(lexicon: self)
+        do {
+            try reserialize()
+        } catch {
+            print("😱", #function, error)
+        }
         
-        return dictionary[newID]
+        return self[new.id]
     }
 
     @discardableResult
@@ -283,79 +300,55 @@ public extension Lexicon {
         return true
     }
 
-	@discardableResult
-	func remove(type: Lemma, from lemma: Lemma) -> Bool {
-		defer {
-			graph.date = .init()
-		}
-		return removeWithDeleteRecursion(type: type, from: lemma)
-	}
-	
-    private func removeWithDeleteRecursion(type: Lemma, from lemma: Lemma) -> Bool {
+	func remove(type: Lemma, from lemma: Lemma) -> Lemma? {
         
-        guard lemma.node.type.remove(type.id) != nil else {
-            return false
+        guard lemma.node.type.remove(type.id).isNotNil else {
+            return nil
         }
-
-		let children = type.children.keys
-        
-        for id in dictionary.keys {
-            guard let o = dictionary[id], o != type, o.is(lemma) else {
-                continue
-            }
-            for name in children {
-                guard let child = o.children[name] else {
-                    continue
-                }
-				let parent = deleteWithRecursion(child) // TODO: allow overlapping inheritance?
-				assert(parent != nil)
-            }
+                
+        defer {
+            graph.date = .init()
         }
         
-        lemma.type.removeValue(forKey: type.id)
-        lemma.ownType.removeValue(forKey: type.id)
+        do {
+            try reserialize()
+        } catch {
+            print("😱", #function, error)
+        }
 
-        return true
+        return self[lemma.node.id]
     }
     
-    func set(protonym: Lemma?, of lemma: Lemma) {
-        if let protonym = protonym {
+    func set(protonym: Lemma?, of lemma: Lemma) -> Lemma? {
+        
+        guard let node = lemma.graphNode() else {
+            return nil
+        }
+        
+        if let protonym = protonym?.rootProtonym {
             
-            let protonym = Array(sequence(first: protonym, next: \.protonym)).last!
-            
-            guard let (ref, protonym) = lemma.validated(protonym: protonym) else {
+            guard let (ref, _) = lemma.validated(protonym: protonym) else {
                 print("❓ protonym", protonym, "not validated for", lemma)
-                return // TODO: throw
-            }
-            dictionary[lemma.id] = protonym
-            
-            lemma.node.protonym = ref
-            
-            for child in lemma.ownChildren.values {
-                delete(child)
+                return nil // TODO: throw
             }
             
-            for id in dictionary.keys {
-                guard let o = dictionary[id] else {
-                    continue
-                }
-                if remove(type: lemma, from: o) {
-                    add(type: protonym, to: o)
-                }
-            }
-
-            lemma.node.children = [:]
-            lemma.node.type = []
-            lemma.protonym = protonym
-            lemma.children = [:]
-            lemma.type = [:]
+            node.protonym = ref
+            node.children.removeAll()
+            node.type.removeAll()
         }
+        
         else {
-            dictionary[lemma.id] = lemma
-            lemma.node.protonym = nil
-            lemma.protonym = nil
-            lemma.type[lemma.id] = Unowned(lemma)
+            node.protonym = nil
         }
+        
         graph.date = .init()
+        
+        do {
+            try reserialize()
+        } catch {
+            print("😱", #function, error)
+        }
+
+        return self[node.id]
     }
 }
