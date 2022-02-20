@@ -16,7 +16,7 @@ import Combine
 public extension EventContext {
     
     nonisolated static func == (lhs: Self, rhs: Self) -> Bool {
-        lhs.id == rhs.id
+        lhs === rhs
     }
     
     nonisolated func hash(into hasher: inout Hasher) {
