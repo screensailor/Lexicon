@@ -157,6 +157,9 @@ public extension CLI {
     
     @LexiconActor
     func entered() -> CLI {
+        if let protonym = lemma.rootProtonym {
+            return CLI.with(lemma: protonym)
+        }
         var o = self
         guard
             let index = o.selectedIndex,
