@@ -210,7 +210,7 @@ public extension Lexicon { // MARK: additive mutations
     }
 }
 
-extension Lexicon { // MARK: non-additive mutations
+public extension Lexicon { // MARK: non-additive mutations
 
     func delete(_ lemma: Lemma) -> Lemma? { // TODO: throws
         
