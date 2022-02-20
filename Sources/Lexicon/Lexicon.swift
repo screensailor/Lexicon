@@ -103,7 +103,7 @@ public extension Lexicon {
     }
 }
 
-public extension Lexicon {
+public extension Lexicon { // MARK: additive mutations
     
     @discardableResult
     func make(child name: Lemma.Name, node inherited: Graph.Node?, to lemma: Lemma) -> Lemma? {
@@ -185,6 +185,32 @@ public extension Lexicon {
 		
 		return child
 	}
+
+    @discardableResult
+    func add(type: Lemma, to lemma: Lemma) -> Bool {
+        guard !lemma.is(type) else {
+            return false
+        }
+        lemma.node.type.insert(type.id)
+        lemma.ownType[type.id] = Unowned(type)
+        lemma.type[type.id] = Unowned(type)
+        
+        for id in dictionary.keys {
+            guard let o = dictionary[id], o.is(lemma) else {
+                continue
+            }
+            for (name, lemma) in type.children {
+                make(child: name, node: lemma.node, to: o)
+            }
+        }
+        
+        graph.date = .init()
+        
+        return true
+    }
+}
+
+extension Lexicon { // MARK: non-additive mutations
 
     func delete(_ lemma: Lemma) -> Lemma? { // TODO: throws
         
@@ -275,29 +301,6 @@ public extension Lexicon {
         }
         
         return self[new.id]
-    }
-
-    @discardableResult
-    func add(type: Lemma, to lemma: Lemma) -> Bool {
-        guard !lemma.is(type) else {
-            return false
-        }
-        lemma.node.type.insert(type.id)
-        lemma.ownType[type.id] = Unowned(type)
-        lemma.type[type.id] = Unowned(type)
-        
-        for id in dictionary.keys {
-            guard let o = dictionary[id], o.is(lemma) else {
-                continue
-            }
-            for (name, lemma) in type.children {
-                make(child: name, node: lemma.node, to: o)
-            }
-        }
-        
-        graph.date = .init()
-
-        return true
     }
 
 	func remove(type: Lemma, from lemma: Lemma) -> Lemma? {
