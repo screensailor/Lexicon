@@ -229,7 +229,7 @@ private let expected = """
       "protonym" : "root.a.b"
     }
   ],
-  "date" : 0,
+  "date" : "2001-01-01T00:00:00.000Z",
   "name" : "root"
 }
 """
