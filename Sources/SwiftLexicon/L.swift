@@ -5,7 +5,7 @@
 open class L: @unchecked Sendable, Hashable, I {
     open class var localized: String { "" }
     public let __: String
-    public init(_ id: String) { __ = id }
+    public required init(_ id: String) { __ = id }
 }
 
 public extension L {
