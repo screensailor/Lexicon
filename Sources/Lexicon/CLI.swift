@@ -157,7 +157,7 @@ public extension CLI {
     
     @LexiconActor
     func entered() -> CLI {
-        if let protonym = lemma.rootProtonym {
+        if let protonym = lemma.deepProtonym {
             return CLI.with(lemma: protonym)
         }
         var o = self
@@ -266,8 +266,21 @@ public extension Lemma {
             child.name.lowercased().starts(with: input)
         }
     }
+    
+    var deepProtonym: Lemma? {
+        if let protonym = rootProtonym {
+            return protonym
+        }
+        if let protonym = node.protonym, let lemma = lexicon[String(id.dropLast(name.count) + protonym)] {
+            return lemma
+        }
+        return nil
+    }
 
     var childrenSortedByType: [Lemma] {
+        if let deepProtonym = deepProtonym {
+            return deepProtonym.childrenSortedByType
+        }
 		var o = ownChildren.values.sortedByLocalizedStandard(by: \.name)
 		for type in ownType.values.sortedByLocalizedStandard(by: \.id) {
 			o.append(contentsOf: type.children.keys.sortedByLocalizedStandard(by: \.self).compactMap{ children[$0] })
@@ -276,6 +289,9 @@ public extension Lemma {
     }
 
     var childrenGroupedByTypeAndSorted: [(type: Lemma, children: [Lemma])] {
+        if let deepProtonym = deepProtonym {
+            return deepProtonym.childrenGroupedByTypeAndSorted
+        }
 		var o = [(self, ownChildren.values.sortedByLocalizedStandard(by: \.name))]
 		for type in ownType.values.sortedByLocalizedStandard(by: \.id) {
 			o.append((type.unwrapped, type.children.keys.sortedByLocalizedStandard(by: \.self).compactMap{ children[$0] }))
