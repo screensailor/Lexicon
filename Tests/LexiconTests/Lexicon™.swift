@@ -20,11 +20,11 @@ final class Lexicon™: Hopes {
 		
 		hope(cli.suggestions.map(\.name)) == ["knowledge"]
 		
-		let outline = try await lexicon["root.idea.knowledge.mind_map"].hopefully()
+		let mindMap = try await lexicon["root.idea.knowledge.mind_map"].hopefully()
 		let tree = try await lexicon["root.idea.knowledge.tree"].hopefully()
 
-		hope(outline) == tree
-		hope.true(outline === tree)
+        await hope(that: mindMap.source) == tree
+        await hope(that: mindMap.source === tree) == true
 		
 		// TODO: ...
     }

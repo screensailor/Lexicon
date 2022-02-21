@@ -53,12 +53,14 @@ public extension Lemma {
     var graph: Lexicon.Graph {
         .init(root: node, date: lexicon.graph.date)
     }
+    
+    var source: Lemma {
+        sourceProtonym ?? self
+    }
 
-    var rootProtonym: Lemma? {
-        guard let protonym = protonym?.unwrapped else {
-            return nil
-        }
-        return Array(sequence(first: protonym, next: \.protonym?.unwrapped)).last!
+    var sourceProtonym: Lemma? {
+        guard let o = protonym?.unwrapped else { return nil }
+        return o.sourceProtonym ?? o
     }
 }
 

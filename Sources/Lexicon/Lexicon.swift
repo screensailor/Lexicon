@@ -308,7 +308,7 @@ public extension Lexicon { // MARK: non-additive mutations
             return nil
         }
         
-        if let protonym = protonym?.rootProtonym ?? protonym {
+        if let protonym = protonym?.sourceProtonym ?? protonym {
             
             guard let (ref, _) = lemma.validated(protonym: protonym) else {
                 return nil // TODO: throw

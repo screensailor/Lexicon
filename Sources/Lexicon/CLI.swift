@@ -272,7 +272,7 @@ public extension Lemma {
     }
 
     var childrenGroupedByTypeAndSorted: [(type: Lemma, children: [Lemma])] {
-        if let protonym = rootProtonym {
+        if let protonym = sourceProtonym {
             return [(protonym, children.values.sortedByLocalizedStandard(by: \.name))]
         }
 		var o = [(self, ownChildren.values.sortedByLocalizedStandard(by: \.name))]
