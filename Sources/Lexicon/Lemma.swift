@@ -19,7 +19,7 @@ public class Lemma {
 	nonisolated public unowned let parent: Lemma?
     nonisolated public unowned let lexicon: Lexicon
 	
-	public internal(set) unowned var protonym: Lemma?
+    public internal(set) lazy var protonym: Unowned<Lemma>? = lazy_protonym()
 
     public internal(set) lazy var children: [Name: Lemma] = lazy_children()
     public internal(set) var ownChildren: [Name: Lemma] = [:]
@@ -50,16 +50,16 @@ public class Lemma {
 
 public extension Lemma {
     
+    var graph: Lexicon.Graph {
+        .init(root: node, date: lexicon.graph.date)
+    }
+
     var rootProtonym: Lemma? {
-        guard let protonym = protonym else {
+        guard let protonym = protonym?.unwrapped else {
             return nil
         }
-        return Array(sequence(first: protonym, next: \.protonym)).last!
+        return Array(sequence(first: protonym, next: \.protonym?.unwrapped)).last!
     }
-	
-	var graph: Lexicon.Graph {
-		.init(root: node, date: lexicon.graph.date)
-	}
 }
 
 public extension Lemma {
@@ -133,7 +133,7 @@ public extension Lemma {
             guard let lemma = o.children[name] else {
                 return nil
             }
-            o = lemma.protonym ?? lemma
+            o = lemma.protonym?.unwrapped ?? lemma
         }
         return o
     }
@@ -158,7 +158,7 @@ public extension Lemma {
     }
 
     func validated(protonym: Lemma) -> (Protonym, Lemma)? {
-        let protonym = Array(sequence(first: protonym, next: \.protonym)).last!
+        let protonym = Array(sequence(first: protonym, next: \.protonym?.unwrapped)).last!
         guard let parent = parent, protonym.isDescendant(of: parent) else {
             return nil
         }
@@ -175,6 +175,10 @@ public extension Lemma {
             return false
         }
         return true
+    }
+    
+    func isValid(inheritance type: Lemma) -> Bool {
+        !self.is(type)
     }
 }
 
@@ -244,7 +248,30 @@ public extension Lemma {
 
 extension Lemma {
     
+    func lazy_protonym() -> Unowned<Lemma>? {
+        guard let suffix = node.protonym else {
+            return nil
+        }
+        guard let parent = parent else {
+            print("😱Synonym '\(suffix)', lemma '\(id)', does not have a parent.")
+            return nil
+        }
+        guard let protonym = parent[suffix.components(separatedBy: ".")] else {
+            print("😱Could not find protonym '\(suffix)' of \(id)")
+            return nil
+        }
+        lexicon.dictionary[id] = protonym
+        return .init(protonym)
+    }
+
     func lazy_children() -> [Name: Lemma] {
+        if let protonym = protonym {
+            var o: [Name: Lemma] = [:]
+            for (name, child) in protonym.children {
+                o[name] = Lemma(name: name, node: child.node, parent: self, lexicon: lexicon)
+            }
+            return o
+        }
         var o = ownChildren
         for (_, type) in ownType {
             for (name, lemma) in type.children {
@@ -255,6 +282,9 @@ extension Lemma {
     }
     
     func lazy_type() -> [ID: Unowned<Lemma>] {
+        if let protonym = protonym {
+            return protonym.type
+        }
         var o = ownType
         o[id] = self
         for (_, lemma) in ownType {

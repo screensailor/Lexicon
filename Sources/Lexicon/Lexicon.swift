@@ -48,36 +48,11 @@ public extension Lexicon {
         reset(to: newGraph)
     }
     
-    private static func connect(lexicon o: Lexicon, with new: Graph? = nil) {
-		
-		let graph = new ?? o.graph
-		
-		defer {
-			o.graph = graph
-		}
-
-		o.dictionary.removeAll(keepingCapacity: true)
-        
-		o.lemma = Lemma(name: graph.name, node: graph.root, parent: nil, lexicon: o)
-		
-		assert(o.dictionary[graph.name] === o.lemma)
-
-		for lemma in o.dictionary.values {
-            
-			guard let suffix = lemma.node.protonym else {
-				continue
-			}
-			guard let parent = lemma.parent else {
-				print("😱 Synonym '\(suffix)', lemma '\(lemma.id)', does not have a parent.")
-				continue
-			}
-			guard let protonym = parent[suffix.components(separatedBy: ".")] else {
-				print("😱 Could not find protonym '\(suffix)' of \(lemma.id)")
-				continue
-			}
-			lemma.protonym = protonym
-			o.dictionary[lemma.id] = protonym
-        }
+    private static func connect(lexicon: Lexicon, with new: Graph? = nil) {
+		let graph = new ?? lexicon.graph
+		lexicon.dictionary.removeAll(keepingCapacity: true)
+		lexicon.lemma = Lemma(name: graph.name, node: graph.root, parent: nil, lexicon: lexicon)
+        lexicon.graph = graph
     }
 }
 
@@ -333,10 +308,9 @@ public extension Lexicon { // MARK: non-additive mutations
             return nil
         }
         
-        if let protonym = protonym?.rootProtonym {
+        if let protonym = protonym?.rootProtonym ?? protonym {
             
             guard let (ref, _) = lemma.validated(protonym: protonym) else {
-                print("❓ protonym", protonym, "not validated for", lemma)
                 return nil // TODO: throw
             }
             
@@ -346,6 +320,11 @@ public extension Lexicon { // MARK: non-additive mutations
         }
         
         else {
+            
+            guard node.protonym != nil else {
+                return nil
+            }
+            
             node.protonym = nil
         }
         
@@ -354,7 +333,16 @@ public extension Lexicon { // MARK: non-additive mutations
         do {
             try reserialize()
         } catch {
-            print("😱", #function, error)
+            print("😱", #function, error) // TODO: throw
+            return nil
+        }
+        
+        if
+            let parentID = lemma.parent?.id,
+            let parent = self[parentID],
+            let lemma = parent.children[node.name]
+        {
+            return lemma // fonund the synonym rather than protonym
         }
 
         return self[node.id]

@@ -157,9 +157,6 @@ public extension CLI {
     
     @LexiconActor
     func entered() -> CLI {
-        if let protonym = lemma.deepProtonym {
-            return CLI.with(lemma: protonym)
-        }
         var o = self
         guard
             let index = o.selectedIndex,
@@ -249,8 +246,11 @@ public extension CLI {
     }
     
     @LexiconActor
-    func reseting(to lemma: Lemma? = nil, selecting: Lemma? = nil) -> CLI {
-        var o = CLI.with(lemma: lemma ?? self.lemma)
+    func reseting(to lemma: Lemma? = nil, selecting: Lemma? = nil, root: Lemma? = nil) -> CLI {
+        var o = CLI.with(
+            lemma: lemma ?? self.root,
+            root: root ?? self.root
+        )
         if let selecting = selecting, let i = o.suggestions.firstIndex(of: selecting) {
             o.selectedIndex = i
         }
@@ -266,40 +266,15 @@ public extension Lemma {
             child.name.lowercased().starts(with: input)
         }
     }
-    
-    var deepProtonym: Lemma? {
-        if let protonym = rootProtonym {
-            return protonym
-        }
-        if let protonym = node.protonym, let lemma = lexicon[String(id.dropLast(name.count) + protonym)] {
-            return lemma
-        }
-        return nil
-    }
-    
-    var isInheritedProtonym: Bool {
-        protonym.isNil && node.protonym.isNotNil // TODO: resolve this fundamentally
-    }
-    
-    // TODO: refactor these two ↓
 
     var childrenSortedByType: [Lemma] {
-        if let deepProtonym = deepProtonym {
-            return deepProtonym.childrenSortedByType
-        }
-        let children = children.filter(\.value.isInheritedProtonym.not)
-		var o = ownChildren.values.sortedByLocalizedStandard(by: \.name)
-		for type in ownType.values.sortedByLocalizedStandard(by: \.id) {
-			o.append(contentsOf: type.children.keys.sortedByLocalizedStandard(by: \.self).compactMap{ children[$0] })
-        }
-        return o
+        childrenGroupedByTypeAndSorted.flatMap(\.children)
     }
 
     var childrenGroupedByTypeAndSorted: [(type: Lemma, children: [Lemma])] {
-        if let deepProtonym = deepProtonym {
-            return deepProtonym.childrenGroupedByTypeAndSorted
+        if let protonym = rootProtonym {
+            return [(protonym, children.values.sortedByLocalizedStandard(by: \.name))]
         }
-        let children = children.filter(\.value.isInheritedProtonym.not)
 		var o = [(self, ownChildren.values.sortedByLocalizedStandard(by: \.name))]
 		for type in ownType.values.sortedByLocalizedStandard(by: \.id) {
 			o.append((type.unwrapped, type.children.keys.sortedByLocalizedStandard(by: \.self).compactMap{ children[$0] }))
