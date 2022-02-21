@@ -281,6 +281,7 @@ public extension Lemma {
         if let deepProtonym = deepProtonym {
             return deepProtonym.childrenSortedByType
         }
+        let children = children.filter{ $0.value.protonym.isNil == $0.value.node.protonym.isNil } // TODO: resolve this fundamentally
 		var o = ownChildren.values.sortedByLocalizedStandard(by: \.name)
 		for type in ownType.values.sortedByLocalizedStandard(by: \.id) {
 			o.append(contentsOf: type.children.keys.sortedByLocalizedStandard(by: \.self).compactMap{ children[$0] })
@@ -292,6 +293,7 @@ public extension Lemma {
         if let deepProtonym = deepProtonym {
             return deepProtonym.childrenGroupedByTypeAndSorted
         }
+        let children = children.filter{ $0.value.protonym.isNil == $0.value.node.protonym.isNil } // TODO: resolve this fundamentally
 		var o = [(self, ownChildren.values.sortedByLocalizedStandard(by: \.name))]
 		for type in ownType.values.sortedByLocalizedStandard(by: \.id) {
 			o.append((type.unwrapped, type.children.keys.sortedByLocalizedStandard(by: \.self).compactMap{ children[$0] }))
