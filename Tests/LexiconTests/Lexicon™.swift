@@ -6,8 +6,8 @@
 @_exported import Lexicon
 
 final class Lexicon™: Hopes {
-
-    func test() async throws {
+	
+	func test() async throws {
 		
 		let lexicon = try await Lexicon.from(TaskPaper(taskpaper).decode())
 		let root = await lexicon.root
@@ -16,18 +16,18 @@ final class Lexicon™: Hopes {
 		hope(cli.suggestions.map(\.name)) == ["idea", "purpose", "type", "ui", "ux"]
 		
 		await cli.replace(input: "idea")
-        await cli.enter()
+		await cli.enter()
 		
 		hope(cli.suggestions.map(\.name)) == ["knowledge"]
 		
 		let mindMap = try await lexicon["root.idea.knowledge.mind_map"].hopefully()
 		let tree = try await lexicon["root.idea.knowledge.tree"].hopefully()
-
-        await hope(that: mindMap.source) == tree
-        await hope(that: mindMap.source === tree) == true
+		
+		await hope(that: mindMap.source) == tree
+		await hope(that: mindMap.source === tree) == true
 		
 		// TODO: ...
-    }
+	}
 }
 
 private let taskpaper = """

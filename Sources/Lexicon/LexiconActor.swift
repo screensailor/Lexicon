@@ -4,5 +4,5 @@
 
 @globalActor
 public actor LexiconActor {
-    public static let shared = LexiconActor()
+	public static let shared = LexiconActor()
 }

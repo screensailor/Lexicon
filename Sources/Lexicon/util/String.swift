@@ -9,15 +9,15 @@ import Foundation
 extension String: Error {} // TODO: dedicated error types
 
 extension String {
-
-    func dotPath(after: String) -> String {
-        guard count >= after.count else { return self }
-        guard hasPrefix(after) else { return self }
-        guard count > after.count else { return "" }
-        let i = index(startIndex, offsetBy: after.count)
-        guard i < endIndex, self[i] == "." else { return self }
-        return String(suffix(from: index(after: i)))
-    }
+	
+	func dotPath(after: String) -> String {
+		guard count >= after.count else { return self }
+		guard hasPrefix(after) else { return self }
+		guard count > after.count else { return "" }
+		let i = index(startIndex, offsetBy: after.count)
+		guard i < endIndex, self[i] == "." else { return self }
+		return String(suffix(from: index(after: i)))
+	}
 }
 
 extension String {
@@ -56,9 +56,9 @@ extension StringMatch {
 			let range = result?.range(withName: name),
 			range.location != NSNotFound,
 			range.length > 0 else
-		{
-			return nil
-		}
+			{
+				return nil
+			}
 		return string.substring(with: range)
 	}
 }
@@ -74,19 +74,19 @@ extension NSRegularExpression {
 }
 
 public extension Sequence {
-    
-    @inlinable func sortedByLocalizedStandard<S: StringProtocol>(by keyPath: KeyPath<Element, S>, _ order: ComparisonResult = .orderedAscending) -> [Element] {
-        sorted { l, r in
-            l[keyPath: keyPath].localizedStandardCompare(r[keyPath: keyPath]) == order
-        }
-    }
+	
+	@inlinable func sortedByLocalizedStandard<S: StringProtocol>(by keyPath: KeyPath<Element, S>, _ order: ComparisonResult = .orderedAscending) -> [Element] {
+		sorted { l, r in
+			l[keyPath: keyPath].localizedStandardCompare(r[keyPath: keyPath]) == order
+		}
+	}
 }
 
 extension Sequence where Element: StringProtocol {
-    
-    @inlinable func sortedByLocalizedStandard(_ order: ComparisonResult = .orderedAscending) -> [Element] {
-        sorted { l, r in
-            l.localizedStandardCompare(r) == order
-        }
-    }
+	
+	@inlinable func sortedByLocalizedStandard(_ order: ComparisonResult = .orderedAscending) -> [Element] {
+		sorted { l, r in
+			l.localizedStandardCompare(r) == order
+		}
+	}
 }

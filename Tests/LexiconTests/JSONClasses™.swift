@@ -3,20 +3,20 @@
 //
 
 class JSONClasses™: Hopes {
-    
-    func test() async throws {
-        
-        var json = try await JSONClasses™.taskpaper.lexicon().json()
-        json.date = Date(timeIntervalSinceReferenceDate: 0)
-
-        let data = try JSONClasses.generate(json)
-        
-        try hope(data.string()) == expected
-    }
+	
+	func test() async throws {
+		
+		var json = try await JSONClasses™.taskpaper.lexicon().json()
+		json.date = Date(timeIntervalSinceReferenceDate: 0)
+		
+		let data = try JSONClasses.generate(json)
+		
+		try hope(data.string()) == expected
+	}
 }
 
 extension JSONClasses™ {
-
+	
 	static let taskpaper = """
 	root:
 		a:

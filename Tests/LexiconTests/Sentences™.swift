@@ -15,7 +15,7 @@ class Sentences™: Hopes {
 			Couldn't put Humpty together again.
 			"""
 		
-        let graph = Lexicon.Graph.from(sentences: humpty, root: "rhyme")
+		let graph = Lexicon.Graph.from(sentences: humpty, root: "rhyme")
 		let taskpaper = TaskPaper.encode(graph)
 		
 		hope(taskpaper) == """

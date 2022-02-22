@@ -3,6 +3,6 @@
 //
 
 extension Bool {
-    
-    var not: Bool { !self }
+	
+	var not: Bool { !self }
 }
