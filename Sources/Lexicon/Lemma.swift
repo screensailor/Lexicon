@@ -97,12 +97,16 @@ public extension Lemma {
 	@discardableResult @inlinable func add(childrenOf node: Lexicon.Graph.Node) -> Lemma? {
 		lexicon.add(childrenOf: node, to: self)
 	}
+	
+	@discardableResult func inherit(child name: Lemma.Name, node: Lexicon.Graph.Node) -> Lemma? {
+		lexicon.inherit(child: name, node: node, to: self)
+	}
 }
 
 public extension Lemma { // MARK: additive mutations
 	
 	@discardableResult @inlinable func make(child: Name) -> Lemma? {
-		lexicon.make(child: child, node: nil, to: self)
+		lexicon.make(child: child, to: self)
 	}
 	
 	@discardableResult @inlinable func add(type: Lemma) -> Bool {

@@ -86,17 +86,6 @@ public extension Lexicon {
 	}
 	
 	@discardableResult
-	func add(childrenOf node: Graph.Node, to lemma: Lemma) -> Lemma? {
-		defer {
-			graph.date = .init()
-		}
-		for (name, child) in node.children {
-			add(child: name, node: child, to: lemma, date: nil)
-		}
-		return lemma
-	}
-	
-	@discardableResult
 	func add(child name: Lemma.Name, node: Graph.Node, to lemma: Lemma, date: Date? = Date()) -> Lemma? {
 		
 		guard !name.isEmpty, lemma.children[name] == nil else {
@@ -119,7 +108,38 @@ public extension Lexicon {
 			guard let o = dictionary[id], o != lemma, o.is(lemma) else {
 				continue
 			}
-			make(child: name, node: node, to: o)
+			inherit(child: name, node: node, to: o)
+		}
+		
+		return child
+	}
+
+	@discardableResult
+	func add(childrenOf node: Graph.Node, to lemma: Lemma) -> Lemma? {
+		defer {
+			graph.date = .init()
+		}
+		for (name, child) in node.children {
+			add(child: name, node: child, to: lemma, date: nil)
+		}
+		return lemma
+	}
+	
+	@discardableResult
+	func inherit(child name: Lemma.Name, node: Graph.Node, to lemma: Lemma) -> Lemma? {
+		
+		guard !name.isEmpty, lemma.children[name] == nil else {
+			return nil // TODO: throw
+		}
+		
+		let child = Lemma(name: name, node: node, parent: lemma, lexicon: self)
+		lemma.children[name] = child
+		
+		for id in dictionary.keys {
+			guard let o = dictionary[id], o != lemma, o.is(lemma) else {
+				continue
+			}
+			inherit(child: name, node: node, to: o)
 		}
 		
 		return child
@@ -131,7 +151,7 @@ public extension Lexicon {
 public extension Lexicon { // MARK: additive mutations
 	
 	@discardableResult
-	func make(child name: Lemma.Name, node inherited: Graph.Node?, to lemma: Lemma) -> Lemma? {
+	func make(child name: Lemma.Name, to lemma: Lemma) -> Lemma? {
 		
 		guard !name.isEmpty, lemma.children[name] == nil else {
 			return nil // TODO: throw
@@ -141,29 +161,9 @@ public extension Lexicon { // MARK: additive mutations
 			graph.date = .init()
 		}
 		
-		let node: Graph.Node
+		fatalError()
 		
-		if let o = inherited ?? lemma.node.children[name] {
-			node = o
-		} else {
-			node = lemma.node.make(child: name)
-			lemma.node.children[name] = node
-		}
-		
-		let child = Lemma(name: name, node: node, parent: lemma, lexicon: self)
-		if inherited == nil {
-			lemma.ownChildren[name] = child
-		}
-		lemma.children[name] = child
-		
-		for id in dictionary.keys {
-			guard let o = dictionary[id], o != lemma, o.is(lemma) else {
-				continue
-			}
-			make(child: name, node: node, to: o)
-		}
-		
-		return child
+//		return child
 	}
 	
 	@discardableResult
@@ -174,18 +174,18 @@ public extension Lexicon { // MARK: additive mutations
 		lemma.node.type.insert(type.id)
 		lemma.ownType[type.id] = Unowned(type)
 		lemma.type[type.id] = Unowned(type)
-		
+
 		for id in dictionary.keys {
 			guard let o = dictionary[id], o.is(lemma) else {
 				continue
 			}
 			for (name, lemma) in type.children {
-				make(child: name, node: lemma.node, to: o)
+				inherit(child: name, node: lemma.node, to: o)
 			}
 		}
-		
+
 		graph.date = .init()
-		
+
 		return true
 	}
 }
