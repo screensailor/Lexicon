@@ -8,19 +8,16 @@ public extension Lexicon {
     
     struct Graph {
 
-        public internal(set) var date: Date
-        public internal(set) var name: Lemma.Name
-        public let root: Node
+        public var date: Date
+        public var root: Node
 
         public init(name: Lemma.Name = "root", date: Date = .init()) {
             self.date = date
-            self.name = name
-            self.root = Node(parent: nil, name: name)
+            self.root = Node(root: name)
         }
 
         public init(root: Node, date: Date = .init()) {
             self.date = date
-            self.name = root.name
             self.root = root
         }
     }
@@ -28,9 +25,16 @@ public extension Lexicon {
 
 extension Lexicon.Graph: Equatable {
 
-    public static func == (lhs: Lexicon.Graph, rhs: Lexicon.Graph) -> Bool {
+    public static func == (lhs: Lexicon.Graph, rhs: Lexicon.Graph) -> Bool { // TODO: super dodgy
         lhs.date == rhs.date &&
-        lhs.name == rhs.name
+        lhs.root.name == rhs.root.name
+    }
+}
+
+extension Lexicon.Graph: CustomStringConvertible {
+    
+    public var description: String {
+        "\(Self.self)(root: \(root.name), date: \(date)"
     }
 }
 
@@ -42,13 +46,16 @@ public extension Lexicon.Graph {
 	static let underscore = CharacterSet(charactersIn: "_")
 	static let specialSentenceTerminator = CharacterSet(charactersIn: ";–()[]{}")
 
-	@LexiconActor
 	static func from(sentences string: String, root name: Lemma.Name = "root") -> Lexicon.Graph {
 		
-        let root = Node(parent: nil, name: name)
-        let word = Node(parent: root, name: "word")
-        let sentence = Node(parent: root, name: "sentence")
-		
+        var root = Node(root: name)
+        
+        root.make(child: "word")
+        root.make(child: "sentence")
+        
+        let word: WritableKeyPath<Node, Node> = \.["word"]
+        let sentence: WritableKeyPath<Node, Node> = \.["sentence"]
+
 		let tagger = NLTagger(tagSchemes: [.lexicalClass])
 		let options: NLTagger.Options = [.omitPunctuation, .omitWhitespace, .omitOther]
 		let sentences = NLTokenizer(unit: .sentence)
@@ -79,21 +86,20 @@ public extension Lexicon.Graph {
 					if first.isNumber {
 						string = "_\(string)"
 					}
+                    
+                    root[keyPath: node].make(child: string)
+                    node = node.appending(path: \.[string])
 					
-                    node = node.children[string, default: Node(parent: node, name: string)]
-					
-					if word.children[token] == nil {
-						word.children[token] = Node(parent: word, name: token)
-					}
-					
-					node.type.insert("\(name).word.\(token)")
+                    root[keyPath: node].type.insert(
+                        root[keyPath: word].make(child: token).id
+                    )
 					
 					return true
 				}
 			}
 			return true
 		}
-		return .init(root: root)
+		return Lexicon.Graph(root: root)
 	}
 }
 #endif

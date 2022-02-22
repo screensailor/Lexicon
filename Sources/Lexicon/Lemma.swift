@@ -12,7 +12,7 @@ public class Lemma {
     public typealias Protonym = String
     public typealias Description = String
 
-	nonisolated public let node: Lexicon.Graph.Node
+	public internal(set) var node: Lexicon.Graph.Node
 
     nonisolated public let id: ID
     nonisolated public let name: Name
@@ -85,33 +85,39 @@ public extension Lemma {
 }
 
 public extension Lemma {
+    
+    @discardableResult @inlinable func add(child: Lexicon.Graph) -> Lemma? {
+        lexicon.add(child: child, to: self)
+    }
+    
+    @discardableResult @inlinable func add(child name: Lemma.Name, node: Lexicon.Graph.Node) -> Lemma? {
+        lexicon.add(child: name, node: node, to: self)
+    }
+    
+    @discardableResult @inlinable func add(childrenOf node: Lexicon.Graph.Node) -> Lemma? {
+        lexicon.add(childrenOf: node, to: self)
+    }
+}
+
+public extension Lemma { // MARK: additive mutations
 	
 	@discardableResult @inlinable func make(child: Name) -> Lemma? {
 		lexicon.make(child: child, node: nil, to: self)
 	}
-	
-	@discardableResult @inlinable func add(child: Lexicon.Graph) -> Lemma? {
-		lexicon.add(child: child, to: self)
-	}
-	
-	@discardableResult @inlinable func add(child name: Lemma.Name, node: Lexicon.Graph.Node) -> Lemma? {
-		lexicon.add(child: name, node: node, to: self)
-	}
-	
-	@discardableResult @inlinable func add(childrenOf node: Lexicon.Graph.Node) -> Lemma? {
-		lexicon.add(childrenOf: node, to: self)
-	}
+    
+    @discardableResult @inlinable func add(type: Lemma) -> Bool {
+        lexicon.add(type: type, to: self)
+    }
+}
 
+public extension Lemma { // MARK: non-additive mutations
+    
     @inlinable func rename(to name: Lemma.Name) -> Lemma? {
         lexicon.rename(self, to: name)
     }
 
     @inlinable func delete() -> Lemma? {
         lexicon.delete(self)
-    }
-    
-    @discardableResult @inlinable func add(type: Lemma) -> Bool {
-        lexicon.add(type: type, to: self)
     }
     
     @inlinable func remove(type: Lemma) -> Lemma? {

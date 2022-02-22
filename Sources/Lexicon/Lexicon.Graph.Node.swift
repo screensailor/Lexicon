@@ -2,47 +2,70 @@
 // github.com/screensailor 2021
 //
 
+public extension Lexicon.Graph.Node {
+    typealias ID = String
+    typealias Name = String
+    typealias Protonym = String
+}
+
 public extension Lexicon.Graph {
 
-    class Node {
+    struct Node {
         
-        public typealias ID = String
-        public typealias Name = String
-        public typealias Protonym = String
+        public var id: ID
+        public var name: Name
+        public var type: Set<ID>
+        public var protonym: Protonym?
+        public var children: [Name: Node]
         
-        public internal(set) var id: ID = ""
-        public internal(set) var name: Name = ""
-        public internal(set) var type: Set<ID> = []
-        public internal(set) var protonym: Protonym?
-        public internal(set) var children: [Name: Node] = [:]
+        public init(root: Name) {
+            self.init(id: root, name: root)
+        }
 
-        public init(parent: Node?, name: Name, children: [Name: Node] = [:], type: Set<ID> = []) {
-            self.id = parent?.id.unlessEmpty.map{ "\($0).\(name)" } ?? name
+        public init(id: ID, name: Name, children: [Name: Node] = [:], type: Set<ID> = []) {
+            self.id = id
             self.name = name
             self.type = type
-            self.protonym = nil
             self.children = children
-            parent?.children[name] = self
         }
         
-        public func dictionary(id: ID = "", name: Name) -> [ID: Node] {
-			let id = id.isEmpty ? name : "\(id).\(name)"
-            var o: [ID: Node] = [id: self]
-            for (name, child) in children {
-                o.merge(child.dictionary(id: id, name: name)){ _, last in last }
+        @discardableResult
+        public mutating func make(child name: Name) -> Node {
+            if let child = children[name] {
+                return child
             }
-            return o
+            let child = Node(id: "\(id).\(name)", name: name)
+            children[name] = child
+            return child
         }
-        
-        // TODO: rewrite to reflect Node changes
-		public func traverse(sorted: Bool = false, parent: ID? = nil, name: Name? = nil, yield: ((id: ID, name: Name, node: Node)) -> ()) {
-            let name = name ?? self.name
-            let id = parent.map{ "\($0).\(name)" } ?? name
-            yield((id, name, self))
-			let nodes = sorted ? AnyCollection(children.sorted(by: { $0.key < $1.key })) : AnyCollection(children)
-			nodes.forEach { (name, child) in
-				child.traverse(sorted: sorted, parent: id, name: name, yield: yield)
-			}
-		}
-	}
+    }
+}
+
+extension Lexicon.Graph.Node: CustomStringConvertible {
+    
+    public var description: String {
+        id
+    }
+}
+
+internal extension Lexicon.Graph.Node {
+    
+    subscript(child: String) -> Lexicon.Graph.Node {
+        get { children[child]! } // TODO: rethink
+        set { children[child] = newValue }
+    }
+}
+
+public extension Lexicon.Graph.Node {
+    
+    // TODO: rewrite to reflect Node changes
+    func traverse(sorted: Bool = false, parent: ID? = nil, name: Name? = nil, yield: ((id: ID, name: Name, node: Lexicon.Graph.Node)) -> ()) {
+        let name = name ?? self.name
+        let id = parent.map{ "\($0).\(name)" } ?? name
+        yield((id, name, self))
+        let nodes = sorted ? AnyCollection(children.sorted(by: { $0.key < $1.key })) : AnyCollection(children)
+        nodes.forEach { (name, child) in
+            child.traverse(sorted: sorted, parent: id, name: name, yield: yield)
+        }
+    }
 }

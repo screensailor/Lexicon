@@ -6,23 +6,22 @@ import Foundation
 import UniformTypeIdentifiers
 
 public extension UTType {
-    static var taskpaper = UTType(importedAs: "com.taskpaper.plain-text")
+    static var taskpaper = UTType(importedAs: "com.taskpaper.plain-text") // TODO: rethink
 }
 
 public class TaskPaper {
 	
-	typealias Node = Lexicon.Graph.Node
-	
-	static let linePattern = try! NSRegularExpression(pattern: "^(?<tabs>\\t*)(?<content>.+)")
-	static let lemmaPattern = try! NSRegularExpression(pattern: "^(?<lemma>[\\w]+):?\\s*$") // TODO: Optional colon `:?` allows plain text (tabbed) outlines, but this should be opted into
-	static let operatorPattern = try! NSRegularExpression(pattern: "^(?<operator>[+=])\\s*(?<content>\\S+)")
+	public typealias Node = Lexicon.Graph.Node
+    
+    public static let pattern = try! (
+        line: NSRegularExpression(pattern: "^(?<tabs>\\t*)(?<content>.+)"),
+        lemma: NSRegularExpression(pattern: "^(?<lemma>[\\w]+):?\\s*$"), // TODO: Optional colon `:?` allows plain text (tabbed) outlines, but this should be opted into
+        operator: NSRegularExpression(pattern: "^(?<operator>[+=])\\s*(?<content>\\S+)")
+    )
 
-	let string: String
+	public let string: String
 	
-	private(set) var error: Error?
-	private(set) var root: Node?
-	
-	private var path: [Node] = []
+    private var result: Result<Lexicon.Graph, Error>?
 
 	public init(_ string: String) {
 		self.string = string
@@ -36,53 +35,56 @@ public class TaskPaper {
 	}
 
 	public func decode() throws -> Lexicon.Graph {
-		
-		if let error = error {
-			throw error
-		}
-		
-		if let root = root {
-			return .init(root: root) // TODO: date
-		}
+        
+        if let result = result {
+            return try result.get()
+        }
+        
+        var path: [WritableKeyPath<Node, Node>] = []
+        var root = Node(root: "")
+        var error: Error?
 		
 		string.enumerateLines{ line, stop in
 			do {
-				guard let match = TaskPaper.linePattern.firstMatch(in: line, options: [], range: line.nsRange) else {
+                guard let match = TaskPaper.pattern.line.firstMatch(in: line, options: [], range: line.nsRange) else {
 					return
 				}
 				let range = match.range(withName: "content")
 				let content = line.substring(with: range)
 				let depth = match.range(withName: "tabs").length
-				try self.decode(line: content, depth: depth)
-			} catch {
+                try self.decode(line: content, depth: depth, path: &path, in: &root)
+			} catch let o {
 				stop = true
-				self.error = error
-				print("😱", error)
+				error = o
 			}
 		}
 		
 		if let error = error {
-			throw error
-		}
-		
-		guard let root = root else {
-			throw "The taskpaper file does not declare a root lemma"
-		}
-		
-		return .init(root: root) // TODO: date
+            result = .failure(error)
+            throw error
+        }
+        
+        guard root.name.isNotEmpty else {
+            let error = "The taskpaper file does not declare a root lemma"
+            result = .failure(error)
+            throw error
+        }
+        
+        let graph = Lexicon.Graph(root: root)
+        result = .success(graph)
+		return graph
 	}
 	
-	func decode(line: String, depth: Int) throws {
+    func decode(line: String, depth: Int, path: inout [WritableKeyPath<Node, Node>], in root: inout Node) throws {
 		
-		let name = TaskPaper.lemmaPattern.first(in: line)?["lemma"]
+        let name = TaskPaper.pattern.lemma.first(in: line)?["lemma"]
 		
-        guard let parent = path.last else {
+        guard var parent = path.last else {
 			guard let name = name, depth == 0 else {
 				return // ignore everything before the first root node
 			}
-            let node = Node(parent: nil, name: name)
-			self.root = node
-			self.path.append(node)
+            root = Node(root: name)
+            path = [\.self]
 			return
 		}
 		
@@ -90,43 +92,46 @@ public class TaskPaper {
 			return // ignore any additional roots
 		}
 		
-		if let name = name {
-
+        if let name = name {
+            
             let indent = depth - (path.count - 1)
+            
+            switch indent {
+                    
+                case 0:
+                    path.removeLast()
+                    guard path.isNotEmpty else {
+                        throw "More than one root: \(name) (current root: '\(root.name)')" // TODO: allow multiple roots!
+                    }
+                    parent = path.last!
+                    
+                case 1:
+                    break
+                    
+                case ..<0:
+                    guard path.count + indent > 0 else {
+                        throw "Line with wrong indent (\(indent)): '\(line)'"
+                    }
+                    path.removeLast(1 - indent)
+                    parent = path.last!
 
-			switch indent {
-				
-			case 0:
-				path.removeLast()
-				guard let parent = path.last else {
-					throw "More than one root: \(name) (current root: \(root?.name ?? "?"))"
-				}
-				path.append(Node(parent: parent, name: name))
-
-			case 1:
-				path.append(Node(parent: parent, name: name))
-
-			case ..<0:
-				guard path.count + indent > 0 else {
-					throw "Line with wrong indent (\(indent)): '\(line)'"
-				}
-				path.removeLast(1 + abs(indent))
-                path.append(Node(parent: path.last!, name: name))
-
-			default:
-				throw "Line with wrong indent (\(indent)): '\(line)'"
-			}
-		}
+                default:
+                    throw "Line with wrong indent (\(indent)): '\(line)'"
+            }
+            
+            root[keyPath: parent].make(child: name)
+            path.append(parent.appending(path: \.[name]))
+        }
 		
 		else if
-			let node = path.last,
-			let match = TaskPaper.operatorPattern.first(in: line),
-			let op = match["operator"],
+            let node = path.last,
+            let match = TaskPaper.pattern.operator.first(in: line),
+			let symbol = match["operator"],
 			let content = match["content"]
 		{
-			switch op {
-			case "+": node.type.insert(content)
-			case "=": node.protonym = content
+			switch symbol {
+			case "+": root[keyPath: node].type.insert(content)
+			case "=": root[keyPath: node].protonym = content
 			default: break
 			}
 		}
@@ -135,22 +140,22 @@ public class TaskPaper {
 
 public extension TaskPaper {
 	
-	static func encode(node: Lexicon.Graph.Node, date: Date = .init()) -> String {
-		encode(.init(root: node, date: date))
+	static func encode(_ node: Lexicon.Graph.Node, date: Date = .init()) -> String {
+		encode(Lexicon.Graph(root: node, date: date))
 	}
 	
 	static func encode(_ graph: Lexicon.Graph) -> String {
 		
 		var lines: [String] = []
 		
-		graph.root.traverse(sorted: true, name: graph.name) { id, name, node in
+        graph.root.traverse(sorted: true) { id, name, node in
 			let depth = id.reduce(0){ a, e in e == "." ? a + 1 : a }
 			let tabs = "\t" * depth
 			lines.append("\(tabs)\(name):")
 			if let protonym = node.protonym {
 				lines.append("\(tabs)= \(protonym)")
 			} else {
-				for type in node.type.sorted(by: <) {
+				for type in node.type.sorted(by: <) { // TODO: consider whether to sort it lexicographically
 					lines.append("\(tabs)+ \(type)")
 				}
 			}

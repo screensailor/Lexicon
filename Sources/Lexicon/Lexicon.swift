@@ -51,7 +51,7 @@ public extension Lexicon {
     private static func connect(lexicon: Lexicon, with new: Graph? = nil) {
 		let graph = new ?? lexicon.graph
 		lexicon.dictionary.removeAll(keepingCapacity: true)
-		lexicon.lemma = Lemma(name: graph.name, node: graph.root, parent: nil, lexicon: lexicon)
+        lexicon.lemma = Lemma(name: graph.root.name, node: graph.root, parent: nil, lexicon: lexicon)
         lexicon.graph = graph
     }
 }
@@ -78,6 +78,56 @@ public extension Lexicon {
     }
 }
 
+public extension Lexicon {
+    
+    @discardableResult
+    func add(child graph: Graph, to lemma: Lemma) -> Lemma? {
+        add(child: graph.root.name, node: graph.root, to: lemma)
+    }
+    
+    @discardableResult
+    func add(childrenOf node: Graph.Node, to lemma: Lemma) -> Lemma? {
+        defer {
+            graph.date = .init()
+        }
+        for (name, child) in node.children {
+            add(child: name, node: child, to: lemma, date: nil)
+        }
+        return lemma
+    }
+    
+    @discardableResult
+    func add(child name: Lemma.Name, node: Graph.Node, to lemma: Lemma, date: Date? = Date()) -> Lemma? {
+        
+        guard !name.isEmpty, lemma.children[name] == nil else {
+            return nil // TODO: throw
+        }
+        
+        defer {
+            if let date = date {
+                graph.date = date
+            }
+        }
+        
+        lemma.node.children[name] = node
+        
+        let child = Lemma(name: name, node: node, parent: lemma, lexicon: self)
+        lemma.ownChildren[name] = child
+        lemma.children[name] = child
+        
+        for id in dictionary.keys {
+            guard let o = dictionary[id], o != lemma, o.is(lemma) else {
+                continue
+            }
+            make(child: name, node: node, to: o)
+        }
+        
+        return child
+    }
+}
+
+// MARK: graph mutations
+
 public extension Lexicon { // MARK: additive mutations
     
     @discardableResult
@@ -96,7 +146,7 @@ public extension Lexicon { // MARK: additive mutations
         if let o = inherited ?? lemma.node.children[name] {
             node = o
         } else {
-            node = Graph.Node(parent: lemma.node, name: name)
+            node = lemma.node.make(child: name)
             lemma.node.children[name] = node
         }
         
@@ -115,51 +165,6 @@ public extension Lexicon { // MARK: additive mutations
         
         return child
     }
-	
-	@discardableResult
-	func add(child graph: Graph, to lemma: Lemma) -> Lemma? {
-		add(child: graph.name, node: graph.root, to: lemma)
-	}
-	
-	@discardableResult
-	func add(childrenOf node: Graph.Node, to lemma: Lemma) -> Lemma? {
-		defer {
-			graph.date = .init()
-		}
-		for (name, child) in node.children {
-			add(child: name, node: child, to: lemma, date: nil)
-		}
-		return lemma
-	}
-
-	@discardableResult
-	func add(child name: Lemma.Name, node: Graph.Node, to lemma: Lemma, date: Date? = Date()) -> Lemma? {
-		
-		guard !name.isEmpty, lemma.children[name] == nil else {
-			return nil // TODO: throw
-		}
-		
-		defer {
-			if let date = date {
-				graph.date = date
-			}
-		}
-
-		lemma.node.children[name] = node
-		
-		let child = Lemma(name: name, node: node, parent: lemma, lexicon: self)
-		lemma.ownChildren[name] = child
-		lemma.children[name] = child
-		
-		for id in dictionary.keys {
-			guard let o = dictionary[id], o != lemma, o.is(lemma) else {
-				continue
-			}
-			make(child: name, node: node, to: o)
-		}
-		
-		return child
-	}
 
     @discardableResult
     func add(type: Lemma, to lemma: Lemma) -> Bool {
@@ -190,7 +195,7 @@ public extension Lexicon { // MARK: non-additive mutations
     func delete(_ lemma: Lemma) -> Lemma? { // TODO: throws
         
         guard
-            let parent = lemma.parent?.node,
+            var parent = lemma.parent?.node,
             let node = lemma.graphNode()
         else {
             return nil
@@ -203,9 +208,9 @@ public extension Lexicon { // MARK: non-additive mutations
         parent.children.removeValue(forKey: node.name)
 
         root.node.traverse { (_, _, otherNode) in
-            otherNode.type = otherNode.type.filter{ id in
-                !id.starts(with: node.id)
-            }
+//            otherNode.type = otherNode.type.filter{ id in
+//                !id.starts(with: node.id)
+//            }
         }
         
         do {
@@ -219,7 +224,7 @@ public extension Lexicon { // MARK: non-additive mutations
     
     func rename(_ lemma: Lemma, to name: Lemma.Name) -> Lemma? {
         
-        guard let node = lemma.graphNode(), lemma.isValid(newName: name) else {
+        guard var node = lemma.graphNode(), lemma.isValid(newName: name) else {
             return nil
         }
         
@@ -240,11 +245,11 @@ public extension Lexicon { // MARK: non-additive mutations
         node.id = new.id
         node.name = new.name
         
-        if let parent = lemma.parent?.node {
+        if var parent = lemma.parent?.node {
             parent.children[old.name] = nil
             parent.children[new.name] = node
         } else {
-            graph.name = new.name
+//            graph.name = new.name
         }
         
         root.node.traverse { (_, _, otherNode) in
@@ -253,19 +258,19 @@ public extension Lexicon { // MARK: non-additive mutations
                 protonym.contains(where: { $0 == old.name }), // TODO: performance - not necessarily our node
                 let protonymLemma = self[otherNode.id]
             {
-                otherNode.protonym = sequence(first: protonymLemma, next: \.parent)
-                    .prefix(protonym.count)
-                    .map(\.node.name)
-                    .reversed()
-                    .joined(separator: ".")
+//                otherNode.protonym = sequence(first: protonymLemma, next: \.parent)
+//                    .prefix(protonym.count)
+//                    .map(\.node.name)
+//                    .reversed()
+//                    .joined(separator: ".")
             }
             else {
-                otherNode.type = Set(otherNode.type.map{ id in
-                    guard id.starts(with: old.id) else { // TODO: user range(of:)
-                        return id
-                    }
-                    return String(new.id + id.dropFirst(old.id.count)) // TODO: preformance (use range)
-                }) // TODO: performance
+//                otherNode.type = Set(otherNode.type.map{ id in
+//                    guard id.starts(with: old.id) else { // TODO: user range(of:)
+//                        return id
+//                    }
+//                    return String(new.id + id.dropFirst(old.id.count)) // TODO: preformance (use range)
+//                }) // TODO: performance
             }
         }
         
@@ -304,7 +309,7 @@ public extension Lexicon { // MARK: non-additive mutations
     
     func set(protonym: Lemma?, of lemma: Lemma) -> Lemma? {
         
-        guard let node = lemma.graphNode() else {
+        guard var node = lemma.graphNode() else {
             return nil
         }
         

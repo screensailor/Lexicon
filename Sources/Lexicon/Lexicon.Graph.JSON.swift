@@ -21,7 +21,7 @@ public extension Lexicon {
     func json() async -> Graph.JSON {
         .init(
             date: graph.date,
-            name: graph.name,
+            name: graph.root.name,
             classes: await root.classes().values.map(\.json).sortedByLocalizedStandard(by: \.id)
         )
     }
