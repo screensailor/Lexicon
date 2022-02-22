@@ -151,7 +151,7 @@ public extension TaskPaper {
 				lines.append("\(tabs)= \(protonym)")
 			} else {
 				for type in node.type.sorted(by: <) {
-					lines.append("\(tabs)+ \(type)")
+					lines.append("\(tabs)\t+ \(type)")
 				}
 			}
 		}
