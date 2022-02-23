@@ -304,26 +304,21 @@ public extension Lexicon { // MARK: non-additive mutations
 
 	func remove(type: Lemma, from lemma: Lemma) -> Lemma? {
 		
-		if lemma.node.type.remove(type.id).isNil {
-			guard
-				let id = lemma.ownType.first(where: { k, v in v.unwrapped == type })?.key,
-				lemma.node.type.remove(id).isNotNil
-			else {
-				return nil
+		guard
+			lemma.isGraphNode,
+			let type = lemma.ownType.removeValue(forKey: type.id)?.unwrapped
+		else {
+			return nil
+		}
+		
+		let graph = regenerateGraph { o in
+			if let protonym = o.protonym {
+				// TODO: !
 			}
 		}
 		
-		defer {
-			graph.date = .init()
-		}
-		
-		do {
-			try reserialize()
-		} catch {
-			print("😱", #function, error)
-		}
-		
-		return self[lemma.node.id]
+		reset(to: graph)
+		return self[lemma.id]
 	}
 	
 	func set(protonym: Lemma, of lemma: Lemma) -> Lemma? {
@@ -350,26 +345,28 @@ public extension Lexicon { // MARK: non-additive mutations
 				
 		reset(to: graph)
 
-		if
-			let parentID = lemma.parent?.id,
-			let parent = self[parentID],
-			let lemma = parent.children[lemma.name]
-		{
-			return lemma // fonund the synonym rather than protonym
+		guard
+			let id = lemma.parent?.id,
+			let parent = self[id],
+			let lemma = parent.children[lemma.name] // fonund the synonym rather than protonym
+		else {
+			return self[lemma.id]
 		}
 		
-		return self[lemma.id]
+		return lemma
 	}
 	
 	func removeProtonym(of lemma: Lemma) -> Lemma? {
 		
-		guard
-			lemma.isGraphNode,
-			let protonym = lemma.protonym
-		else {
+		guard lemma.isGraphNode else {
 			return nil
 		}
+		
+		lemma.protonym = nil
 
-		fatalError()
+		let graph = regenerateGraph()
+		
+		reset(to: graph)
+		return self[lemma.id]
 	}
 }

@@ -51,6 +51,21 @@ public class Lemma {
 
 public extension Lemma {
 	
+	@inlinable subscript(descendant: Name...) -> Lemma? {
+		self[descendant]
+	}
+	
+	subscript<Descendant>(descendant: Descendant) -> Lemma? where Descendant: Collection, Descendant.Element == Name {
+		var o = self
+		for name in descendant {
+			guard let lemma = o.children[name] else {
+				return nil
+			}
+			o = lemma.protonym?.unwrapped ?? lemma
+		}
+		return o
+	}
+	
 	func regenerateNode(_ ƒ: ((Lemma) -> ())? = nil) -> Lexicon.Graph.Node {
 		ƒ?(self)
 		if let protonym = protonym {
@@ -68,6 +83,9 @@ public extension Lemma {
 			)
 		}
 	}
+}
+
+public extension Lemma {
 	
 	var graph: Lexicon.Graph {
 		Lexicon.Graph(root: node, date: lexicon.graph.date)
@@ -77,9 +95,29 @@ public extension Lemma {
 		sourceProtonym ?? self
 	}
 	
-	var sourceProtonym: Lemma? {
+	var sourceProtonym: Lemma? { // TODO: not needed until we allow synonyms of synonyms
 		guard let o = protonym?.unwrapped else { return nil }
 		return o.sourceProtonym ?? o
+	}
+	
+	@inlinable var isSynonym: Bool {
+		protonym != nil
+	}
+
+	@inlinable var isGraphNode: Bool {
+		id == node.id
+	}
+	
+	@inlinable var graphNode: Lexicon.Graph.Node? {
+		isGraphNode ? node : nil
+	}
+	
+	@inlinable var lineage: UnfoldSequence<Lemma, (Lemma?, Bool)> {
+		sequence(first: self, next: \.parent)
+	}
+	
+	@inlinable func `is`(_ type: Lemma) -> Bool {
+		self.type.keys.contains(type.id)
 	}
 }
 
@@ -111,104 +149,12 @@ public extension Lemma {
 		children[name] == nil &&
 		Lemma.isValid(name: name)
 	}
-}
 
-public extension Lemma {
-	
 	func isValid(newType type: Lemma) -> Bool {
 		self.isGraphNode &&
 		type.isGraphNode &&
+		!type.isSynonym &&
 		!self.is(type)
-	}
-}
-
-public extension Lemma {
-	
-	@discardableResult @inlinable func add(child: Lexicon.Graph) -> Lemma? {
-		lexicon.add(child: child, to: self)
-	}
-	
-	@discardableResult @inlinable func add(child name: Lemma.Name, node: Lexicon.Graph.Node) -> Lemma? {
-		lexicon.add(child: name, node: node, to: self)
-	}
-	
-	@discardableResult @inlinable func add(childrenOf node: Lexicon.Graph.Node) -> Lemma? {
-		lexicon.add(childrenOf: node, to: self)
-	}
-	
-	@discardableResult func inherit(child name: Lemma.Name, node: Lexicon.Graph.Node) -> Lemma? {
-		lexicon.inherit(child: name, node: node, to: self)
-	}
-}
-
-public extension Lemma { // MARK: additive mutations
-	
-	@inlinable func make(child: Name) -> Lemma? {
-		lexicon.make(child: child, to: self)
-	}
-	
-	@inlinable func add(type: Lemma) -> Lemma? {
-		lexicon.add(type: type, to: self)
-	}
-}
-
-public extension Lemma { // MARK: non-additive mutations
-	
-	@inlinable func rename(to name: Lemma.Name) -> Lemma? {
-		lexicon.rename(self, to: name)
-	}
-	
-	@inlinable func delete() -> Lemma? {
-		lexicon.delete(self)
-	}
-	
-	@inlinable func remove(type: Lemma) -> Lemma? {
-		lexicon.remove(type: type, from: self)
-	}
-	
-	@inlinable func set(protonym: Lemma) -> Lemma? {
-		lexicon.set(protonym: protonym, of: self)
-	}
-	
-	@inlinable func removeProtonym() -> Lemma? {
-		lexicon.removeProtonym(of: self)
-	}
-}
-
-public extension Lemma {
-	
-	@inlinable subscript(descendant: Name...) -> Lemma? {
-		self[descendant]
-	}
-	
-	subscript<Descendant>(descendant: Descendant) -> Lemma? where Descendant: Collection, Descendant.Element == Name {
-		var o = self
-		for name in descendant {
-			guard let lemma = o.children[name] else {
-				return nil
-			}
-			o = lemma.protonym?.unwrapped ?? lemma
-		}
-		return o
-	}
-}
-
-public extension Lemma {
-	
-	@inlinable var isGraphNode: Bool {
-		id == node.id
-	}
-	
-	@inlinable var graphNode: Lexicon.Graph.Node? {
-		isGraphNode ? node : nil
-	}
-
-	@inlinable var lineage: UnfoldSequence<Lemma, (Lemma?, Bool)> {
-		sequence(first: self, next: \.parent)
-	}
-	
-	@inlinable func `is`(_ type: Lemma) -> Bool {
-		self.type.keys.contains(type.id)
 	}
 	
 	func validated(protonym: Lemma) -> Protonym? {
@@ -222,6 +168,7 @@ public extension Lemma {
 		guard
 			let parent = parent,
 			protonym != self,
+			!protonym.isSynonym, // TODO: relax this one, one day
 			self.isGraphNode,
 			!protonym.isDescendant(of: self),
 			protonym.isDescendant(of: parent)
@@ -229,10 +176,6 @@ public extension Lemma {
 			return false
 		}
 		return true
-	}
-	
-	func isValid(inheritance type: Lemma) -> Bool {
-		!self.is(type)
 	}
 }
 
@@ -261,6 +204,59 @@ extension String {
 	
 	func isDotPathDescendant(of other: String) -> Bool {
 		other.isDotPathAncestor(of: self)
+	}
+}
+
+public extension Lemma { // MARK: language hydration
+	
+	@discardableResult @inlinable func add(child: Lexicon.Graph) -> Lemma? {
+		lexicon.add(child: child, to: self)
+	}
+	
+	@discardableResult @inlinable func add(child name: Lemma.Name, node: Lexicon.Graph.Node) -> Lemma? {
+		lexicon.add(child: name, node: node, to: self)
+	}
+	
+	@discardableResult @inlinable func add(childrenOf node: Lexicon.Graph.Node) -> Lemma? {
+		lexicon.add(childrenOf: node, to: self)
+	}
+	
+	@discardableResult func inherit(child name: Lemma.Name, node: Lexicon.Graph.Node) -> Lemma? {
+		lexicon.inherit(child: name, node: node, to: self)
+	}
+}
+
+public extension Lemma { // MARK: additive graph mutations
+	
+	@inlinable func make(child: Name) -> Lemma? {
+		lexicon.make(child: child, to: self)
+	}
+	
+	@inlinable func add(type: Lemma) -> Lemma? {
+		lexicon.add(type: type, to: self)
+	}
+}
+
+public extension Lemma { // MARK: non-additive graph mutations
+	
+	@inlinable func rename(to name: Lemma.Name) -> Lemma? {
+		lexicon.rename(self, to: name)
+	}
+	
+	@inlinable func delete() -> Lemma? {
+		lexicon.delete(self)
+	}
+	
+	@inlinable func remove(type: Lemma) -> Lemma? {
+		lexicon.remove(type: type, from: self)
+	}
+	
+	@inlinable func set(protonym: Lemma) -> Lemma? {
+		lexicon.set(protonym: protonym, of: self)
+	}
+	
+	@inlinable func removeProtonym() -> Lemma? {
+		lexicon.removeProtonym(of: self)
 	}
 }
 
