@@ -11,11 +11,16 @@ extension String: Error {} // TODO: dedicated error types
 extension String {
 	
 	func dotPath(after: String) -> String {
-		guard count >= after.count else { return self }
-		guard hasPrefix(after) else { return self }
-		guard count > after.count else { return "" }
+		guard hasPrefix(after) else {
+			return self
+		}
+		guard count > after.count else {
+			return ""
+		}
 		let i = index(startIndex, offsetBy: after.count)
-		guard i < endIndex, self[i] == "." else { return self }
+		guard i < endIndex, self[i] == "." else {
+			return self
+		}
 		return String(suffix(from: index(after: i)))
 	}
 }

@@ -53,11 +53,11 @@ public extension Lemma {
 	
 	func regenerateNode(_ ƒ: ((Lemma) -> ())? = nil) -> Lexicon.Graph.Node {
 		ƒ?(self)
-		if let protonym = node.protonym {
+		if let protonym = protonym {
 			return Lexicon.Graph.Node(
 				id: node.id,
 				name: node.name,
-				protonym: protonym
+				protonym: protonym.id.dotPath(after: parent?.id ?? "") // TODO: performance?
 			)
 		} else {
 			return Lexicon.Graph.Node(
@@ -166,8 +166,12 @@ public extension Lemma { // MARK: non-additive mutations
 		lexicon.remove(type: type, from: self)
 	}
 	
-	@inlinable func set(protonym: Lemma?) -> Lemma? {
+	@inlinable func set(protonym: Lemma) -> Lemma? {
 		lexicon.set(protonym: protonym, of: self)
+	}
+	
+	@inlinable func removeProtonym() -> Lemma? {
+		lexicon.removeProtonym(of: self)
 	}
 }
 
@@ -207,18 +211,18 @@ public extension Lemma {
 		self.type.keys.contains(type.id)
 	}
 	
-	func validated(protonym: Lemma) -> (Protonym, Lemma)? {
-		let protonym = Array(sequence(first: protonym, next: \.protonym?.unwrapped)).last!
-		guard let parent = parent, protonym.isDescendant(of: parent) else {
+	func validated(protonym: Lemma) -> Protonym? {
+		guard let parent = parent, isValid(protonym: protonym) else {
 			return nil
 		}
-		return (protonym.id.dotPath(after: parent.id), protonym)
+		return protonym.id.dotPath(after: parent.id)
 	}
 	
 	func isValid(protonym: Lemma) -> Bool {
 		guard
 			let parent = parent,
 			protonym != self,
+			self.isGraphNode,
 			!protonym.isDescendant(of: self),
 			protonym.isDescendant(of: parent)
 		else {
