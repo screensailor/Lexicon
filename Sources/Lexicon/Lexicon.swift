@@ -37,6 +37,13 @@ public extension Lexicon {
 		Lexicon.connect(lexicon: self, with: graph)
 	}
 	
+	func regenerateGraph(_ ƒ: ((Lemma) -> ())? = nil) -> Lexicon.Graph {
+		Lexicon.Graph(
+			root: root.regenerateNode(ƒ),
+			date: graph.date
+		)
+	}
+
 	/// Poor performance!
 	///
 	/// However, this will resolve implications of mutations for synonyms correctly.
@@ -56,10 +63,10 @@ public extension Lexicon {
 	}
 }
 
-public extension Lemma {
+public extension Lexicon.Graph.Node {
 	
-	var graphPath: Lexicon.Graph.Path { // TODO: consider storing these with the lemma?
-		node.id.split(separator: ".").dropFirst().reduce(\.self) { a, e in
+	var graphPath: Lexicon.Graph.Path { // TODO: consider storing these with the node?
+		id.split(separator: ".").dropFirst().reduce(\.self) { a, e in
 			a.appending(path: \.[String(e)])
 		}
 	}
@@ -69,12 +76,12 @@ public extension Lexicon.Graph {
 	
 	typealias Path = WritableKeyPath<Node, Node>
 
-	@LexiconActor subscript(_ lemma: Lemma) -> Node {
+	subscript(_ node: Node) -> Node {
 		get {
-			return root[keyPath: lemma.graphPath]
+			return root[keyPath: node.graphPath]
 		}
 		set {
-			root[keyPath: lemma.graphPath] = newValue
+			root[keyPath: node.graphPath] = newValue
 		}
 	}
 }
@@ -179,140 +186,123 @@ public extension Lexicon { // MARK: additive mutations
 	
 	func make(child name: Lemma.Name, to lemma: Lemma) -> Lemma? {
 		
-		guard
-			!name.isEmpty,
-			lemma.children[name] == nil,
-			lemma.isGraphNode()
-		else {
+		guard lemma.isValid(newChildName: name) else {
 			return nil // TODO: throw
 		}
 		
 		var graph = graph
 		graph.date = .init()
 		
-		let child = graph[lemma].make(child: name)
+		let child = graph[lemma.node].make(child: name)
 
 		reset(to: graph)
-		
 		return self[child.id]
 	}
 	
 	func add(type: Lemma, to lemma: Lemma) -> Lemma? {
 		
-		guard
-			lemma.isGraphNode(),
-			type.isGraphNode(),
-			!lemma.is(type)
-		else {
-			return nil
+		guard lemma.isValid(newType: type) else {
+			return nil // TODO: throw
 		}
-		
-		lemma.node.type.insert(type.id)
 
 		var graph = graph
 		graph.date = .init()
 		
-		graph[lemma].type.insert(type.id)
+		graph[lemma.node].type.insert(type.id)
 		
 		reset(to: graph)
-		
 		return self[lemma.id]
 	}
 }
 
 public extension Lexicon { // MARK: non-additive mutations
 	
-	func delete(_ lemma: Lemma) -> Lemma? { // TODO: throws
+	func delete(_ lemma: Lemma) -> Lemma? {
 		
 		guard
-			var parent = lemma.parent?.node,
-			let node = lemma.graphNode()
+			lemma.isGraphNode,
+			let parent = lemma.parent
 		else {
-			return nil
+			return nil // TODO: throw
 		}
 		
-		defer {
-			graph.date = .init()
+		parent.ownChildren.removeValue(forKey: lemma.name)
+		
+		let graph = regenerateGraph { o in
+			
+			if let protonym = o.protonym {
+				if protonym.unwrapped.isInLineage(of: lemma) {
+					o.protonym = nil
+				}
+			} else {
+				for (name, type) in o.type where type.unwrapped.isInLineage(of: lemma) {
+					o.type.removeValue(forKey: name)
+				}
+			}
 		}
 		
-		parent.children.removeValue(forKey: node.name)
-		
-		root.node.traverse { (_, _, otherNode) in
-			//            otherNode.type = otherNode.type.filter{ id in
-			//                !id.starts(with: node.id)
-			//            }
-		}
-		
-		do {
-			try reserialize()
-		} catch {
-			print("😱", #function, error)
-		}
-		
+		reset(to: graph)
 		return self[parent.id]
 	}
 	
 	func rename(_ lemma: Lemma, to name: Lemma.Name) -> Lemma? {
 		
-		guard var node = lemma.graphNode(), lemma.isValid(newName: name) else {
-			return nil
+		guard lemma.isValid(newName: name) else {
+			return nil // TODO: throw
 		}
 		
 		let old = (
-			id: node.id,
-			name: node.name
+			id: lemma.id,
+			name: lemma.name
 		)
 		
 		let new = (
-			id: String(node.id.dropLast(old.name.count) + name),
+			id: String(lemma.id.dropLast(old.name.count) + name),
 			name: name
 		)
 		
-		defer {
-			graph.date = .init()
-		}
+		lemma.node.id = new.id
+		lemma.node.name = new.name
 		
-		node.id = new.id
-		node.name = new.name
-		
-		if var parent = lemma.parent?.node {
-			parent.children[old.name] = nil
-			parent.children[new.name] = node
+		var graph = graph
+		graph.date = .init()
+
+		if let parent = lemma.parent {
+			graph[parent.node].children[old.name] = nil
+			graph[parent.node].children[new.name] = lemma.node
 		} else {
-			//            graph.name = new.name
+			graph.root = lemma.node
 		}
 		
-		root.node.traverse { (_, _, otherNode) in
-//			if
-//				let protonym = otherNode.protonym?.split(separator: "."),
-//				protonym.contains(where: { $0 == old.name }), // TODO: performance - not necessarily our node
-//				let protonymLemma = self[otherNode.id]
-//			{
-				//                otherNode.protonym = sequence(first: protonymLemma, next: \.parent)
-				//                    .prefix(protonym.count)
-				//                    .map(\.node.name)
-				//                    .reversed()
-				//                    .joined(separator: ".")
-//			}
-//			else {
+		let namePattern = try! NSRegularExpression(pattern: "\\b\(new.name)\\b", options: [])
+		
+		for node in graph.root.descendants(.breadthFirst) {
+			if
+				let protonym = node.protonym,
+				namePattern.firstMatch(in: protonym, options: [], range: protonym.nsRange) != nil, // TODO: performance - not necessarily our node
+				let synonym = self[node.id]
+			{
+				let count = protonym.split(separator: ".").count
+				graph[node].protonym  = sequence(first: synonym, next: \.parent)
+					.prefix(count)
+					.map(\.node.name)
+					.reversed()
+					.joined(separator: ".")
+			}
+			else {
 				//                otherNode.type = Set(otherNode.type.map{ id in
 				//                    guard id.starts(with: old.id) else { // TODO: user range(of:)
 				//                        return id
 				//                    }
 				//                    return String(new.id + id.dropFirst(old.id.count)) // TODO: preformance (use range)
 				//                }) // TODO: performance
-//			}
+			}
 		}
 		
-		do {
-			try reserialize()
-		} catch {
-			print("😱", #function, error)
-		}
-		
+		reset(to: graph)
 		return self[new.id]
 	}
-	
+
 	func remove(type: Lemma, from lemma: Lemma) -> Lemma? {
 		
 		if lemma.node.type.remove(type.id).isNil {
@@ -339,7 +329,7 @@ public extension Lexicon { // MARK: non-additive mutations
 	
 	func set(protonym: Lemma?, of lemma: Lemma) -> Lemma? {
 		
-		guard var node = lemma.graphNode() else {
+		guard var node = lemma.graphNode else {
 			return nil
 		}
 		

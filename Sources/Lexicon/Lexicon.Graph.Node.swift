@@ -3,7 +3,7 @@
 //
 
 public extension Lexicon.Graph.Node {
-	typealias ID = String
+	typealias ID = String // TODO: consider [Name] instead
 	typealias Name = String
 	typealias Protonym = String
 }
@@ -22,13 +22,21 @@ public extension Lexicon.Graph {
 			self.init(id: root, name: root)
 		}
 		
+		public init(id: ID, name: Name, protonym: Protonym) {
+			self.id = id
+			self.name = name
+			self.protonym = protonym
+			self.type = []
+			self.children = [:]
+		}
+		
 		public init(id: ID, name: Name, children: [Name: Node] = [:], type: Set<ID> = []) {
 			self.id = id
 			self.name = name
 			self.type = type
 			self.children = children
 		}
-		
+
 		@discardableResult
 		public mutating func make(child name: Name) -> Node {
 			if let child = children[name] {

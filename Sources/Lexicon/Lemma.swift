@@ -51,8 +51,26 @@ public class Lemma {
 
 public extension Lemma {
 	
+	func regenerateNode(_ ƒ: ((Lemma) -> ())? = nil) -> Lexicon.Graph.Node {
+		ƒ?(self)
+		if let protonym = node.protonym {
+			return Lexicon.Graph.Node(
+				id: node.id,
+				name: node.name,
+				protonym: protonym
+			)
+		} else {
+			return Lexicon.Graph.Node(
+				id: node.id,
+				name: node.name,
+				children: ownChildren.mapValues{ $0.regenerateNode(ƒ) },
+				type: Set(ownType.values.map(\.node.id))
+			)
+		}
+	}
+	
 	var graph: Lexicon.Graph {
-		.init(root: node, date: lexicon.graph.date)
+		Lexicon.Graph(root: node, date: lexicon.graph.date)
 	}
 	
 	var source: Lemma {
@@ -71,17 +89,36 @@ public extension Lemma {
 	nonisolated static let validCharacterOfName = CharacterSet.letters.union(.decimalDigits).union(.init(charactersIn: "_"))
 	
 	nonisolated static func isValid(name: Name) -> Bool {
-		guard let first = name.first, CharacterSet(charactersIn: String(first)).isSubset(of: Lemma.validFirstCharacterOfName) else {
+		guard
+			let first = name.first,
+			CharacterSet(charactersIn: String(first)).isSubset(of: Lemma.validFirstCharacterOfName)
+		else {
 			return false
 		}
-		return CharacterSet(charactersIn: String(name.dropFirst())).isSubset(of: Lemma.validCharacterOfName)
+		return CharacterSet(charactersIn: String(name.dropFirst()))
+			.isSubset(of: Lemma.validCharacterOfName)
 	}
 	
 	func isValid(newName: Name) -> Bool {
-		if parent?.children.keys.contains(newName) ?? (name == newName) {
-			return false
-		}
-		return Lemma.isValid(name: newName)
+		isGraphNode &&
+		parent?.children[newName] == nil &&
+		name != newName &&
+		Lemma.isValid(name: newName)
+	}
+	
+	func isValid(newChildName name: Name) -> Bool {
+		isGraphNode &&
+		children[name] == nil &&
+		Lemma.isValid(name: name)
+	}
+}
+
+public extension Lemma {
+	
+	func isValid(newType type: Lemma) -> Bool {
+		self.isGraphNode &&
+		type.isGraphNode &&
+		!self.is(type)
 	}
 }
 
@@ -154,20 +191,20 @@ public extension Lemma {
 
 public extension Lemma {
 	
+	@inlinable var isGraphNode: Bool {
+		id == node.id
+	}
+	
+	@inlinable var graphNode: Lexicon.Graph.Node? {
+		isGraphNode ? node : nil
+	}
+
 	@inlinable var lineage: UnfoldSequence<Lemma, (Lemma?, Bool)> {
 		sequence(first: self, next: \.parent)
 	}
 	
 	@inlinable func `is`(_ type: Lemma) -> Bool {
 		self.type.keys.contains(type.id)
-	}
-	
-	@inlinable func isGraphNode() -> Bool { // TODO: property
-		id == node.id
-	}
-	
-	@inlinable func graphNode() -> Lexicon.Graph.Node? { // TODO: property
-		isGraphNode() ? node : nil
 	}
 	
 	func validated(protonym: Lemma) -> (Protonym, Lemma)? {
@@ -195,7 +232,7 @@ public extension Lemma {
 	}
 }
 
-public extension Lemma {
+public extension Lemma { // TODO: consider moving these ↓ to Node
 	
 	func isAncestor(of other: Lemma) -> Bool {
 		id.isDotPathAncestor(of: other.id)
@@ -204,14 +241,18 @@ public extension Lemma {
 	func isDescendant(of other: Lemma) -> Bool {
 		id.isDotPathDescendant(of: other.id)
 	}
+	
+	func isInLineage(of other: Lemma) -> Bool {
+		id == other.id || isDescendant(of: other)
+	}
 }
 
 extension String {
 	
 	func isDotPathAncestor(of other: String) -> Bool {
-		guard other.count > count + 1 else { return false }
-		guard other.hasPrefix(self) else { return false }
-		return other[other.index(other.startIndex, offsetBy: count)] == "."
+		other.count > count + 1 &&
+		other[other.index(other.startIndex, offsetBy: count)] == "." &&
+		other.hasPrefix(self)
 	}
 	
 	func isDotPathDescendant(of other: String) -> Bool {
