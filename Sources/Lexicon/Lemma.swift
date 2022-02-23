@@ -43,8 +43,9 @@ public class Lemma {
 	}
 	
 	deinit {
-		lexicon.deiniting(lemma: self)
-		print("🗑 \(self)")
+		// TODO: just ensure that this ↓ is indeed no longer needed in view of the value semantic graph
+//		lexicon.deiniting(lemma: self)
+//		print("🗑 \(self)")
 	}
 }
 
@@ -105,11 +106,11 @@ public extension Lemma {
 
 public extension Lemma { // MARK: additive mutations
 	
-	@discardableResult @inlinable func make(child: Name) -> Lemma? {
+	@inlinable func make(child: Name) -> Lemma? {
 		lexicon.make(child: child, to: self)
 	}
 	
-	@discardableResult @inlinable func add(type: Lemma) -> Bool {
+	@inlinable func add(type: Lemma) -> Lemma? {
 		lexicon.add(type: type, to: self)
 	}
 }

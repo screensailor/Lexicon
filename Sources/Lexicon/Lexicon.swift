@@ -56,7 +56,32 @@ public extension Lexicon {
 	}
 }
 
+public extension Lemma {
+	
+	var graphPath: Lexicon.Graph.Path { // TODO: consider storing these with the lemma?
+		node.id.split(separator: ".").dropFirst().reduce(\.self) { a, e in
+			a.appending(path: \.[String(e)])
+		}
+	}
+}
+
+public extension Lexicon.Graph {
+	
+	typealias Path = WritableKeyPath<Node, Node>
+
+	@LexiconActor subscript(_ lemma: Lemma) -> Node {
+		get {
+			return root[keyPath: lemma.graphPath]
+		}
+		set {
+			root[keyPath: lemma.graphPath] = newValue
+		}
+	}
+}
+
 extension Lexicon {
+	
+	// TODO: are these still needed ↓?
 	
 	nonisolated func deiniting(lemma: Lemma) {
 		Task(priority: .high) { [id = lemma.id] in
@@ -70,6 +95,8 @@ extension Lexicon {
 }
 
 public extension Lexicon {
+	
+	// TODO: rething these too ↓
 	
 	var root: Lemma { lemma! }
 	
@@ -150,43 +177,46 @@ public extension Lexicon {
 
 public extension Lexicon { // MARK: additive mutations
 	
-	@discardableResult
 	func make(child name: Lemma.Name, to lemma: Lemma) -> Lemma? {
 		
-		guard !name.isEmpty, lemma.children[name] == nil else {
+		guard
+			!name.isEmpty,
+			lemma.children[name] == nil,
+			lemma.isGraphNode()
+		else {
 			return nil // TODO: throw
 		}
 		
-		defer {
-			graph.date = .init()
-		}
+		var graph = graph
+		graph.date = .init()
 		
-		fatalError()
+		let child = graph[lemma].make(child: name)
+
+		reset(to: graph)
 		
-//		return child
+		return self[child.id]
 	}
 	
-	@discardableResult
-	func add(type: Lemma, to lemma: Lemma) -> Bool {
-		guard !lemma.is(type) else {
-			return false
+	func add(type: Lemma, to lemma: Lemma) -> Lemma? {
+		
+		guard
+			lemma.isGraphNode(),
+			type.isGraphNode(),
+			!lemma.is(type)
+		else {
+			return nil
 		}
+		
 		lemma.node.type.insert(type.id)
-		lemma.ownType[type.id] = Unowned(type)
-		lemma.type[type.id] = Unowned(type)
 
-		for id in dictionary.keys {
-			guard let o = dictionary[id], o.is(lemma) else {
-				continue
-			}
-			for (name, lemma) in type.children {
-				inherit(child: name, node: lemma.node, to: o)
-			}
-		}
-
+		var graph = graph
 		graph.date = .init()
-
-		return true
+		
+		graph[lemma].type.insert(type.id)
+		
+		reset(to: graph)
+		
+		return self[lemma.id]
 	}
 }
 
@@ -253,25 +283,25 @@ public extension Lexicon { // MARK: non-additive mutations
 		}
 		
 		root.node.traverse { (_, _, otherNode) in
-			if
-				let protonym = otherNode.protonym?.split(separator: "."),
-				protonym.contains(where: { $0 == old.name }), // TODO: performance - not necessarily our node
-				let protonymLemma = self[otherNode.id]
-			{
+//			if
+//				let protonym = otherNode.protonym?.split(separator: "."),
+//				protonym.contains(where: { $0 == old.name }), // TODO: performance - not necessarily our node
+//				let protonymLemma = self[otherNode.id]
+//			{
 				//                otherNode.protonym = sequence(first: protonymLemma, next: \.parent)
 				//                    .prefix(protonym.count)
 				//                    .map(\.node.name)
 				//                    .reversed()
 				//                    .joined(separator: ".")
-			}
-			else {
+//			}
+//			else {
 				//                otherNode.type = Set(otherNode.type.map{ id in
 				//                    guard id.starts(with: old.id) else { // TODO: user range(of:)
 				//                        return id
 				//                    }
 				//                    return String(new.id + id.dropFirst(old.id.count)) // TODO: preformance (use range)
 				//                }) // TODO: performance
-			}
+//			}
 		}
 		
 		do {
