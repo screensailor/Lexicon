@@ -122,18 +122,20 @@ public extension Lexicon { // MARK: additive mutations
 	
 	func add(type: Lemma, to lemma: Lemma) -> Lemma? {
 		
-		guard lemma.isValid(newType: type) else {
+		guard
+			lemma.isValid(newType: type),
+			let path = lemma.graphPath
+		else {
 			return nil // TODO: throw
 		}
 
-//		var graph = graph
-//		graph.date = .init()
-//
-//		graph[lemma.node].type.insert(type.id)
-//
-//		reset(to: graph)
-//		return self[lemma.id]
-		fatalError()
+		var graph = graph
+		graph.date = .init()
+
+		graph[path].type.insert(type.id)
+
+		reset(to: graph)
+		return self[lemma.id]
 	}
 }
 

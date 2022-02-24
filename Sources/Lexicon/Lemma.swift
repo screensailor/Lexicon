@@ -154,6 +154,7 @@ public extension Lemma {
 
 	func isValid(newType type: Lemma) -> Bool {
 		self.isGraphNode &&
+		!self.isSynonym &&
 		type.isGraphNode &&
 		!type.isSynonym &&
 		!self.is(type)
