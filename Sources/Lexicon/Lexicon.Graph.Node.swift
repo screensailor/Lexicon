@@ -10,7 +10,7 @@ public extension Lexicon.Graph.Node {
 
 public extension Lexicon.Graph {
 	
-	struct Node: Equatable {
+	struct Node {
 		
 		public var name: Name
 		public var type: Set<ID>

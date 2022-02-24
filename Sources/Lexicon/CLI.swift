@@ -20,8 +20,7 @@ public extension CLI {
 		self = await CLI.with(lemma: lemma, root: root)
 	}
 	
-	@LexiconActor
-	static func with(lemma: Lemma, root: Lemma? = nil) -> CLI {
+	@LexiconActor static func with(lemma: Lemma, root: Lemma? = nil) -> CLI {
 		let breadcrumbs = lemma.lineage.reversed()
 		var o = CLI(
 			date: lemma.lexicon.graph.date,

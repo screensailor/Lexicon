@@ -249,7 +249,7 @@ public extension Lemma { // MARK: non-additive graph mutations
 
 extension Lemma: Equatable {
 	@inlinable nonisolated public static func == (lhs: Lemma, rhs: Lemma) -> Bool {
-		lhs.id == rhs.id
+		lhs === rhs // TODO: lhs.id == rhs.id
 	}
 }
 

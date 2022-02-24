@@ -104,18 +104,20 @@ public extension Lexicon { // MARK: additive mutations
 	
 	func make(child name: Lemma.Name, to lemma: Lemma) -> Lemma? {
 		
-		guard lemma.isValid(newChildName: name) else {
+		guard
+			lemma.isValid(newChildName: name),
+			let path = lemma.graphPath
+		else {
 			return nil // TODO: throw
 		}
 		
-//		var graph = graph
-//		graph.date = .init()
-//
-//		let child = graph[lemma.node].make(child: name)
-//
-//		reset(to: graph)
-//		return self[child.id]
-		fatalError()
+		var graph = graph
+		graph.date = .init()
+
+		graph[path].make(child: name)
+
+		reset(to: graph)
+		return self["\(lemma.id).\(name)"]
 	}
 	
 	func add(type: Lemma, to lemma: Lemma) -> Lemma? {
