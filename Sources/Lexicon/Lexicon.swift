@@ -79,15 +79,24 @@ public extension Lexicon { // MARK: additive mutations
 		}
 		
 		var new = new
-		
-		for (node, path) in new.root.descendantsWithPaths(.breadthFirst) { 
-			
+		var protonyms: [(Graph.Node, Graph.Path)] = [] // TODO: reinstate
+		var inheritance: [(Graph.Node, Graph.Path)] = [] // TODO: reinstate
+
+		for (node, path) in new.root.descendantsWithPaths(.breadthFirst) {
+			if node.protonym != nil {
+				protonyms.append((node, path))
+				new[path].protonym = nil
+			}
+			else if !node.type.isEmpty {
+				inheritance.append((node, path))
+				new[path].type = []
+			}
 		}
 		
 		var graph = graph
 		graph.date = .init()
 		
-		graph[path].children[name] = new.root // TODO: fix inheritance and synonyms where pasting from other lexicons
+		graph[path].children[name] = new.root
 
 		reset(to: graph)
 		return self["\(lemma.id).\(name)"]
