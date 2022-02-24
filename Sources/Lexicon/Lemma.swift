@@ -4,7 +4,7 @@
 
 import Foundation
 
-@LexiconActor public class Lemma {
+@LexiconActor public final class Lemma {
 	
 	public typealias ID = String
 	public typealias Name = String
@@ -14,7 +14,7 @@ import Foundation
 	nonisolated public let id: ID
 	nonisolated public let name: Name
 	nonisolated public let breadcrumbs: [Name]
-	nonisolated public let  isGraphNode: Bool
+	nonisolated public let isGraphNode: Bool
 	nonisolated public unowned let parent: Lemma?
 	nonisolated public unowned let lexicon: Lexicon
 	
@@ -45,12 +45,6 @@ import Foundation
 		for (name, node) in node.children { // MARK: recursively replicate the graph
 			ownChildren[name] = Lemma(name: name, node: node, parent: self, lexicon: lexicon)
 		}
-	}
-	
-	deinit {
-		// TODO: just ensure that this ↓ is indeed no longer needed in view of the value semantic graph
-//		lexicon.deiniting(lemma: self)
-//		print("🗑 \(self)")
 	}
 }
 

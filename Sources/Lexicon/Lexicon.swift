@@ -4,27 +4,33 @@
 
 import Foundation
 
-@LexiconActor
-public class Lexicon: ObservableObject {
+@LexiconActor public final class Lexicon: ObservableObject {
 	
 	@Published public private(set) var graph: Graph
 	
 	public internal(set) var dictionary: [Lemma.ID: Lemma] = [:]
 	
-	private var lemma: Lemma!
+	private var lemma: Lemma! // TODO: serioulsy?
 	
 	private init(_ o: Graph) {
 		graph = o
 	}
 	
 	deinit {
-		assertionFailure("🗑 \(self)")
+		assertionFailure("🗑 \(self)") // TODO: hard rethink
 	}
 }
 
 public extension Lexicon {
 	
-	private(set) static var all: [Lexicon] = [] // TODO: rethink the reference tree
+	var root: Lemma { lemma! }
+	
+	subscript(id: Lemma.ID) -> Lemma? {
+		dictionary[id] ?? lemma?[id.components(separatedBy: ".")]
+	}
+}
+
+public extension Lexicon {
 	
 	static func from(_ graph: Graph) -> Lexicon {
 		let o = Lexicon(graph)
@@ -32,12 +38,17 @@ public extension Lexicon {
 		all.append(o)
 		return o
 	}
-	
+
 	func reset(to graph: Graph) {
 		Lexicon.connect(lexicon: self, with: graph)
 	}
+}
+
+private extension Lexicon {
 	
-	private static func connect(lexicon: Lexicon, with new: Graph? = nil) {
+	static var all: [Lexicon] = []
+	
+	static func connect(lexicon: Lexicon, with new: Graph? = nil) {
 		let graph = new ?? lexicon.graph
 		lexicon.dictionary.removeAll(keepingCapacity: true)
 		lexicon.lemma = Lemma(name: graph.root.name, node: graph.root, parent: nil, lexicon: lexicon)
@@ -49,43 +60,6 @@ public extension Lexicon {
 			root: root.regenerateNode(ƒ),
 			date: .init()
 		)
-	}
-
-	/// Poor performance!
-	///
-	/// However, this will resolve implications of mutations for synonyms correctly.
-	/// Using this shortcut will give us time to build up testing facilities to more
-	/// easily develop performant solutions.
-	func reserialize() throws { // TODO: remove!
-		let string = TaskPaper.encode(graph)
-		let newGraph = try TaskPaper(string).decode()
-		reset(to: newGraph)
-	}
-}
-
-extension Lexicon {
-	
-	// TODO: are these ↓ still useful?
-	
-	nonisolated func deiniting(lemma: Lemma) {
-		Task(priority: .high) { [id = lemma.id] in
-			await remove(lemma: id)
-		}
-	}
-	
-	private func remove(lemma id: Lemma.ID) {
-		dictionary.removeValue(forKey: id)
-	}
-}
-
-public extension Lexicon {
-	
-	// TODO: rethink these ↓
-	
-	var root: Lemma { lemma! }
-	
-	subscript(id: Lemma.ID) -> Lemma? {
-		dictionary[id] ?? lemma?[id.components(separatedBy: ".")]
 	}
 }
 
