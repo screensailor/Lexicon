@@ -13,6 +13,7 @@ import Foundation
 	
 	nonisolated public let id: ID
 	nonisolated public let name: Name
+	nonisolated public let breadcrumbs: [Name]
 	nonisolated public let  isGraphNode: Bool
 	nonisolated public unowned let parent: Lemma?
 	nonisolated public unowned let lexicon: Lexicon
@@ -27,14 +28,16 @@ import Foundation
 	
 	init(name: Name, node: Lexicon.Graph.Node, parent: Lemma?, lexicon: Lexicon) {
 		
-		self.id = parent.map{ "\($0.id).\(name)" } ?? name
+		self.breadcrumbs = (parent?.breadcrumbs ?? []) + [name]
+		self.id = breadcrumbs.joined(separator: ".")
+		
 		self.name = name
 		self.node = node
 		self.parent = parent
 		self.lexicon = lexicon
 		
 		self.isGraphNode = parent.map {
-			$0.isGraphNode && $0.node.children[name] != nil
+			$0.isGraphNode && $0.node.children.keys.contains(name)
 		} ?? true
 		
 		lexicon.dictionary[id] = self // MARK: ads itself to the lexicon map
@@ -249,13 +252,13 @@ public extension Lemma { // MARK: non-additive graph mutations
 
 extension Lemma: Equatable {
 	@inlinable nonisolated public static func == (lhs: Lemma, rhs: Lemma) -> Bool {
-		lhs === rhs
+		lhs.id == rhs.id
 	}
 }
 
 extension Lemma: Hashable {
 	@inlinable nonisolated public func hash(into hasher: inout Hasher) {
-		hasher.combine(ObjectIdentifier(self))
+		hasher.combine(id)
 	}
 }
 
