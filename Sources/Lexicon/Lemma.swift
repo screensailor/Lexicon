@@ -84,10 +84,6 @@ public extension Lemma {
 
 public extension Lemma {
 	
-	var graph: Lexicon.Graph {
-		Lexicon.Graph(root: node, date: lexicon.graph.date)
-	}
-	
 	var source: Lemma {
 		sourceProtonym ?? self
 	}
@@ -101,15 +97,22 @@ public extension Lemma {
 		protonym != nil
 	}
 	
+	var graph: Lexicon.Graph {
+		Lexicon.Graph(root: node, date: lexicon.graph.date)
+	}
+
+	var graphPath: Lexicon.Graph.Path? {
+		guard isGraphNode else {
+			return nil
+		}
+		return breadcrumbs.dropFirst().reduce(\.self) { a, e in // TODO: performance
+			a.appending(path: \.[String(e)])
+		}
+	}
+	
 	@inlinable var graphNode: Lexicon.Graph.Node? {
 		isGraphNode ? node : nil
 	}
-	
-	//	var graphPath: Lexicon.Graph.Path { // TODO: consider storing these with the node?
-	//		id.split(separator: ".").dropFirst().reduce(\.self) { a, e in // TODO: consoder Node.ID = [Node.Name]
-	//			a.appending(path: \.[String(e)])
-	//		}
-	//	}
 
 	@inlinable var lineage: UnfoldSequence<Lemma, (Lemma?, Bool)> {
 		sequence(first: self, next: \.parent)

@@ -12,8 +12,8 @@ import Foundation
 	
 	private var lemma: Lemma! // TODO: serioulsy?
 	
-	private init(_ o: Graph) {
-		graph = o
+	private init(_ graph: Graph) {
+		self.graph = graph
 	}
 	
 	deinit {
@@ -71,18 +71,20 @@ public extension Lexicon { // MARK: additive mutations
 		
 		let name = new.root.name
 		
-		guard lemma.isValid(newChildName: name) else {
+		guard
+			lemma.isValid(newChildName: name),
+			let path = lemma.graphPath
+		else {
 			return nil // TODO: throw
 		}
 		
 		var graph = graph
 		graph.date = .init()
 		
-//		let child = graph[lemma.node].make(child: name)
-//
-//		reset(to: graph)
-//		return self[child.id]
-		fatalError()
+		graph[path].children[name] = new.root // TODO: fix inheritance and synonyms where pasting from other lexicons
+
+		reset(to: graph)
+		return self["\(lemma.id).\(name)"]
 	}
 	
 	func make(child name: Lemma.Name, to lemma: Lemma) -> Lemma? {
