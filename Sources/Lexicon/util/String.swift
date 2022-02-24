@@ -80,6 +80,8 @@ extension NSRegularExpression {
 
 public extension Sequence {
 	
+	// TODO: use SortComparator-s after dropping support for iOS 14 and macOS 11
+	
 	@inlinable func sortedByLocalizedStandard<S: StringProtocol>(by keyPath: KeyPath<Element, S>, _ order: ComparisonResult = .orderedAscending) -> [Element] {
 		sorted { l, r in
 			l[keyPath: keyPath].localizedStandardCompare(r[keyPath: keyPath]) == order

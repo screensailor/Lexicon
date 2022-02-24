@@ -78,6 +78,12 @@ public extension Lexicon { // MARK: additive mutations
 			return nil // TODO: throw
 		}
 		
+		var new = new
+		
+		for (node, path) in new.root.descendantsWithPaths(.breadthFirst) { 
+			
+		}
+		
 		var graph = graph
 		graph.date = .init()
 		
