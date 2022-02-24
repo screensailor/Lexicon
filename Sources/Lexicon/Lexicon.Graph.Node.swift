@@ -49,18 +49,24 @@ public extension Lexicon.Graph {
 	}
 }
 
+internal extension Lexicon.Graph.Node {
+	
+	var graphPath: Lexicon.Graph.Path { // TODO: consider storing these with the node?
+		id.split(separator: ".").dropFirst().reduce(\.self) { a, e in // TODO: consoder Node.ID = [Node.Name]
+			a.appending(path: \.[String(e)])
+		}
+	}
+
+	subscript(child: String) -> Lexicon.Graph.Node {
+		get { children[child]! } // TODO: rethink
+		set { children[child] = newValue }
+	}
+}
+
 extension Lexicon.Graph.Node: CustomStringConvertible {
 	
 	public var description: String {
 		id
-	}
-}
-
-internal extension Lexicon.Graph.Node {
-	
-	subscript(child: String) -> Lexicon.Graph.Node {
-		get { children[child]! } // TODO: rethink
-		set { children[child] = newValue }
 	}
 }
 

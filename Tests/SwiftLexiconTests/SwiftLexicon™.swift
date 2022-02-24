@@ -117,7 +117,7 @@ final class SwiftLexicon™: Hopes {
 		test.one[2].more[2].time["❌"].one[2] >> events
 		test.one[3].more[3].time["✅"].one[3] >> events
 		
-		wait(for: 1)
+		wait(for: 1) // TODO: flakey test
 		oTicks.cancel()
 		oAll.cancel()
 	}

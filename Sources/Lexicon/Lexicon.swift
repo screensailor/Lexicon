@@ -24,7 +24,7 @@ public class Lexicon: ObservableObject {
 
 public extension Lexicon {
 	
-	private(set) static var all: [Lexicon] = []
+	private(set) static var all: [Lexicon] = [] // TODO: rethink the reference tree
 	
 	static func from(_ graph: Graph) -> Lexicon {
 		let o = Lexicon(graph)
@@ -37,6 +37,13 @@ public extension Lexicon {
 		Lexicon.connect(lexicon: self, with: graph)
 	}
 	
+	private static func connect(lexicon: Lexicon, with new: Graph? = nil) {
+		let graph = new ?? lexicon.graph
+		lexicon.dictionary.removeAll(keepingCapacity: true)
+		lexicon.lemma = Lemma(name: graph.root.name, node: graph.root, parent: nil, lexicon: lexicon)
+		lexicon.graph = graph
+	}
+
 	func regenerateGraph(_ ƒ: ((Lemma) -> ())? = nil) -> Lexicon.Graph {
 		Lexicon.Graph(
 			root: root.regenerateNode(ƒ),
@@ -49,46 +56,16 @@ public extension Lexicon {
 	/// However, this will resolve implications of mutations for synonyms correctly.
 	/// Using this shortcut will give us time to build up testing facilities to more
 	/// easily develop performant solutions.
-	func reserialize() throws {
+	func reserialize() throws { // TODO: remove!
 		let string = TaskPaper.encode(graph)
 		let newGraph = try TaskPaper(string).decode()
 		reset(to: newGraph)
-	}
-	
-	private static func connect(lexicon: Lexicon, with new: Graph? = nil) {
-		let graph = new ?? lexicon.graph
-		lexicon.dictionary.removeAll(keepingCapacity: true)
-		lexicon.lemma = Lemma(name: graph.root.name, node: graph.root, parent: nil, lexicon: lexicon)
-		lexicon.graph = graph
-	}
-}
-
-public extension Lexicon.Graph.Node {
-	
-	var graphPath: Lexicon.Graph.Path { // TODO: consider storing these with the node?
-		id.split(separator: ".").dropFirst().reduce(\.self) { a, e in
-			a.appending(path: \.[String(e)])
-		}
-	}
-}
-
-public extension Lexicon.Graph {
-	
-	typealias Path = WritableKeyPath<Node, Node>
-
-	subscript(_ node: Node) -> Node {
-		get {
-			return root[keyPath: node.graphPath]
-		}
-		set {
-			root[keyPath: node.graphPath] = newValue
-		}
 	}
 }
 
 extension Lexicon {
 	
-	// TODO: are these still needed ↓?
+	// TODO: are these ↓ still useful?
 	
 	nonisolated func deiniting(lemma: Lemma) {
 		Task(priority: .high) { [id = lemma.id] in
@@ -103,7 +80,7 @@ extension Lexicon {
 
 public extension Lexicon {
 	
-	// TODO: rething these too ↓
+	// TODO: rethink these ↓
 	
 	var root: Lemma { lemma! }
 	
@@ -112,77 +89,26 @@ public extension Lexicon {
 	}
 }
 
-public extension Lexicon {
-	
-	@discardableResult
-	func add(child graph: Graph, to lemma: Lemma) -> Lemma? {
-		add(child: graph.root.name, node: graph.root, to: lemma)
-	}
-	
-	@discardableResult
-	func add(child name: Lemma.Name, node: Graph.Node, to lemma: Lemma, date: Date? = Date()) -> Lemma? {
-		
-		guard !name.isEmpty, lemma.children[name] == nil else {
-			return nil // TODO: throw
-		}
-		
-		defer {
-			if let date = date {
-				graph.date = date
-			}
-		}
-		
-		lemma.node.children[name] = node
-		
-		let child = Lemma(name: name, node: node, parent: lemma, lexicon: self)
-		lemma.ownChildren[name] = child
-		lemma.children[name] = child
-		
-		for id in dictionary.keys {
-			guard let o = dictionary[id], o != lemma, o.is(lemma) else {
-				continue
-			}
-			inherit(child: name, node: node, to: o)
-		}
-		
-		return child
-	}
-
-	@discardableResult
-	func add(childrenOf node: Graph.Node, to lemma: Lemma) -> Lemma? {
-		defer {
-			graph.date = .init()
-		}
-		for (name, child) in node.children {
-			add(child: name, node: child, to: lemma, date: nil)
-		}
-		return lemma
-	}
-	
-	@discardableResult
-	func inherit(child name: Lemma.Name, node: Graph.Node, to lemma: Lemma) -> Lemma? {
-		
-		guard !name.isEmpty, lemma.children[name] == nil else {
-			return nil // TODO: throw
-		}
-		
-		let child = Lemma(name: name, node: node, parent: lemma, lexicon: self)
-		lemma.children[name] = child
-		
-		for id in dictionary.keys {
-			guard let o = dictionary[id], o != lemma, o.is(lemma) else {
-				continue
-			}
-			inherit(child: name, node: node, to: o)
-		}
-		
-		return child
-	}
-}
-
 // MARK: graph mutations
 
 public extension Lexicon { // MARK: additive mutations
+	
+	func make(child new: Graph, to lemma: Lemma) -> Lemma? {
+		
+		let name = new.root.name
+		
+		guard lemma.isValid(newChildName: name) else {
+			return nil // TODO: throw
+		}
+		
+		var graph = graph
+		graph.date = .init()
+		
+		let child = graph[lemma.node].make(child: name)
+		
+		reset(to: graph)
+		return self[child.id]
+	}
 	
 	func make(child name: Lemma.Name, to lemma: Lemma) -> Lemma? {
 		

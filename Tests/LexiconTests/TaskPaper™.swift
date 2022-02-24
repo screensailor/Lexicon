@@ -15,7 +15,7 @@ class TaskPaper™: Hopes {
 }
 
 private let taskpaper_example = """
-
+ignore me!
 a:
 	a1:
 	+ a.a2
@@ -38,7 +38,7 @@ a:
 		= a.a4.a41.a411.a4111
 
 b:
-	ignore!!!
+	ignore me too!
 	+ b
 """
 

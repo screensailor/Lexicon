@@ -23,6 +23,20 @@ public extension Lexicon {
 	}
 }
 
+public extension Lexicon.Graph {
+	
+	typealias Path = WritableKeyPath<Node, Node>
+	
+	subscript(_ node: Node) -> Node {
+		get {
+			return root[keyPath: node.graphPath]
+		}
+		set {
+			root[keyPath: node.graphPath] = newValue
+		}
+	}
+}
+
 extension Lexicon.Graph: Equatable {
 	
 	public static func == (lhs: Lexicon.Graph, rhs: Lexicon.Graph) -> Bool { // TODO: super dodgy

@@ -29,15 +29,15 @@ public class Lemma {
 	
 	init(name: Name, node: Lexicon.Graph.Node, parent: Lemma?, lexicon: Lexicon) {
 		
-		self.id = parent.map{ "\($0.id).\(name)" } ?? name
+		self.id = parent.map{ "\($0.id).\(name)" } ?? name // MARK: not using node.id
 		self.name = name
 		self.node = node
 		self.parent = parent
 		self.lexicon = lexicon
 		
-		lexicon.dictionary[id] = self
+		lexicon.dictionary[id] = self // MARK: ads itself to the lexicon map
 		
-		for (name, node) in node.children {
+		for (name, node) in node.children { // MARK: recursively replicate the graph
 			ownChildren[name] = Lemma(name: name, node: node, parent: self, lexicon: lexicon)
 		}
 	}
@@ -207,27 +207,12 @@ extension String {
 	}
 }
 
-public extension Lemma { // MARK: language hydration
-	
-	@discardableResult @inlinable func add(child: Lexicon.Graph) -> Lemma? {
-		lexicon.add(child: child, to: self)
-	}
-	
-	@discardableResult @inlinable func add(child name: Lemma.Name, node: Lexicon.Graph.Node) -> Lemma? {
-		lexicon.add(child: name, node: node, to: self)
-	}
-	
-	@discardableResult @inlinable func add(childrenOf node: Lexicon.Graph.Node) -> Lemma? {
-		lexicon.add(childrenOf: node, to: self)
-	}
-	
-	@discardableResult func inherit(child name: Lemma.Name, node: Lexicon.Graph.Node) -> Lemma? {
-		lexicon.inherit(child: name, node: node, to: self)
-	}
-}
-
 public extension Lemma { // MARK: additive graph mutations
 	
+	@discardableResult @inlinable func make(child: Lexicon.Graph) -> Lemma? {
+		lexicon.make(child: child, to: self)
+	}
+
 	@inlinable func make(child: Name) -> Lemma? {
 		lexicon.make(child: child, to: self)
 	}
@@ -307,14 +292,15 @@ extension Lemma {
 			return nil
 		}
 		guard let parent = parent else {
-			print("😱Synonym '\(suffix)', lemma '\(id)', does not have a parent.")
+			assertionFailure("Synonym '\(suffix)', lemma '\(id)', does not have a parent.")
 			return nil
 		}
 		guard let protonym = parent[suffix.components(separatedBy: ".")] else {
-			print("😱Could not find protonym '\(suffix)' of \(id)")
+			print()
+			assertionFailure("Could not find protonym '\(suffix)' of \(id)")
 			return nil
 		}
-		lexicon.dictionary[id] = protonym
+		lexicon.dictionary[id] = protonym // MARK: always map synonym to its protonym
 		return .init(protonym)
 	}
 	
@@ -326,25 +312,29 @@ extension Lemma {
 			}
 			return o
 		}
-		var o = ownChildren
-		for (_, type) in ownType {
-			for (name, lemma) in type.children {
-				o[name] = Lemma(name: name, node: lemma.node, parent: self, lexicon: lexicon)
+		else {
+			var o = ownChildren
+			for (_, type) in ownType {
+				for (name, lemma) in type.children {
+					o[name] = Lemma(name: name, node: lemma.node, parent: self, lexicon: lexicon)
+				}
 			}
+			return o
 		}
-		return o
 	}
 	
 	func lazy_type() -> [ID: Unowned<Lemma>] {
-		if let protonym = protonym {
+		if let protonym = protonym { // TODO: make this computed pass through to the protonym
 			return protonym.type
 		}
-		var o = ownType
-		o[id] = self
-		for (_, lemma) in ownType {
-			o.merge(lemma.type){ o, _ in o }
+		else {
+			var o = ownType
+			o[id] = self
+			for (_, lemma) in ownType {
+				o.merge(lemma.type){ o, _ in o }
+			}
+			return o
 		}
-		return o
 	}
 	
 	func lazy_ownType() -> [ID: Unowned<Lemma>] {
