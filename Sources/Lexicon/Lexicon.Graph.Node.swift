@@ -3,7 +3,7 @@
 //
 
 public extension Lexicon.Graph.Node {
-	typealias ID = String // TODO: consider [Name] instead
+	typealias ID = String // TODO: consider [Name] or WritableKeyPath or [WritableKeyPath] instead
 	typealias Name = String
 	typealias Protonym = String
 }
@@ -12,26 +12,19 @@ public extension Lexicon.Graph {
 	
 	struct Node {
 		
-		public var id: ID
 		public var name: Name
 		public var type: Set<ID>
 		public var protonym: Protonym?
 		public var children: [Name: Node]
 		
-		public init(root: Name) {
-			self.init(id: root, name: root)
-		}
-		
-		public init(id: ID, name: Name, protonym: Protonym) {
-			self.id = id
+		public init(name: Name, protonym: Protonym) {
 			self.name = name
-			self.protonym = protonym
 			self.type = []
+			self.protonym = protonym
 			self.children = [:]
 		}
 		
-		public init(id: ID, name: Name, children: [Name: Node] = [:], type: Set<ID> = []) {
-			self.id = id
+		public init(name: Name, children: [Name: Node] = [:], type: Set<ID> = []) {
 			self.name = name
 			self.type = type
 			self.children = children
@@ -42,7 +35,7 @@ public extension Lexicon.Graph {
 			if let child = children[name] {
 				return child
 			}
-			let child = Node(id: "\(id).\(name)", name: name)
+			let child = Node(name: name)
 			children[name] = child
 			return child
 		}
@@ -50,13 +43,8 @@ public extension Lexicon.Graph {
 }
 
 internal extension Lexicon.Graph.Node {
-	
-	var graphPath: Lexicon.Graph.Path { // TODO: consider storing these with the node?
-		id.split(separator: ".").dropFirst().reduce(\.self) { a, e in // TODO: consoder Node.ID = [Node.Name]
-			a.appending(path: \.[String(e)])
-		}
-	}
 
+	/// - note: This is not an optional subscript!
 	subscript(child: String) -> Lexicon.Graph.Node {
 		get { children[child]! } // TODO: rethink
 		set { children[child] = newValue }
@@ -66,7 +54,7 @@ internal extension Lexicon.Graph.Node {
 extension Lexicon.Graph.Node: CustomStringConvertible {
 	
 	public var description: String {
-		id
+		name
 	}
 }
 

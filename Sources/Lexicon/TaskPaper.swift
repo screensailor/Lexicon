@@ -41,7 +41,7 @@ public class TaskPaper {
 		}
 		
 		var path: [WritableKeyPath<Node, Node>] = []
-		var root = Node(root: "")
+		var root = Node(name: "")
 		var error: Error?
 		
 		string.enumerateLines{ line, stop in
@@ -83,7 +83,7 @@ public class TaskPaper {
 			guard let name = name, depth == 0 else {
 				return // ignore everything before the first root node
 			}
-			root = Node(root: name)
+			root = Node(name: name)
 			path = [\.self]
 			return
 		}

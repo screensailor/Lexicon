@@ -21,19 +21,19 @@ class Lemma_Traversal™: Hopes {
 		let hierarchy: [Lemma] = await lemma.breadthFirstTraversal.reduce(into: []){ $0.append($1) }
 		
 		hope(hierarchy.map(\.id)) == [
-			"root",
-			"root.sentence",
-			"root.word",
-			"root.sentence.a",
-			"root.sentence.one",
-			"root.word.determiner",
-			"root.word.noun",
-			"root.word.number",
-			"root.sentence.a.b",
-			"root.sentence.one.two",
-			"root.sentence.a.b.c",
-			"root.sentence.one.two.three",
-			"root.sentence.a.b.c.d",
+			"a",
+			"a.sentence",
+			"a.word",
+			"a.sentence.a",
+			"a.sentence.one",
+			"a.word.determiner",
+			"a.word.noun",
+			"a.word.number",
+			"a.sentence.a.b",
+			"a.sentence.one.two",
+			"a.sentence.a.b.c",
+			"a.sentence.one.two.three",
+			"a.sentence.a.b.c.d",
 		]
 	}
 	
@@ -49,19 +49,19 @@ class Lemma_Traversal™: Hopes {
 		let hierarchy: [Lemma] = await lemma.depthFirstTraversal.reduce(into: []){ $0.append($1) }
 		
 		hope(hierarchy.map(\.id)) == [
-			"root",
-			"root.sentence",
-			"root.sentence.a",
-			"root.sentence.a.b",
-			"root.sentence.a.b.c",
-			"root.sentence.a.b.c.d",
-			"root.sentence.one",
-			"root.sentence.one.two",
-			"root.sentence.one.two.three",
-			"root.word",
-			"root.word.determiner",
-			"root.word.noun",
-			"root.word.number",
+			"a",
+			"a.sentence",
+			"a.sentence.a",
+			"a.sentence.a.b",
+			"a.sentence.a.b.c",
+			"a.sentence.a.b.c.d",
+			"a.sentence.one",
+			"a.sentence.one.two",
+			"a.sentence.one.two.three",
+			"a.word",
+			"a.word.determiner",
+			"a.word.noun",
+			"a.word.number",
 		]
 	}
 }

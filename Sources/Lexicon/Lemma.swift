@@ -4,36 +4,38 @@
 
 import Foundation
 
-@LexiconActor
-public class Lemma {
+@LexiconActor public class Lemma {
 	
 	public typealias ID = String
 	public typealias Name = String
 	public typealias Protonym = String
 	public typealias Description = String
 	
-	public internal(set) var node: Lexicon.Graph.Node
-	
 	nonisolated public let id: ID
 	nonisolated public let name: Name
+	nonisolated public let  isGraphNode: Bool
 	nonisolated public unowned let parent: Lemma?
 	nonisolated public unowned let lexicon: Lexicon
 	
-	public internal(set) lazy var protonym: Unowned<Lemma>? = lazy_protonym()
-	
-	public internal(set) lazy var children: [Name: Lemma] = lazy_children()
+	public internal(set) var node: Lexicon.Graph.Node
 	public internal(set) var ownChildren: [Name: Lemma] = [:]
-	
+
+	public internal(set) lazy var protonym: Unowned<Lemma>? = lazy_protonym()
+	public internal(set) lazy var children: [Name: Lemma] = lazy_children()
 	public internal(set) lazy var type: [ID: Unowned<Lemma>] = lazy_type()
 	public internal(set) lazy var ownType: [ID: Unowned<Lemma>] = lazy_ownType()
 	
 	init(name: Name, node: Lexicon.Graph.Node, parent: Lemma?, lexicon: Lexicon) {
 		
-		self.id = parent.map{ "\($0.id).\(name)" } ?? name // MARK: not using node.id
+		self.id = parent.map{ "\($0.id).\(name)" } ?? name
 		self.name = name
 		self.node = node
 		self.parent = parent
 		self.lexicon = lexicon
+		
+		self.isGraphNode = parent.map {
+			$0.isGraphNode && $0.node.children[name] != nil
+		} ?? true
 		
 		lexicon.dictionary[id] = self // MARK: ads itself to the lexicon map
 		
@@ -70,16 +72,14 @@ public extension Lemma {
 		ƒ?(self)
 		if let protonym = protonym {
 			return Lexicon.Graph.Node(
-				id: node.id,
 				name: node.name,
 				protonym: protonym.id.dotPath(after: parent?.id ?? "") // TODO: performance?
 			)
 		} else {
 			return Lexicon.Graph.Node(
-				id: node.id,
 				name: node.name,
 				children: ownChildren.mapValues{ $0.regenerateNode(ƒ) },
-				type: Set(ownType.values.map(\.node.id))
+				type: Set(ownType.values.map(\.id))
 			)
 		}
 	}
@@ -103,15 +103,17 @@ public extension Lemma {
 	@inlinable var isSynonym: Bool {
 		protonym != nil
 	}
-
-	@inlinable var isGraphNode: Bool {
-		id == node.id
-	}
 	
 	@inlinable var graphNode: Lexicon.Graph.Node? {
 		isGraphNode ? node : nil
 	}
 	
+	//	var graphPath: Lexicon.Graph.Path { // TODO: consider storing these with the node?
+	//		id.split(separator: ".").dropFirst().reduce(\.self) { a, e in // TODO: consoder Node.ID = [Node.Name]
+	//			a.appending(path: \.[String(e)])
+	//		}
+	//	}
+
 	@inlinable var lineage: UnfoldSequence<Lemma, (Lemma?, Bool)> {
 		sequence(first: self, next: \.parent)
 	}

@@ -33,7 +33,7 @@ public extension Lexicon.Graph.Node {
 			guard let first = buffer.popFirst() else {
 				return nil
 			}
-			buffer.append(contentsOf: first.children.values.sortedByLocalizedStandard(by: \.id))
+			buffer.append(contentsOf: first.children.values.sortedByLocalizedStandard(by: \.name))
 			return first
 		}
 		
@@ -57,7 +57,7 @@ public extension Lexicon.Graph.Node {
 			guard let last = buffer.popLast() else {
 				return nil
 			}
-			buffer.append(contentsOf: last.children.values.sortedByLocalizedStandard(by: \.id).reversed())
+			buffer.append(contentsOf: last.children.values.sortedByLocalizedStandard(by: \.name).reversed())
 			return last
 		}
 		

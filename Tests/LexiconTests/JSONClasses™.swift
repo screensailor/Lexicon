@@ -17,6 +17,8 @@ class JSONClasses™: Hopes {
 
 extension JSONClasses™ {
 	
+	// TODO: should we allow "= a.b.b.b.b.b"?
+	
 	static let taskpaper = """
 	root:
 		a:
@@ -226,7 +228,7 @@ private let expected = """
     },
     {
       "id" : "root.x_y_z",
-      "protonym" : "root.a.b"
+      "protonym" : "root.a.b.b.b.b.b"
     }
   ],
   "date" : "2001-01-01T00:00:00.000Z",

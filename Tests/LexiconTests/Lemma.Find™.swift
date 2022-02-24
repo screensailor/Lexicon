@@ -18,21 +18,21 @@ class Lemma_Find™: Hopes {
 	func test_c() async throws {
 		let lemma = await Lexicon.from(.from(sentences: sentences)).root
 		let o = await lemma.find("c").map(\.id)
-		hope(o) == ["root.sentence.a.b.c"]
+		hope(o) == ["a.sentence.a.b.c"]
 	}
 	
 	func test_C() async throws {
 		let lemma = await Lexicon.from(.from(sentences: sentences)).root
 		let o = await lemma.find("c").map(\.id)
-		hope(o) == ["root.sentence.a.b.c"]
+		hope(o) == ["a.sentence.a.b.c"]
 	}
 	
 	func test_n() async throws {
 		let lemma = await Lexicon.from(.from(sentences: sentences)).root
 		let o = await lemma.find("n").map(\.id).sorted()
 		hope(o) == [
-			"root.word.noun",
-			"root.word.number",
+			"a.word.noun",
+			"a.word.number",
 		]
 	}
 	
@@ -40,8 +40,8 @@ class Lemma_Find™: Hopes {
 		let lemma = await Lexicon.from(.from(sentences: sentences)).root
 		let o = await lemma.find("w", "n").map(\.id).sorted()
 		hope(o) == [
-			"root.word.noun",
-			"root.word.number",
+			"a.word.noun",
+			"a.word.number",
 		]
 	}
 	
@@ -49,8 +49,8 @@ class Lemma_Find™: Hopes {
 		let lemma = await Lexicon.from(.from(sentences: sentences)).root
 		let o = await lemma.find("w", "", "n").map(\.id).sorted()
 		hope(o) == [
-			"root.word.noun",
-			"root.word.number",
+			"a.word.noun",
+			"a.word.number",
 		]
 	}
 	
@@ -58,7 +58,7 @@ class Lemma_Find™: Hopes {
 		let lemma = await Lexicon.from(.from(sentences: sentences)).root
 		let o = await lemma.find("a", "b").map(\.id)
 		hope(o) == [
-			"root.sentence.a.b",
+			"a.sentence.a.b",
 		]
 	}
 	
@@ -73,8 +73,8 @@ class Lemma_Find™: Hopes {
 		let lemma = await Lexicon.from(.from(sentences: sentences)).root
 		let o = await lemma.find("b", "d").map(\.id).sorted()
 		hope(o) == [
-			"root.sentence.a.b.c.d",
-			"root.sentence.b.c.d",
+			"a.sentence.a.b.c.d",
+			"a.sentence.b.c.d",
 		]
 	}
 	
@@ -89,16 +89,16 @@ class Lemma_Find™: Hopes {
 		do {
 			let o = await lemma.find("a", "d").map(\.id).sorted()
 			hope(o) == [
-				"root.sentence.a.b.c.d",
-				"root.sentence.b.c.d.a.b.c.d",
+				"a.sentence.a.b.c.d",
+				"a.sentence.b.c.d.a.b.c.d",
 			]
 		}
 		do {
 			let o = await lemma.find("b", "d").map(\.id).sorted()
 			hope(o) == [
-				"root.sentence.a.b.c.d",
-				"root.sentence.b.c.d",
-				"root.sentence.b.c.d.a.b.c.d",
+				"a.sentence.a.b.c.d",
+				"a.sentence.b.c.d",
+				"a.sentence.b.c.d.a.b.c.d",
 			]
 		}
 	}

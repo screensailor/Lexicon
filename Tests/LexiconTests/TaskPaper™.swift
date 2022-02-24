@@ -24,7 +24,7 @@ a:
 
 	a2:
 		a21:
-		ignore!!!
+		ignore me!!
 		+ a.a2
 	a3:
 	a4:
@@ -38,7 +38,7 @@ a:
 		= a.a4.a41.a411.a4111
 
 b:
-	ignore me too!
+	ignore me too!!!
 	+ b
 """
 

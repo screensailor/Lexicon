@@ -119,7 +119,7 @@ public extension Lexicon.Graph.Node {
 			
 			self.json = JSON(
 				id: lemma.id,
-				protonym: lemma.protonym?.node.id,
+				protonym: lemma.protonym?.id,
 				type: lemma.ownType
 					.keys
 					.sortedByLocalizedStandard()
@@ -150,7 +150,7 @@ public extension Lexicon.Graph.Node {
 				mixin: JSON.Mixin(
 					type: mixin.json.id,
 					children: mixin.lemma?.children
-						.map{ (name, child) in (name, "\(child.node.id)") }
+						.map{ (name, child) in (name, "\(child.id)") }
 						.unlessEmpty
 						.map{ Dictionary($0){ _, last in last } }
 				)

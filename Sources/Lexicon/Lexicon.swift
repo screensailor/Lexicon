@@ -104,10 +104,11 @@ public extension Lexicon { // MARK: additive mutations
 		var graph = graph
 		graph.date = .init()
 		
-		let child = graph[lemma.node].make(child: name)
-		
-		reset(to: graph)
-		return self[child.id]
+//		let child = graph[lemma.node].make(child: name)
+//
+//		reset(to: graph)
+//		return self[child.id]
+		fatalError()
 	}
 	
 	func make(child name: Lemma.Name, to lemma: Lemma) -> Lemma? {
@@ -116,13 +117,14 @@ public extension Lexicon { // MARK: additive mutations
 			return nil // TODO: throw
 		}
 		
-		var graph = graph
-		graph.date = .init()
-		
-		let child = graph[lemma.node].make(child: name)
-
-		reset(to: graph)
-		return self[child.id]
+//		var graph = graph
+//		graph.date = .init()
+//
+//		let child = graph[lemma.node].make(child: name)
+//
+//		reset(to: graph)
+//		return self[child.id]
+		fatalError()
 	}
 	
 	func add(type: Lemma, to lemma: Lemma) -> Lemma? {
@@ -131,13 +133,14 @@ public extension Lexicon { // MARK: additive mutations
 			return nil // TODO: throw
 		}
 
-		var graph = graph
-		graph.date = .init()
-		
-		graph[lemma.node].type.insert(type.id)
-		
-		reset(to: graph)
-		return self[lemma.id]
+//		var graph = graph
+//		graph.date = .init()
+//
+//		graph[lemma.node].type.insert(type.id)
+//
+//		reset(to: graph)
+//		return self[lemma.id]
+		fatalError()
 	}
 }
 
@@ -186,46 +189,47 @@ public extension Lexicon { // MARK: non-additive mutations
 			name: name
 		)
 		
-		lemma.node.id = new.id
-		lemma.node.name = new.name
-		
-		var graph = graph
-		graph.date = .init()
-
-		if let parent = lemma.parent {
-			graph[parent.node].children[old.name] = nil
-			graph[parent.node].children[new.name] = lemma.node
-		} else {
-			graph.root = lemma.node
-		}
-		
-		let namePattern = try! NSRegularExpression(pattern: "\\b\(new.name)\\b", options: [])
-		
-		for node in graph.root.descendants(.breadthFirst) {
-			if
-				let protonym = node.protonym,
-				namePattern.firstMatch(in: protonym, options: [], range: protonym.nsRange) != nil, // TODO: performance - not necessarily our node
-				let synonym = self[node.id]
-			{
-				let count = protonym.split(separator: ".").count
-				graph[node].protonym  = sequence(first: synonym, next: \.parent)
-					.prefix(count)
-					.map(\.node.name)
-					.reversed()
-					.joined(separator: ".")
-			}
-			else {
-				//                otherNode.type = Set(otherNode.type.map{ id in
-				//                    guard id.starts(with: old.id) else { // TODO: user range(of:)
-				//                        return id
-				//                    }
-				//                    return String(new.id + id.dropFirst(old.id.count)) // TODO: preformance (use range)
-				//                }) // TODO: performance
-			}
-		}
-		
-		reset(to: graph)
-		return self[new.id]
+//		lemma.node.id = new.id
+//		lemma.node.name = new.name
+//
+//		var graph = graph
+//		graph.date = .init()
+//
+//		if let parent = lemma.parent {
+//			graph[parent.node].children[old.name] = nil
+//			graph[parent.node].children[new.name] = lemma.node
+//		} else {
+//			graph.root = lemma.node
+//		}
+//
+//		let namePattern = try! NSRegularExpression(pattern: "\\b\(new.name)\\b", options: [])
+//
+//		for node in graph.root.descendants(.breadthFirst) {
+//			if
+//				let protonym = node.protonym,
+//				namePattern.firstMatch(in: protonym, options: [], range: protonym.nsRange) != nil, // TODO: performance - not necessarily our node
+//				let synonym = self[node.id]
+//			{
+//				let count = protonym.split(separator: ".").count
+//				graph[node].protonym  = sequence(first: synonym, next: \.parent)
+//					.prefix(count)
+//					.map(\.node.name)
+//					.reversed()
+//					.joined(separator: ".")
+//			}
+//			else {
+//				//                otherNode.type = Set(otherNode.type.map{ id in
+//				//                    guard id.starts(with: old.id) else { // TODO: user range(of:)
+//				//                        return id
+//				//                    }
+//				//                    return String(new.id + id.dropFirst(old.id.count)) // TODO: preformance (use range)
+//				//                }) // TODO: performance
+//			}
+//		}
+//
+//		reset(to: graph)
+//		return self[new.id]
+		fatalError()
 	}
 
 	func remove(type: Lemma, from lemma: Lemma) -> Lemma? {
