@@ -103,29 +103,33 @@ public extension Lexicon { // MARK: additive mutations
 			return nil
 		}
 		
-		var new = new
+		let id = "\(lemma.id).\(name)"
 		
-		var protonyms: [(Graph.Node, Graph.Path)] = [] // TODO: reinstate
-		var inheritance: [(Graph.Node, Graph.Path)] = [] // TODO: reinstate
+		var graph = graph
+		
+		graph[path].children[name] = new.root
+		reset(to: graph)
+		
+		guard let child = self[id] else {
+			return root
+		}
 
-		for (node, path) in new.root.graphTraversalWithPaths(.breadthFirst) {
-			if node.protonym != nil {
-				protonyms.append((node, path))
-				new[path].protonym = nil
+		graph[path].children[name] = child.regenerateNode { o in
+			for (name, child) in o.ownChildren {
+				if
+					let protonym = child.node.protonym,
+					o[protonym.components(separatedBy: ".")] == nil
+				{
+					o.ownChildren.removeValue(forKey: name)
+				}
 			}
-			else if !node.type.isEmpty {
-				inheritance.append((node, path))
-				new[path].type = []
+			for id in o.node.type where self[id] == nil {
+				o.node.type.remove(name)
 			}
 		}
 		
-		var graph = graph
-		graph.date = .init()
-		
-		graph[path].children[name] = new.root
-
 		reset(to: graph)
-		return self["\(lemma.id).\(name)"] ?? root
+		return self[id] ?? root
 	}
 	
 	func make(child name: Lemma.Name, to lemma: Lemma) -> Lemma? {
@@ -251,12 +255,11 @@ public extension Lexicon { // MARK: non-additive mutations
 
 		root.graphTraversal(.breadthFirst) { o in
 			if
-				let parent = o.parent,
-				let protonym = o.protonym?.unwrapped//,
-//				protonym.isInLineage(of: lemma)
+				let protonym = o.protonym?.unwrapped,
+				protonym.lineage.contains(where: { $0.is(lemma) }) // TODO: measure performance without this
 			{
 				o.node.protonym = protonym.lineage
-					.prefix(while: { $0 != parent })
+					.prefix(while: { $0 != o.parent })
 					.reversed()
 					.map(\.node.name)
 					.joined(separator: ".")

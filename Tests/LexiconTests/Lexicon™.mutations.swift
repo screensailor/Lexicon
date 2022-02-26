@@ -6,6 +6,70 @@ import Lexicon
 
 extension Lexicon™ {
 	
+	// MARK: additive mutations
+	
+	func test_make_child_graph() async throws {
+				
+		let taskpaper = """
+			o:
+				copy:
+					a:
+					+ o
+						b:
+							c:
+								d:
+								+ o.paste.a
+									e:
+									+ o
+							d:
+							= c.d
+							e:
+							= c.d.e.copy
+						c:
+						= copy
+				paste:
+					a:
+			"""
+			
+		let src = try await taskpaper.lemma("o.copy.a.b")
+		let dst = try await src.lexicon["o.paste.a"].try()
+
+		let b = try await dst.make(child: src.graph).try()
+		
+		await hope(that: b.lexicon.taskpaper()) == """
+			o:
+				copy:
+					a:
+					+ o
+						b:
+							c:
+								d:
+								+ o.paste.a
+									e:
+									+ o
+							d:
+							= c.d
+							e:
+							= c.d.e.copy
+						c:
+						= copy
+				paste:
+					a:
+						b:
+							c:
+								d:
+								+ o.paste.a
+									e:
+									+ o
+							d:
+							= c.d
+							e:
+							= c.d.e.copy
+			"""
+	}
+	
+	// MARK: non-additive mutations
+	
 	func test_delete() async throws {
 		
 		let taskpaper = """
