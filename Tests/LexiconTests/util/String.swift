@@ -24,4 +24,26 @@ extension String {
 	func lexicon() async throws -> Lexicon {
 		try await Lexicon.from(TaskPaper(self).decode())
 	}
+	
+	func lemma(_ id: String) async throws -> Lemma {
+		try await lexicon()[id].try()
+	}
+}
+
+extension Lexicon {
+	
+	func taskpaper() -> String {
+		TaskPaper.encode(graph)
+	}
+}
+
+extension Lemma {
+	
+	func taskpaper() -> String {
+		if parent == nil {
+			return lexicon.taskpaper()
+		} else {
+			return TaskPaper.encode(graph)
+		}
+	}
 }

@@ -303,7 +303,6 @@ extension Lemma {
 			return nil
 		}
 		guard let protonym = parent[suffix.components(separatedBy: ".")] else {
-			print()
 			assertionFailure("Could not find protonym '\(suffix)' of \(id)")
 			return nil
 		}

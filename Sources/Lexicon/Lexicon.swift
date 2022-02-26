@@ -158,14 +158,16 @@ public extension Lexicon { // MARK: non-additive mutations
 		parent.ownChildren.removeValue(forKey: lemma.name)
 		
 		let graph = regenerateGraph { o in
-			if let protonym = o.protonym {
-				if protonym.unwrapped.isInLineage(of: lemma) {
-					o.protonym = nil
+			for (name, child) in o.ownChildren {
+				if
+					let protonym = child.node.protonym//,
+//					protonym.isInLineage(of: lemma)
+				{
+					o.ownChildren.removeValue(forKey: name)
 				}
-			} else {
-				for (name, type) in o.type where type.unwrapped.isInLineage(of: lemma) {
-					o.type.removeValue(forKey: name)
-				}
+			}
+			for (name, type) in o.ownType where type.unwrapped.isInLineage(of: lemma) {
+				o.ownType.removeValue(forKey: name)
 			}
 		}
 		
