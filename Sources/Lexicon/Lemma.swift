@@ -167,7 +167,7 @@ public extension Lemma {
 		return protonym.id.dotPath(after: parent.id)
 	}
 	
-	func isValid(protonym: Lemma) -> Bool {
+	func isValid(protonym: Lemma) -> Bool { // TODO: reverse naming to lemma.isValidProtonym(for: proposedSynonym)
 		guard
 			let parent = parent,
 			protonym != self,

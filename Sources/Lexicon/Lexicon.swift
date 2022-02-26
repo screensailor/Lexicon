@@ -26,7 +26,7 @@ public extension Lexicon {
 	var root: Lemma { lemma! }
 	
 	subscript(id: Lemma.ID) -> Lemma? {
-		dictionary[id] ?? lemma?[id.components(separatedBy: ".")]
+		dictionary[id] ?? lemma?[id.components(separatedBy: ".").dropFirst()]
 	}
 }
 
@@ -89,7 +89,7 @@ public extension Lexicon { // MARK: additive mutations
 		graph[path].type.insert(type.id)
 		
 		reset(to: graph)
-		return self[lemma.id]
+		return self[lemma.id] ?? root
 	}
 
 	func make(child new: Graph, to lemma: Lemma) -> Lemma? {
@@ -125,7 +125,7 @@ public extension Lexicon { // MARK: additive mutations
 		graph[path].children[name] = new.root
 
 		reset(to: graph)
-		return self["\(lemma.id).\(name)"]
+		return self["\(lemma.id).\(name)"] ?? root
 	}
 	
 	func make(child name: Lemma.Name, to lemma: Lemma) -> Lemma? {
@@ -143,7 +143,7 @@ public extension Lexicon { // MARK: additive mutations
 		graph[path].make(child: name)
 
 		reset(to: graph)
-		return self["\(lemma.id).\(name)"]
+		return self["\(lemma.id).\(name)"] ?? root
 	}
 }
 
@@ -178,7 +178,7 @@ public extension Lexicon { // MARK: non-additive mutations
 		}
 
 		reset(to: graph)
-		return self[parent.id]
+		return self[parent.id] ?? root
 	}
 	
 	func remove(type: Lemma, from lemma: Lemma) -> Lemma? {
@@ -207,7 +207,7 @@ public extension Lexicon { // MARK: non-additive mutations
 		}
 		
 		reset(to: graph)
-		return self[lemma.id]
+		return self[lemma.id] ?? root
 	}
 	
 	func removeProtonym(of lemma: Lemma) -> Lemma? {
@@ -223,8 +223,8 @@ public extension Lexicon { // MARK: non-additive mutations
 		
 		graph[path].protonym = nil
 		
-		reset(to: graph)
-		return self[lemma.id]
+		reset(to: graph) // TODO: reconsider, as it is not strictly necessary
+		return self[lemma.id] ?? root
 	}
 
 	func rename(_ lemma: Lemma, to name: Lemma.Name) -> Lemma? {
@@ -288,37 +288,29 @@ public extension Lexicon { // MARK: non-additive mutations
 
 	func set(protonym: Lemma, of lemma: Lemma) -> Lemma? {
 		
-		guard lemma.isValid(protonym: protonym) else {
+		guard let protonym = lemma.validated(protonym: protonym) else {
 			return nil
 		}
-
-		lemma.protonym = Unowned(protonym)
-		lemma.ownChildren.removeAll()
-		lemma.ownType.removeAll()
 		
-		let graph = regenerateGraph { o in
-			if let protonym = o.protonym {
-				if protonym.unwrapped.isAncestor(of: lemma) {
-					o.protonym = nil
-				}
-			} else {
-				for (name, type) in o.type where type.unwrapped.isAncestor(of: lemma) {
-					o.type.removeValue(forKey: name)
-				}
-			}
+		let id = lemma.id
+		
+		guard let parent = lemma.delete() else {
+			return nil
 		}
+		
+		guard let path = parent.graphPath else {
+			return parent
+		}
+
+		var graph = graph
+		
+		let node = Lexicon.Graph.Node(name: lemma.name, protonym: protonym)
+		
+		graph[path].children[node.name] = node
 				
 		reset(to: graph)
-
-		guard
-			let id = lemma.parent?.id,
-			let parent = self[id],
-			let lemma = parent.children[lemma.name] // fonund the synonym rather than protonym
-		else {
-			return self[lemma.id]
-		}
 		
-		return lemma
+		return self[id] ?? root
 	}
 }
 

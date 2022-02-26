@@ -92,4 +92,35 @@ extension Lexicon™ {
 				= a
 			"""
 	}
+	
+	func test_set_protonym() async throws {
+		
+		let taskpaper = """
+			o:
+				a:
+				+ o
+				b:
+					x:
+				c:
+				d:
+				= a
+			"""
+			
+		let c = try await taskpaper.lemma("o.c")
+		let x = try await c.lexicon["o.a.b.x"].try()
+
+		let c₂ = try await c.set(protonym: x).try()
+
+		await hope(that: c₂.lexicon.taskpaper()) == """
+			o:
+				a:
+				+ o
+				b:
+					x:
+				c:
+				= a.b.x
+				d:
+				= a
+			"""
+	}
 }
