@@ -212,13 +212,16 @@ public extension Lexicon { // MARK: non-additive mutations
 	
 	func removeProtonym(of lemma: Lemma) -> Lemma? {
 		
-		guard lemma.isGraphNode else {
+		guard
+			lemma.node.protonym != nil,
+			let path = lemma.graphPath
+		else {
 			return nil
 		}
 		
-		lemma.protonym = nil
+		var graph = graph
 		
-		let graph = regenerateGraph()
+		graph[path].protonym = nil
 		
 		reset(to: graph)
 		return self[lemma.id]
@@ -227,7 +230,7 @@ public extension Lexicon { // MARK: non-additive mutations
 	func rename(_ lemma: Lemma, to name: Lemma.Name) -> Lemma? {
 		
 		guard lemma.isValid(newName: name) else {
-			return nil // TODO: throw
+			return nil
 		}
 		
 		let old = (

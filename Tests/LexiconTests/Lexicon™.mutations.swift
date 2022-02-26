@@ -4,7 +4,7 @@
 
 import Lexicon
 
-extension Lexicon™ { // MARK: delete
+extension Lexicon™ {
 	
 	func test_delete() async throws {
 		
@@ -33,10 +33,6 @@ extension Lexicon™ { // MARK: delete
 				= a
 			"""
 	}
-}
-
-
-extension Lexicon™ { // MARK: remove type
 	
 	func test_remove_type() async throws {
 		
@@ -62,6 +58,36 @@ extension Lexicon™ { // MARK: remove type
 				a:
 				b:
 					x:
+				d:
+				= a
+			"""
+	}
+	
+	func test_remove_protonym() async throws {
+		
+		let taskpaper = """
+			o:
+				a:
+				+ o
+				b:
+					x:
+				c:
+				= a.b.x
+				d:
+				= a
+			"""
+			
+		let c = try await taskpaper.lemma("o.c")
+
+		let c₂ = try await c.removeProtonym().try()
+		
+		await hope(that: c₂.lexicon.taskpaper()) == """
+			o:
+				a:
+				+ o
+				b:
+					x:
+				c:
 				d:
 				= a
 			"""
