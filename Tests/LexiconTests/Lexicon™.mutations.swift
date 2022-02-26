@@ -16,6 +16,8 @@ extension Lexicon™ {
 					x:
 				c:
 				= a.x
+				d:
+				= a
 			"""
 			
 		let b = try await taskpaper.lemma("o.b")
@@ -25,6 +27,8 @@ extension Lexicon™ {
 		await hope(that: o.taskpaper()) == """
 			o:
 				a:
+				d:
+				= a
 			"""
 	}
 }
