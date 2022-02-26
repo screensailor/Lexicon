@@ -79,10 +79,11 @@ public extension Lexicon { // MARK: additive mutations
 		}
 		
 		var new = new
+		
 		var protonyms: [(Graph.Node, Graph.Path)] = [] // TODO: reinstate
 		var inheritance: [(Graph.Node, Graph.Path)] = [] // TODO: reinstate
 
-		for (node, path) in new.root.descendantsWithPaths(.breadthFirst) {
+		for (node, path) in new.root.graphTraversalWithPaths(.breadthFirst) {
 			if node.protonym != nil {
 				protonyms.append((node, path))
 				new[path].protonym = nil
@@ -199,7 +200,7 @@ public extension Lexicon { // MARK: non-additive mutations
 //
 //		let namePattern = try! NSRegularExpression(pattern: "\\b\(new.name)\\b", options: [])
 //
-//		for node in graph.root.descendants(.breadthFirst) {
+//		for node in graph.root.graphTraversal(.breadthFirst) {
 //			if
 //				let protonym = node.protonym,
 //				namePattern.firstMatch(in: protonym, options: [], range: protonym.nsRange) != nil, // TODO: performance - not necessarily our node

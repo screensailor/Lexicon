@@ -18,22 +18,25 @@ public extension Lexicon.Graph {
 
 public extension Lexicon {
 	
-	func json() async -> Graph.JSON {
-		.init(
+	func json() -> Graph.JSON {
+		Graph.JSON(
 			date: graph.date,
 			name: graph.root.name,
-			classes: await root.classes().values.map(\.json).sortedByLocalizedStandard(by: \.id)
+			classes: root.classes().values.map(\.json).sortedByLocalizedStandard(by: \.id)
 		)
 	}
 }
 
-extension Lemma {
+public extension Lemma {
 	
-	public func classes() async -> [ID: Lexicon.Graph.Node.Class] {
+	func classes() -> [ID: Lexicon.Graph.Node.Class] {
 		
-		var classes: [ID: Class] = await breadthFirstTraversal
-			.map(Class.init)
-			.reduce(into: [:]){ $0[$1.json.id] = $1 }
+		var classes: [ID: Class] = [:]
+		
+		graphTraversal(.depthFirst) { lemma in
+			let o = Class(lemma: lemma)
+			classes[o.json.id] = o
+		}
 		
 		for klass in classes.values {
 			klass.json.supertype = Self.supertype(for: klass, in: &classes)
@@ -54,8 +57,7 @@ public extension Sequence where Element == Lexicon.Graph.Node.Class {
 
 private extension Sequence where Element == Lemma {
 	
-	@LexiconActor
-	func sortedByChildCount() -> [Element] {
+	@LexiconActor func sortedByChildCount() -> [Element] {
 		sorted{ l, r in
 			guard l.ownChildren.count != r.ownChildren.count else {
 				return l.id.lexicographicallyPrecedes(r.id)
@@ -114,8 +116,7 @@ public extension Lexicon.Graph.Node {
 		public let lemma: Lemma?
 		public var kind: Set<Lemma.ID>
 		
-		@LexiconActor
-		init(lemma: Lemma) {
+		@LexiconActor init(lemma: Lemma) {
 			
 			self.json = JSON(
 				id: lemma.id,
@@ -141,8 +142,7 @@ public extension Lexicon.Graph.Node {
 			self.kind = Set(lemma.type.keys)
 		}
 		
-		@LexiconActor
-		init(id: Lemma.ID, supertype: Lemma.ID, mixin: Lexicon.Graph.Node.Class, kind: Set<Lemma.ID>) {
+		@LexiconActor init(id: Lemma.ID, supertype: Lemma.ID, mixin: Lexicon.Graph.Node.Class, kind: Set<Lemma.ID>) {
 			
 			self.json = JSON(
 				id: id,

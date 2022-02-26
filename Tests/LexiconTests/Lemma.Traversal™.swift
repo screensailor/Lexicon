@@ -18,7 +18,11 @@ class Lemma_Traversal™: Hopes {
 		
 		let lemma = await Lexicon.from(.from(sentences: sentences)).root
 		
-		let hierarchy: [Lemma] = await lemma.breadthFirstTraversal.reduce(into: []){ $0.append($1) }
+		var hierarchy: [Lemma] = []
+		
+		await lemma.graphTraversal(.breadthFirst) { lemma in
+			hierarchy.append(lemma)
+		}
 		
 		hope(hierarchy.map(\.id)) == [
 			"a",
@@ -46,8 +50,12 @@ class Lemma_Traversal™: Hopes {
 		
 		let lemma = await Lexicon.from(.from(sentences: sentences)).root
 		
-		let hierarchy: [Lemma] = await lemma.depthFirstTraversal.reduce(into: []){ $0.append($1) }
+		var hierarchy: [Lemma] = []
 		
+		await lemma.graphTraversal(.depthFirst) { lemma in
+			hierarchy.append(lemma)
+		}
+
 		hope(hierarchy.map(\.id)) == [
 			"a",
 			"a.sentence",

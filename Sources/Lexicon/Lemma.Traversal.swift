@@ -6,68 +6,43 @@ import Collections
 
 public extension Lemma {
 	
-	// TODO: Implement without a buffer for more granular adaptation to change during traversal
-	
-	nonisolated var breadthFirstTraversal: BreadthFirstTraversal {
-		BreadthFirstTraversal(of: self)
-	}
-	
-	/// Async sequence of the lexicon nodes.
-	/// - note: Lemma's descendants can change during async traversal.
-	struct BreadthFirstTraversal: AsyncSequence, AsyncIteratorProtocol {
+	func graphTraversal(_ traversal: Lexicon.Graph.Traversal, _ ƒ: (Lemma) -> ()) {
 		
-		public typealias Element = Lemma
-		public let lemma: Lemma
-		
-		private lazy var buffer: Deque<Lemma> = [lemma]
-		
-		public init(of lemma: Lemma) {
-			self.lemma = lemma
+		guard isGraphNode else {
+			return
 		}
 		
-		public mutating func next() async -> Lemma? {
-			guard let first = buffer.popFirst() else {
-				return nil
-			}
-			await buffer.append(contentsOf: first.ownChildren.values.sortedByLocalizedStandard(by: \.id))
-			return first
-		}
+		let next: @LexiconActor () -> Lemma?
 		
-		public func makeAsyncIterator() -> BreadthFirstTraversal {
-			self
-		}
-	}
-}
+		switch traversal {
+			
+			case .depthFirst:
+				
+				var buffer: [Lemma] = [self]
+				
+				next = {
+					guard let last = buffer.popLast() else {
+						return nil
+					}
+					buffer.append(contentsOf: last.ownChildren.values.sortedByLocalizedStandard(by: \.id).reversed())
+					return last
+				}
 
-public extension Lemma {
-	
-	nonisolated var depthFirstTraversal: DepthFirstTraversal {
-		DepthFirstTraversal(of: self)
-	}
-	
-	/// Async sequence of the lexicon nodes.
-	/// - note: Lemma's descendants can change during async traversal.
-	struct DepthFirstTraversal: AsyncSequence, AsyncIteratorProtocol {
-		
-		public typealias Element = Lemma
-		public let lemma: Lemma
-		
-		private lazy var buffer: [Lemma] = [lemma]
-		
-		public init(of lemma: Lemma) {
-			self.lemma = lemma
+			case .breadthFirst:
+				
+				var buffer: Deque<Lemma> = [self]
+
+				next = {
+					guard let first = buffer.popFirst() else {
+						return nil
+					}
+					buffer.append(contentsOf: first.ownChildren.values.sortedByLocalizedStandard(by: \.id))
+					return first
+				}
 		}
 		
-		public mutating func next() async -> Lemma? {
-			guard let last = buffer.popLast() else {
-				return nil
-			}
-			await buffer.append(contentsOf: last.ownChildren.values.sortedByLocalizedStandard(by: \.id).reversed())
-			return last
-		}
-		
-		public func makeAsyncIterator() -> DepthFirstTraversal {
-			self
+		while let descendant = next() {
+			ƒ(descendant)
 		}
 	}
 }

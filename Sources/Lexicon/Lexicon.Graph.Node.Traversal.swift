@@ -14,7 +14,7 @@ public extension Lexicon.Graph {
 
 public extension Lexicon.Graph.Node {
 	
-	func descendants(_ traversal: Lexicon.Graph.Traversal) -> AnySequence<Lexicon.Graph.Node> {
+	func graphTraversal(_ traversal: Lexicon.Graph.Traversal) -> AnySequence<Lexicon.Graph.Node> {
 		switch traversal {
 			case .depthFirst: return AnySequence(DepthFirstTraversal(of: self))
 			case .breadthFirst: return AnySequence(BreadthFirstTraversal(of: self))
@@ -72,7 +72,7 @@ public extension Lexicon.Graph.Node {
 
 public extension Lexicon.Graph.Node {
 	
-	func descendantsWithPaths(_ traversal: Lexicon.Graph.Traversal) -> AnySequence<(Lexicon.Graph.Node, Lexicon.Graph.Path)> {
+	func graphTraversalWithPaths(_ traversal: Lexicon.Graph.Traversal) -> AnySequence<(Lexicon.Graph.Node, Lexicon.Graph.Path)> {
 		switch traversal {
 			case .depthFirst: return AnySequence(DepthFirstTraversalWithPaths(of: self))
 			case .breadthFirst: return AnySequence(BreadthFirstTraversalWithPaths(of: self))
