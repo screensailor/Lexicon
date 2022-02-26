@@ -116,6 +116,7 @@ public extension Lexicon { // MARK: additive mutations
 		let id = "\(lemma.id).\(name)"
 		
 		var graph = graph
+		graph.date = .init()
 		
 		graph[path].children[name] = new.root
 		reset(to: graph)
@@ -236,7 +237,8 @@ public extension Lexicon { // MARK: non-additive mutations
 		}
 		
 		var graph = graph
-		
+		graph.date = .init()
+
 		graph[path].protonym = nil
 		
 		reset(to: graph) // TODO: reconsider, as it is not strictly necessary
@@ -307,7 +309,8 @@ public extension Lexicon { // MARK: non-additive mutations
 		}
 
 		var graph = graph
-		
+		graph.date = .init()
+
 		let node = Lexicon.Graph.Node(name: lemma.name, protonym: protonym)
 		
 		graph[path].children[node.name] = node
