@@ -92,7 +92,70 @@ extension Lexicon™ {
 				= a
 			"""
 	}
-	
+		
+	func test_rename() async throws {
+		
+		let taskpaper = """
+			o:
+				a:
+				+ o.ax
+				+ o.x.y.z
+					b:
+					+ o.ax.xa
+					+ o.x.y
+						c:
+						+ o.ax.xa.axa
+						+ o.x
+				ax:
+					xa:
+						axa:
+						+ o.z.y
+				s1:
+				= x.y.z
+				s2:
+				= a.b.z
+				s3:
+				= a.b.c.y.z
+				x:
+					y:
+						z:
+				z:
+					y:
+			"""
+			
+		let y = try await taskpaper.lemma("o.x.y")
+
+		let y₂ = try await y.rename(to: "Y").try()
+		
+		await hope(that: y₂.lexicon.taskpaper()) == """
+			o:
+				a:
+				+ o.ax
+				+ o.x.Y.z
+					b:
+					+ o.ax.xa
+					+ o.x.Y
+						c:
+						+ o.ax.xa.axa
+						+ o.x
+				ax:
+					xa:
+						axa:
+						+ o.z.y
+				s1:
+				= x.Y.z
+				s2:
+				= a.b.z
+				s3:
+				= a.b.c.Y.z
+				x:
+					Y:
+						z:
+				z:
+					y:
+			"""
+	}
+
 	func test_set_protonym() async throws {
 		
 		let taskpaper = """

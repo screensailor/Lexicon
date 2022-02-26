@@ -162,7 +162,9 @@ public extension Lexicon { // MARK: non-additive mutations
 		
 		root.graphTraversal(.depthFirst) { o in
 			for (name, type) in o.ownType where type.unwrapped.isInLineage(of: lemma) {
-				o.ownType.removeValue(forKey: name)
+				o.ownType.removeValue(forKey: name) // TODO: don't like
+				o.children = o.lazy_children() // TODO: don't like
+				o.node.type.remove(name)
 			}
 		}
 
@@ -239,51 +241,40 @@ public extension Lexicon { // MARK: non-additive mutations
 		)
 		
 		let new = (
-			id: String(lemma.id.dropLast(old.name.count) + name),
+			id: String(lemma.id.dropLast(old.name.count)) + name,
 			name: name
 		)
 		
-//		lemma.node.id = new.id
-//		lemma.node.name = new.name
-//
-//		var graph = graph
-//		graph.date = .init()
-//
-//		if let parent = lemma.parent {
-//			graph[parent.node].children[old.name] = nil
-//			graph[parent.node].children[new.name] = lemma.node
-//		} else {
-//			graph.root = lemma.node
-//		}
-//
-//		let namePattern = try! NSRegularExpression(pattern: "\\b\(new.name)\\b", options: [])
-//
-//		for node in graph.root.graphTraversal(.breadthFirst) {
-//			if
-//				let protonym = node.protonym,
-//				namePattern.firstMatch(in: protonym, options: [], range: protonym.nsRange) != nil, // TODO: performance - not necessarily our node
-//				let synonym = self[node.id]
-//			{
-//				let count = protonym.split(separator: ".").count
-//				graph[node].protonym  = sequence(first: synonym, next: \.parent)
-//					.prefix(count)
-//					.map(\.node.name)
-//					.reversed()
-//					.joined(separator: ".")
-//			}
-//			else {
-//				//                otherNode.type = Set(otherNode.type.map{ id in
-//				//                    guard id.starts(with: old.id) else { // TODO: user range(of:)
-//				//                        return id
-//				//                    }
-//				//                    return String(new.id + id.dropFirst(old.id.count)) // TODO: preformance (use range)
-//				//                }) // TODO: performance
-//			}
-//		}
-//
-//		reset(to: graph)
-//		return self[new.id]
-		fatalError()
+		lemma.node.name = new.name
+		lemma.parent?.ownChildren.removeValue(forKey: old.name)
+		lemma.parent?.ownChildren[new.name] = lemma
+
+		root.graphTraversal(.breadthFirst) { o in
+			if
+				let parent = o.parent,
+				let protonym = o.protonym?.unwrapped//,
+//				protonym.isInLineage(of: lemma)
+			{
+				o.node.protonym = protonym.lineage
+					.prefix(while: { $0 != parent })
+					.reversed()
+					.map(\.node.name)
+					.joined(separator: ".")
+			}
+			else {
+				for id in o.node.type where id.starts(with: old.id) {
+					o.node.type.remove(id)
+					o.node.type.insert(
+						new.id + String(id.dropFirst(old.id.count))
+					)
+				}
+			}
+		}
+
+		let graph = regenerateGraph()
+		
+		reset(to: graph)
+		return self[new.id] ?? root
 	}
 
 	func set(protonym: Lemma, of lemma: Lemma) -> Lemma? {

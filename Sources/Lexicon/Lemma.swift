@@ -67,16 +67,16 @@ public extension Lemma {
 	
 	func regenerateNode(_ ƒ: ((Lemma) -> ())? = nil) -> Lexicon.Graph.Node {
 		ƒ?(self)
-		if let protonym = protonym {
+		if let protonym = node.protonym {
 			return Lexicon.Graph.Node(
 				name: node.name,
-				protonym: protonym.id.dotPath(after: parent?.id ?? "") // TODO: performance?
+				protonym: protonym
 			)
 		} else {
 			return Lexicon.Graph.Node(
 				name: node.name,
 				children: ownChildren.mapValues{ $0.regenerateNode(ƒ) },
-				type: Set(ownType.values.map(\.id))
+				type: node.type
 			)
 		}
 	}
