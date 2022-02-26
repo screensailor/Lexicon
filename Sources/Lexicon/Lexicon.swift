@@ -157,20 +157,23 @@ public extension Lexicon { // MARK: non-additive mutations
 		
 		parent.ownChildren.removeValue(forKey: lemma.name)
 		
-		let graph = regenerateGraph { o in
-			for (name, child) in o.ownChildren {
-				if
-					let protonym = child.node.protonym//,
-//					protonym.isInLineage(of: lemma)
-				{
-					o.ownChildren.removeValue(forKey: name)
-				}
-			}
+		root.graphTraversal(.depthFirst) { o in
 			for (name, type) in o.ownType where type.unwrapped.isInLineage(of: lemma) {
 				o.ownType.removeValue(forKey: name)
 			}
 		}
-		
+
+		let graph = regenerateGraph { o in
+			for (name, child) in o.ownChildren {
+				if
+					let protonym = child.node.protonym,
+					parent[protonym.components(separatedBy: ".")] == nil // TODO: performance
+				{
+					o.ownChildren.removeValue(forKey: name)
+				}
+			}
+		}
+
 		reset(to: graph)
 		return self[parent.id]
 	}

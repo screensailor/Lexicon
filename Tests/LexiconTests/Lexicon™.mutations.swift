@@ -15,7 +15,7 @@ extension Lexicon™ {
 				b:
 					x:
 				c:
-				= o.a.x
+				= a.x
 			"""
 			
 		let b = try await taskpaper.lemma("o.b")
