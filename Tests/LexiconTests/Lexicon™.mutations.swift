@@ -49,7 +49,7 @@ extension Lexicon™ {
 			"""
 			
 		let a = try await taskpaper.lemma("o.a")
-		let o = try await taskpaper.lemma("o")
+		let o = try await a.lexicon["o"].try()
 
 		let a₂ = try await a.remove(type: o).try()
 		
