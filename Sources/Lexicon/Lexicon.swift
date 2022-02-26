@@ -17,7 +17,7 @@ import Foundation
 	}
 	
 	deinit {
-		assertionFailure("🗑 \(self)") // TODO: hard rethink
+		assertionFailure("🗑 \(self)")
 	}
 }
 
@@ -26,7 +26,17 @@ public extension Lexicon {
 	var root: Lemma { lemma! }
 	
 	subscript(id: Lemma.ID) -> Lemma? {
-		dictionary[id] ?? lemma?[id.components(separatedBy: ".").dropFirst()]
+		if let o = dictionary[id] {
+			return o
+		}
+		guard
+			id.starts(with: root.name),
+			id.count > root.name.count,
+			id[id.index(id.startIndex, offsetBy: root.name.count)] == "."
+		else {
+			return nil
+		}
+		return root[id.components(separatedBy: ".").dropFirst()]
 	}
 }
 
@@ -35,7 +45,7 @@ public extension Lexicon {
 	static func from(_ graph: Graph) -> Lexicon {
 		let o = Lexicon(graph)
 		connect(lexicon: o, with: graph)
-		all.append(o)
+		all.append(o) // TODO: hard rethink
 		return o
 	}
 

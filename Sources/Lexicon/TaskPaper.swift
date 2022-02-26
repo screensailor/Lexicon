@@ -88,11 +88,7 @@ public class TaskPaper {
 			return
 		}
 		
-		guard depth > 0 else {
-			return // ignore any additional roots
-		}
-		
-		if let name = name {
+		if let name = name, depth > 0 { // ignore any additional roots... for now :)
 			
 			let indent = depth - (path.count - 1)
 			
