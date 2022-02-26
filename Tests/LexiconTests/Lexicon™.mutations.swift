@@ -4,13 +4,14 @@
 
 import Lexicon
 
-extension Lexicon™ {
+extension Lexicon™ { // MARK: delete
 	
-	func test_delete_1() async throws {
+	func test_delete() async throws {
 		
 		let taskpaper = """
 			o:
 				a:
+				+ o
 				+ o.b
 				b:
 					x:
@@ -27,8 +28,18 @@ extension Lexicon™ {
 		await hope(that: o.taskpaper()) == """
 			o:
 				a:
+				+ o
 				d:
 				= a
 			"""
+	}
+}
+
+
+extension Lexicon™ { // MARK: remove type
+	
+	func test_remove_type() async throws {
+
+		
 	}
 }

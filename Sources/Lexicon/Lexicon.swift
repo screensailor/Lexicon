@@ -71,6 +71,24 @@ private extension Lexicon {
 
 public extension Lexicon { // MARK: additive mutations
 	
+	func add(type: Lemma, to lemma: Lemma) -> Lemma? {
+		
+		guard
+			lemma.isValid(newType: type),
+			let path = lemma.graphPath
+		else {
+			return nil // TODO: throw
+		}
+		
+		var graph = graph
+		graph.date = .init()
+		
+		graph[path].type.insert(type.id)
+		
+		reset(to: graph)
+		return self[lemma.id]
+	}
+
 	func make(child new: Graph, to lemma: Lemma) -> Lemma? {
 		
 		let name = new.root.name
@@ -124,24 +142,6 @@ public extension Lexicon { // MARK: additive mutations
 		reset(to: graph)
 		return self["\(lemma.id).\(name)"]
 	}
-	
-	func add(type: Lemma, to lemma: Lemma) -> Lemma? {
-		
-		guard
-			lemma.isValid(newType: type),
-			let path = lemma.graphPath
-		else {
-			return nil // TODO: throw
-		}
-
-		var graph = graph
-		graph.date = .init()
-
-		graph[path].type.insert(type.id)
-
-		reset(to: graph)
-		return self[lemma.id]
-	}
 }
 
 public extension Lexicon { // MARK: non-additive mutations
@@ -178,6 +178,39 @@ public extension Lexicon { // MARK: non-additive mutations
 		return self[parent.id]
 	}
 	
+	func remove(type: Lemma, from lemma: Lemma) -> Lemma? {
+		
+		guard
+			lemma.isGraphNode,
+			let type = lemma.ownType.removeValue(forKey: type.id)?.unwrapped
+		else {
+			return nil
+		}
+		
+		let graph = regenerateGraph { o in
+			if let protonym = o.protonym {
+				// TODO: !
+			}
+		}
+		
+		reset(to: graph)
+		return self[lemma.id]
+	}
+	
+	func removeProtonym(of lemma: Lemma) -> Lemma? {
+		
+		guard lemma.isGraphNode else {
+			return nil
+		}
+		
+		lemma.protonym = nil
+		
+		let graph = regenerateGraph()
+		
+		reset(to: graph)
+		return self[lemma.id]
+	}
+
 	func rename(_ lemma: Lemma, to name: Lemma.Name) -> Lemma? {
 		
 		guard lemma.isValid(newName: name) else {
@@ -237,25 +270,6 @@ public extension Lexicon { // MARK: non-additive mutations
 		fatalError()
 	}
 
-	func remove(type: Lemma, from lemma: Lemma) -> Lemma? {
-		
-		guard
-			lemma.isGraphNode,
-			let type = lemma.ownType.removeValue(forKey: type.id)?.unwrapped
-		else {
-			return nil
-		}
-		
-		let graph = regenerateGraph { o in
-			if let protonym = o.protonym {
-				// TODO: !
-			}
-		}
-		
-		reset(to: graph)
-		return self[lemma.id]
-	}
-	
 	func set(protonym: Lemma, of lemma: Lemma) -> Lemma? {
 		
 		guard lemma.isValid(protonym: protonym) else {
@@ -289,20 +303,6 @@ public extension Lexicon { // MARK: non-additive mutations
 		}
 		
 		return lemma
-	}
-	
-	func removeProtonym(of lemma: Lemma) -> Lemma? {
-		
-		guard lemma.isGraphNode else {
-			return nil
-		}
-		
-		lemma.protonym = nil
-
-		let graph = regenerateGraph()
-		
-		reset(to: graph)
-		return self[lemma.id]
 	}
 }
 

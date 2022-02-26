@@ -214,24 +214,20 @@ extension String {
 
 public extension Lemma { // MARK: additive graph mutations
 	
-	@discardableResult @inlinable func make(child: Lexicon.Graph) -> Lemma? {
+	@inlinable func add(type: Lemma) -> Lemma? {
+		lexicon.add(type: type, to: self)
+	}
+	
+	@inlinable func make(child: Lexicon.Graph) -> Lemma? {
 		lexicon.make(child: child, to: self)
 	}
 
 	@inlinable func make(child: Name) -> Lemma? {
 		lexicon.make(child: child, to: self)
 	}
-	
-	@inlinable func add(type: Lemma) -> Lemma? {
-		lexicon.add(type: type, to: self)
-	}
 }
 
 public extension Lemma { // MARK: non-additive graph mutations
-	
-	@inlinable func rename(to name: Lemma.Name) -> Lemma? {
-		lexicon.rename(self, to: name)
-	}
 	
 	@inlinable func delete() -> Lemma? {
 		lexicon.delete(self)
@@ -241,12 +237,16 @@ public extension Lemma { // MARK: non-additive graph mutations
 		lexicon.remove(type: type, from: self)
 	}
 	
-	@inlinable func set(protonym: Lemma) -> Lemma? {
-		lexicon.set(protonym: protonym, of: self)
-	}
-	
 	@inlinable func removeProtonym() -> Lemma? {
 		lexicon.removeProtonym(of: self)
+	}
+
+	@inlinable func rename(to name: Lemma.Name) -> Lemma? {
+		lexicon.rename(self, to: name)
+	}
+	
+	@inlinable func set(protonym: Lemma) -> Lemma? {
+		lexicon.set(protonym: protonym, of: self)
 	}
 }
 
