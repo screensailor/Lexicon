@@ -69,6 +69,9 @@ private extension Lexicon {
 
 // MARK: graph mutations
 
+// TODO: performance
+// TODO: throwing
+
 public extension Lexicon { // MARK: additive mutations
 	
 	func add(type: Lemma, to lemma: Lemma) -> Lemma? {
@@ -77,7 +80,7 @@ public extension Lexicon { // MARK: additive mutations
 			lemma.isValid(newType: type),
 			let path = lemma.graphPath
 		else {
-			return nil // TODO: throw
+			return nil
 		}
 		
 		var graph = graph
@@ -97,7 +100,7 @@ public extension Lexicon { // MARK: additive mutations
 			lemma.isValid(newChildName: name),
 			let path = lemma.graphPath
 		else {
-			return nil // TODO: throw
+			return nil
 		}
 		
 		var new = new
@@ -131,7 +134,7 @@ public extension Lexicon { // MARK: additive mutations
 			lemma.isValid(newChildName: name),
 			let path = lemma.graphPath
 		else {
-			return nil // TODO: throw
+			return nil
 		}
 		
 		var graph = graph
@@ -152,7 +155,7 @@ public extension Lexicon { // MARK: non-additive mutations
 			lemma.isGraphNode,
 			let parent = lemma.parent
 		else {
-			return nil // TODO: throw
+			return nil
 		}
 		
 		parent.ownChildren.removeValue(forKey: lemma.name)
@@ -167,7 +170,7 @@ public extension Lexicon { // MARK: non-additive mutations
 			for (name, child) in o.ownChildren {
 				if
 					let protonym = child.node.protonym,
-					parent[protonym.components(separatedBy: ".")] == nil // TODO: performance
+					o[protonym.components(separatedBy: ".")] == nil
 				{
 					o.ownChildren.removeValue(forKey: name)
 				}
@@ -179,17 +182,27 @@ public extension Lexicon { // MARK: non-additive mutations
 	}
 	
 	func remove(type: Lemma, from lemma: Lemma) -> Lemma? {
-		
-		guard
-			lemma.isGraphNode,
-			let type = lemma.ownType.removeValue(forKey: type.id)?.unwrapped
-		else {
+
+		guard let path = lemma.graphPath else {
 			return nil
 		}
 		
-		let graph = regenerateGraph { o in
-			if let protonym = o.protonym {
-				// TODO: !
+		var graph = graph
+
+		guard graph[path].type.remove(type.id) != nil else {
+			return nil
+		}
+
+		reset(to: graph)
+		
+		graph = regenerateGraph { o in
+			for (name, child) in o.ownChildren {
+				if
+					let protonym = child.node.protonym,
+					o[protonym.components(separatedBy: ".")] == nil
+				{
+					o.ownChildren.removeValue(forKey: name)
+				}
 			}
 		}
 		
