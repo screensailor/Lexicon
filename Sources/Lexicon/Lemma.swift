@@ -210,6 +210,8 @@ extension String {
 	}
 }
 
+#if EDITOR
+
 public extension Lemma { // MARK: additive graph mutations
 	
 	@discardableResult @inlinable func make(child: Lexicon.Graph) -> Lemma? {
@@ -247,6 +249,8 @@ public extension Lemma { // MARK: non-additive graph mutations
 		lexicon.removeProtonym(of: self)
 	}
 }
+
+#endif
 
 extension Lemma: Equatable {
 	@inlinable nonisolated public static func == (lhs: Lemma, rhs: Lemma) -> Bool {

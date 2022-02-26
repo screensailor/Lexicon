@@ -39,9 +39,11 @@ public extension Lexicon {
 		return o
 	}
 
+	#if EDITOR
 	func reset(to graph: Graph) {
 		Lexicon.connect(lexicon: self, with: graph)
 	}
+	#endif
 }
 
 private extension Lexicon {
@@ -62,6 +64,8 @@ private extension Lexicon {
 		)
 	}
 }
+
+#if EDITOR
 
 // MARK: graph mutations
 
@@ -296,3 +300,5 @@ public extension Lexicon { // MARK: non-additive mutations
 		return self[lemma.id]
 	}
 }
+
+#endif

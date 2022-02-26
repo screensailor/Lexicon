@@ -25,7 +25,8 @@ let package = Package(
             name: "Lexicon",
             dependencies: [
                 .product(name: "Collections", package: "swift-collections")
-            ]
+			],
+			swiftSettings: [.define("EDITOR")] // TODO: meke this opt in
         ),
         .testTarget(
             name: "LexiconTests",
