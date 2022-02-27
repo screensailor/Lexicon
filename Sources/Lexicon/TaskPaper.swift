@@ -6,7 +6,8 @@ import Foundation
 import UniformTypeIdentifiers
 
 public extension UTType {
-	static var taskpaper = UTType(importedAs: "com.taskpaper.plain-text") // TODO: rethink
+	static var lexicon = UTType(importedAs: "com.github.screensailor.lexicon")
+	static var taskpaper = UTType(importedAs: "com.taskpaper.text")
 }
 
 public class TaskPaper {
