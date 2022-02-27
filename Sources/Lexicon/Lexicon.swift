@@ -3,6 +3,7 @@
 //
 
 import Foundation
+import Algorithms
 
 @LexiconActor public final class Lexicon: ObservableObject {
 	
@@ -173,6 +174,18 @@ public extension Lexicon { // MARK: non-additive mutations
 			return nil
 		}
 		
+		let children = Array(parent.ownChildren.keys.sortedByLocalizedStandard(by: \.self))
+		
+		let sibling: Lemma.Name? = children
+			.firstIndex(of: lemma.name)
+			.flatMap { i in
+				switch (i, children.count > 1) {
+					case (_, false): return nil
+					case (0, _):     return children[1]
+					case (_, _):     return children[i - 1]
+				}
+			}
+		
 		parent.ownChildren.removeValue(forKey: lemma.name)
 		
 		root.graphTraversal(.depthFirst) { o in
@@ -195,7 +208,14 @@ public extension Lexicon { // MARK: non-additive mutations
 		}
 
 		reset(to: graph)
-		return self[parent.id] ?? root
+		
+		guard let parent = self[parent.id] else {
+			return root
+		}
+		guard let name = sibling, let sibling = parent[name] else {
+			return parent
+		}
+		return sibling
 	}
 	
 	func remove(type: Lemma, from lemma: Lemma) -> Lemma? {
