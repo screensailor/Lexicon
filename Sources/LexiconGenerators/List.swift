@@ -11,10 +11,10 @@ public extension Lexicon.Graph.JSON {
 	
 	static let generators: OrderedDictionary<String, CodeGenerator.Type> = [
 		
-		"JSON Classes & Mixins": JSONClasses.self,
-		
 		"Swift Library": SwiftLexicon.Generator.self,
 		
 		"Swift Stand-Alone": SwiftStandAlone.Generator.self,
+		
+		"JSON Classes & Mixins": JSONClasses.self,
 	]
 }
