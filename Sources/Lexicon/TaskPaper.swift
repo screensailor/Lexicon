@@ -41,8 +41,7 @@ public class TaskPaper {
 			return try result.get()
 		}
 		
-		var path: [WritableKeyPath<Node, Node>] = []
-		var root = Node(name: "")
+		var path: [Node] = []
 		var error: Error?
 		
 		string.enumerateLines{ line, stop in
@@ -53,19 +52,23 @@ public class TaskPaper {
 				let range = match.range(withName: "content")
 				let content = line.substring(with: range)
 				let depth = match.range(withName: "tabs").length
-				try self.decode(line: content, depth: depth, path: &path, in: &root)
+				try self.decode(line: content, depth: depth, path: &path)
 			} catch let o {
 				stop = true
 				error = o
 			}
 		}
 		
+		while path.count > 1 {
+			reduce(&path)
+		}
+
 		if let error = error {
 			result = .failure(error)
 			throw error
 		}
 		
-		guard root.name.isNotEmpty else {
+		guard let root = path.first else {
 			let error = "The taskpaper file does not declare a root lemma"
 			result = .failure(error)
 			throw error
@@ -76,16 +79,20 @@ public class TaskPaper {
 		return graph
 	}
 	
-	func decode(line: String, depth: Int, path: inout [WritableKeyPath<Node, Node>], in root: inout Node) throws {
+	func reduce(_ path: inout [Node]) {
+		let child = path.removeLast()
+		path[path.endIndex - 1].children[child.name] = child
+	}
+	
+	func decode(line: String, depth: Int, path: inout [Node]) throws {
 		
 		let name = TaskPaper.pattern.lemma.first(in: line)?["lemma"]
 		
-		guard var parent = path.last else {
+		guard path.isNotEmpty else {
 			guard let name = name, depth == 0 else {
 				return // ignore everything before the first root node
 			}
-			root = Node(name: name)
-			path = [\.self]
+			path = [Node(name: name)]
 			return
 		}
 		
@@ -95,40 +102,38 @@ public class TaskPaper {
 			
 			switch indent {
 					
-				case 0:
-					path.removeLast()
-					guard path.isNotEmpty else {
-						throw "More than one root: \(name) (current root: '\(root.name)')" // TODO: allow multiple roots!
-					}
-					parent = path.last!
-					
-				case 1:
+				case 1: // child
 					break
-					
-				case ..<0:
+
+				case 0: // sibling
+					guard path.count > 1 else {
+						throw "Found a second root: \(name)" // TODO: allow multiple roots!
+					}
+					reduce(&path)
+
+				case ..<0: // ancestor
 					guard path.count + indent > 0 else {
 						throw "Line with wrong indent (\(indent)): '\(line)'"
 					}
-					path.removeLast(1 - indent)
-					parent = path.last!
+					for _ in 0...abs(indent) {
+						reduce(&path)
+					}
 					
 				default:
 					throw "Line with wrong indent (\(indent)): '\(line)'"
 			}
 			
-			root[keyPath: parent].make(child: name)
-			path.append(parent.appending(path: \.[name]))
+			path.append(Node(name: name))
 		}
 		
 		else if
-			let node = path.last,
 			let match = TaskPaper.pattern.operator.first(in: line),
 			let symbol = match["operator"],
 			let content = match["content"]
 		{
 			switch symbol {
-				case "+": root[keyPath: node].type.insert(content)
-				case "=": root[keyPath: node].protonym = content
+				case "+": path[path.endIndex - 1].type.insert(content)
+				case "=": path[path.endIndex - 1].protonym = content
 				default: break
 			}
 		}
