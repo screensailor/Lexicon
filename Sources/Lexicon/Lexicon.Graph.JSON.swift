@@ -113,7 +113,7 @@ public extension Lexicon.Graph.Node {
 	class Class: Hashable {
 		
 		public var json: JSON
-		public let lemma: Lemma?
+		public let lemma: Lemma? // TODO: removing lemma would allow for synchronous code generation
 		public var kind: Set<Lemma.ID>
 		
 		@LexiconActor init(lemma: Lemma) {

@@ -106,13 +106,16 @@ public extension Lexicon { // MARK: additive mutations
 	func make(child new: Graph, to lemma: Lemma) -> Lemma? {
 		
 		let name = new.root.name
-		
+
 		guard
 			lemma.isValid(newChildName: name),
 			let path = lemma.graphPath
 		else {
 			return nil
 		}
+		
+		var new = new
+		new.root.protonym = nil // TODO: allow != nil
 		
 		let id = "\(lemma.id).\(name)"
 		
@@ -165,7 +168,7 @@ public extension Lexicon { // MARK: additive mutations
 
 public extension Lexicon { // MARK: non-additive mutations
 	
-	func delete(_ lemma: Lemma) -> Lemma? {
+	func delete(_ lemma: Lemma, alwaysReturningParent: Bool = false) -> Lemma? {
 		
 		guard
 			lemma.isGraphNode,
@@ -212,7 +215,7 @@ public extension Lexicon { // MARK: non-additive mutations
 		guard let parent = self[parent.id] else {
 			return root
 		}
-		guard let name = sibling, let sibling = parent[name] else {
+		guard !alwaysReturningParent, let name = sibling, let sibling = parent[name] else {
 			return parent
 		}
 		return sibling
@@ -320,7 +323,7 @@ public extension Lexicon { // MARK: non-additive mutations
 		
 		let id = lemma.id
 		
-		guard let parent = lemma.delete() else {
+		guard let parent = delete(lemma, alwaysReturningParent: true) else {
 			return nil
 		}
 		

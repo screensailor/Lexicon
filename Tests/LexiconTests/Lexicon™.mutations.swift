@@ -32,9 +32,9 @@ extension Lexicon™ {
 			"""
 			
 		let src = try await taskpaper.lemma("o.copy.a.b")
-		let dst = try await src.lexicon["o.paste.a"].try()
+		let dst = try await src.lexicon["o.paste.a"].hopefully()
 
-		let b = try await dst.make(child: src.graph).try()
+		let b = try await dst.make(child: src.graph).hopefully()
 		
 		await hope(that: b.lexicon.taskpaper()) == """
 			o:
@@ -68,6 +68,35 @@ extension Lexicon™ {
 			"""
 	}
 	
+	func test_make_child_graph_where_root_is_a_synonym() async throws {
+				
+		let taskpaper = """
+			o:
+				a:
+					b:
+						c:
+							d:
+						x:
+						= c
+			"""
+			
+		let src = try await taskpaper.lemma("o.a.b.x")
+		let dst = try await src.lexicon["o.a"].hopefully()
+
+		let b = try await dst.make(child: src.graph).hopefully()
+
+		await hope(that: b.lexicon.taskpaper()) == """
+			o:
+				a:
+					b:
+						c:
+							d:
+						x:
+						= c
+					x:
+			"""
+	}
+	
 	// MARK: non-additive mutations
 	
 	func test_delete() async throws {
@@ -87,9 +116,9 @@ extension Lexicon™ {
 			
 		let b = try await taskpaper.lemma("o.b")
 		
-		let o = try await b.delete().try()
+		let o = try await b.delete().hopefully()
 		
-		await hope(that: o.taskpaper()) == """
+		await hope(that: o.lexicon.taskpaper()) == """
 			o:
 				a:
 				+ o
@@ -113,9 +142,9 @@ extension Lexicon™ {
 			"""
 			
 		let a = try await taskpaper.lemma("o.a")
-		let o = try await a.lexicon["o"].try()
+		let o = try await a.lexicon["o"].hopefully()
 
-		let a₂ = try await a.remove(type: o).try()
+		let a₂ = try await a.remove(type: o).hopefully()
 		
 		await hope(that: a₂.lexicon.taskpaper()) == """
 			o:
@@ -143,7 +172,7 @@ extension Lexicon™ {
 			
 		let c = try await taskpaper.lemma("o.c")
 
-		let c₂ = try await c.removeProtonym().try()
+		let c₂ = try await c.removeProtonym().hopefully()
 		
 		await hope(that: c₂.lexicon.taskpaper()) == """
 			o:
@@ -189,7 +218,7 @@ extension Lexicon™ {
 			
 		let y = try await taskpaper.lemma("o.x.y")
 
-		let y₂ = try await y.rename(to: "Y").try()
+		let y₂ = try await y.rename(to: "Y").hopefully()
 		
 		await hope(that: y₂.lexicon.taskpaper()) == """
 			o:
@@ -234,9 +263,9 @@ extension Lexicon™ {
 			"""
 			
 		let c = try await taskpaper.lemma("o.c")
-		let x = try await c.lexicon["o.a.b.x"].try()
+		let x = try await c.lexicon["o.a.b.x"].hopefully()
 
-		let c₂ = try await c.set(protonym: x).try()
+		let c₂ = try await c.set(protonym: x).hopefully()
 
 		await hope(that: c₂.lexicon.taskpaper()) == """
 			o:

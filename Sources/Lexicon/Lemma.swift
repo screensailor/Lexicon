@@ -229,8 +229,8 @@ public extension Lemma { // MARK: additive graph mutations
 
 public extension Lemma { // MARK: non-additive graph mutations
 	
-	@inlinable func delete() -> Lemma? {
-		lexicon.delete(self)
+	@inlinable func delete(alwaysReturningParent: Bool = false) -> Lemma? {
+		lexicon.delete(self, alwaysReturningParent: alwaysReturningParent)
 	}
 	
 	@inlinable func remove(type: Lemma) -> Lemma? {
