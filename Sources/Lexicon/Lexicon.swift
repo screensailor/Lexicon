@@ -3,7 +3,6 @@
 //
 
 import Foundation
-import Algorithms
 
 @LexiconActor public final class Lexicon: ObservableObject {
 	

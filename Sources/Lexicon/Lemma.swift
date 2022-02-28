@@ -84,6 +84,10 @@ public extension Lemma {
 
 public extension Lemma {
 	
+	var isConnected: Bool {
+		lexicon[id] === self
+	}
+	
 	var source: Lemma {
 		sourceProtonym ?? self
 	}
