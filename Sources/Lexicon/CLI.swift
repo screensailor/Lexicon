@@ -294,11 +294,16 @@ public extension CLI {
 	}
 	
 	static func isValid(character: Character, appendingTo input: String) -> Bool {
-		CharacterSet(charactersIn: String(character)).isSubset(
-			of: input.isEmpty
-			? Lemma.validFirstCharacterOfName
-			: Lemma.validCharacterOfName
-		)
+		switch (character, input.last) {
+			case ("_", "_"):
+				return false
+				
+			case (_, nil):
+				return CharacterSet(charactersIn: String(character)).isSubset(of: Lemma.validFirstCharacterOfName)
+				
+			default:
+				return CharacterSet(charactersIn: String(character)).isSubset(of: Lemma.validCharacterOfName)
+		}
 	}
 }
 
