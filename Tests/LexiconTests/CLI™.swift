@@ -7,12 +7,6 @@ import Foundation
 
 class CLI™: Hopes {
 	
-	func test() async throws {
-		hope.true(CLI.isValid(character: "_", appendingTo: "yet_another"))
-		hope.false(CLI.isValid(character: "_", appendingTo: "not_another_"))
-		hope.false(CLI.isValid(character: "_", appendingTo: "")) // TODO: consider allowing this!
-	}
-	
 	func test_against_session_record() async throws {
 		
 		let session: CLI.Session = try "testCLI".json()

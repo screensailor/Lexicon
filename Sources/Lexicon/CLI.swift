@@ -107,7 +107,7 @@ public extension CLI {
 	func appending(_ character: Character) -> CLI {
 		var o = self
 		o.error = .none
-		guard Self.isValid(character: character, appendingTo: o.input) else {
+		guard Lemma.isValid(character: character, appendingTo: o.input) else {
 			o.error = .invalidInputCharacter(character)
 			return o
 		}
@@ -133,7 +133,7 @@ public extension CLI {
 		o.input = ""
 		o.error = .none
 		for character in newInput {
-			guard Self.isValid(character: character, appendingTo: o.input) else {
+			guard Lemma.isValid(character: character, appendingTo: o.input) else {
 				o.error = .invalidInputCharacter(character)
 				return o
 			}
@@ -279,31 +279,6 @@ public extension Lemma {
 			o.append((type.unwrapped, type.children.keys.sortedByLocalizedStandard(by: \.self).compactMap{ children[$0] }))
 		}
 		return o
-	}
-}
-
-public extension CLI {
-	
-	static func isValid(name: String) -> Bool {
-		guard
-			let first = name.first,
-			CharacterSet(charactersIn: String(first)).isSubset(of: Lemma.validFirstCharacterOfName),
-			CharacterSet(charactersIn: String(name.dropFirst())).isSubset(of: Lemma.validCharacterOfName)
-		else { return false }
-		return true
-	}
-	
-	static func isValid(character: Character, appendingTo input: String) -> Bool {
-		switch (character, input.last) {
-			case ("_", "_"):
-				return false
-				
-			case (_, nil):
-				return CharacterSet(charactersIn: String(character)).isSubset(of: Lemma.validFirstCharacterOfName)
-				
-			default:
-				return CharacterSet(charactersIn: String(character)).isSubset(of: Lemma.validCharacterOfName)
-		}
 	}
 }
 

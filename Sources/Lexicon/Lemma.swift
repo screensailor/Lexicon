@@ -132,17 +132,26 @@ public extension Lemma {
 	nonisolated static let validFirstCharacterOfName = CharacterSet.letters
 	nonisolated static let validCharacterOfName = CharacterSet.letters.union(.decimalDigits).union(.init(charactersIn: "_"))
 	
-	nonisolated static func isValid(name: Name) -> Bool {
-		guard
-			let first = name.first,
-			CharacterSet(charactersIn: String(first)).isSubset(of: Lemma.validFirstCharacterOfName)
-		else {
-			return false
-		}
-		return CharacterSet(charactersIn: String(name.dropFirst()))
-			.isSubset(of: Lemma.validCharacterOfName)
+	nonisolated static func isValid(name: String) -> Bool {
+		name.unlessEmpty?.enumerated().allSatisfy { i, c in
+			Lemma.isValid(character: c, appendingTo: name.prefix(i))
+		} ?? false
 	}
 	
+	nonisolated static func isValid<S>(character: Character, appendingTo input: S) -> Bool where S: StringProtocol {
+		switch (character, input.last) {
+				
+			case (_, nil):
+				return CharacterSet(charactersIn: String(character)).isSubset(of: Lemma.validFirstCharacterOfName)
+				
+			case ("_", "_"):
+				return false
+				
+			default:
+				return CharacterSet(charactersIn: String(character)).isSubset(of: Lemma.validCharacterOfName)
+		}
+	}
+
 	func isValid(newName: Name) -> Bool {
 		isGraphNode &&
 		parent?.children[newName] == nil &&
