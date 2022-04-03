@@ -24,3 +24,8 @@ While we are working towards a fully featured 1.0 complete with respectable docu
 	- Branches as self-sufficient lexicons
 
 ### Implementation
+- Search
+	- Time limited to allow results to include inherited nodes (breadth first traversal, of course)
+	- All inheritors of this lemma
+	- All synonyms
+	- More complex conditions
