@@ -8,7 +8,7 @@ While we are working towards a fully featured 1.0 complete with respectable docu
 ## To Do
 ### Specification
 - Formal grammar specification
-- OWL serialisation
+- SKOS (or other standard) serialisation
 - CRDT Lexicon
 - Composable lexicons
 	- @ https://some.remote.lexicon
