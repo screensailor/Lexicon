@@ -12,6 +12,7 @@ let package = Package(
 		.library(name: "Lexicon", targets: ["Lexicon"]),
 		.library(name: "SwiftLexicon", targets: ["SwiftLexicon"]),
 		.library(name: "SwiftStandAlone", targets: ["SwiftStandAlone"]),
+        .library(name: "KotlinStandAlone", targets: ["KotlinStandAlone"]),
 		.library(name: "LexiconGenerators", targets: ["LexiconGenerators"]),
 	],
 	dependencies: [
@@ -70,7 +71,7 @@ let package = Package(
 			]
 		),
 		
-		// MARK: 
+		// MARK: SwiftStandAlone
 		
 		.target(
 			name: "SwiftStandAlone",
@@ -88,5 +89,24 @@ let package = Package(
 				.copy("Resources"),
 			]
 		),
+        
+        // MARK: KotlinStandAlones
+        
+        .target(
+            name: "KotlinStandAlone",
+            dependencies: [
+                "Lexicon",
+            ]
+        ),
+        .testTarget(
+            name: "KotlinStandAloneTests",
+            dependencies: [
+                "Hope",
+                "KotlinStandAlone"
+            ],
+            resources: [
+                .copy("Resources"),
+            ]
+        ),
 	]
 )
