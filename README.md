@@ -3,7 +3,7 @@ _A specification for shared indefinitely evolving namespaces, ontologies and lan
 
 Lexicon is intended to serve as a foundation for ontology led development, semantic reactive programming and [software gardening](https://github.com/thousandyears/garden).
 
-While we are working towards a fully featured 1.0 complete with respectable documentation, please consider visiting [mindflare.app](https://mindflare.app) for a quick demo of the basic concepts.
+While we are working towards a fully featured 1.0 complete with respectable documentation, please consider visiting [MindFlare on App Store](https://apps.apple.com/gb/app/mindflare-mind-map-editor/id1608730167?mt=12) and this quick [YouTube demo](https://youtu.be/jGmFuq5DSwQ) of the basic concepts.
 
 ## To Do
 ### Specification
