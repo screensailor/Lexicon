@@ -1,0 +1,17 @@
+test:
+	one:
+	+ test.type.odd
+		more:
+			time:
+			+ test
+	two:
+	+ test.type.even
+		timing:
+	type:
+		even:
+			bad:
+			= no.good
+			no:
+				good:
+		odd:
+			good:
